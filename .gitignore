@@ -1,0 +1,9 @@
+/demo
+go-vue-template
+demo.db
+tmp/
+asset/dashboard/
+# asset/d2admin/
+d2admin/node_modules/
+dist/
+lflxp-k8s
