@@ -76,6 +76,8 @@ or
 
 > kubectl get secret --all-namespaces -l "owner=helm"
 
+> https://fluxcd.io/flux/installation/
+
 ## 安装
 
 `make`
