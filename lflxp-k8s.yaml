@@ -17,3 +17,6 @@ meili:
     host: http://127.0.0.1:7700
 port: 8000
 snakemapper: admin_
+auth:
+    dev: true
+    url: http://192.168.64.2:30137

@@ -8,6 +8,7 @@
 2、切换项目名称，叫脚手架比较好听
 3、修改go mod名称和代码import名
 4、统一后端接口路径以/api开头，/admin忽略
+5、应用商店：初始化、接口联调CRUD、UI界面
 
 # 功能列表
 
@@ -77,6 +78,14 @@ or
 > kubectl get secret --all-namespaces -l "owner=helm"
 
 > https://fluxcd.io/flux/installation/
+
+> https://kubevela.stoplight.io/docs/kubevela/b908ff637ac96-prepare-the-user-s-cloud-shell-environment
+
+> https://kubevela.net/zh/docs/platform-engineers/openapi/overview
+
+## 可以将helm二进制文件打包进embed或者将二进制文件上传到gitee或者github
+
+## 自动化安装kubevela
 
 ## 安装
 

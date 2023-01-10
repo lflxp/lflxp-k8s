@@ -59,6 +59,8 @@ export default {
     { path: 'workload/configmaps', name: 'demo-playground-workload-configmaps', component: _import('demo/playground/workload/configmaps'), meta: { ...meta, title: 'Configmaps' } },
     { path: 'workload/secrets', name: 'demo-playground-workload-secrets', component: _import('demo/playground/workload/secrets'), meta: { ...meta, title: 'Secrets' } },
     { path: 'service/svc', name: 'demo-playground-service-svc', component: _import('demo/playground/service/svc'), meta: { ...meta, title: 'Services' } },
+    { path: 'service/ingress', name: 'demo-playground-service-ingress', component: _import('demo/playground/service/ingress'), meta: { ...meta, title: 'Ingress' } },
     { path: 'cluster/node', name: 'demo-playground-cluster-node', component: _import('demo/playground/cluster/node'), meta: { ...meta, title: 'Nodes' } },
+    { path: 'shop/helm', name: 'demo-playground-shop-helm', component: _import('demo/playground/shop/helm'), meta: { ...meta, title: 'Helm' } },
   ]
 }

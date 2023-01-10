@@ -1,6 +1,7 @@
 package framework
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -78,6 +79,45 @@ func VerifyAuth(username, password string) (bool, error) {
 	}
 
 	return false, errors.New("account is not exists")
+}
+
+// 验证kubevela VelaUX OpenAPI
+// https://kubevela.net/zh/docs/platform-engineers/openapi/overview
+func VerifyKubeVelaLogin(username, password string) (*model.KubeVelaToken, error) {
+	var result model.KubeVelaToken
+	host := viper.GetString("auth.url")
+	url := fmt.Sprintf("%s/api/v1/auth/login", host)
+	log.Debug("kubevela login url: %s", url)
+	code := 0
+	body := ""
+	err := httpclient.NewGoutClient().
+		POST(url).
+		Debug(true).
+		SetHeader(gout.H{
+			"Content-Type": "application/json",
+		}).
+		SetJSON(gout.H{
+			"username": username,
+			"password": password,
+		}).
+		BindBody(&body).
+		Code(&code).
+		Do()
+	if err != nil {
+		return &result, err
+	}
+
+	if code != 200 {
+		log.Error(body)
+		return &result, errors.New(body)
+	}
+
+	err = json.Unmarshal([]byte(body), &result)
+	if err != nil {
+		return &result, err
+	}
+
+	return &result, nil
 }
 
 func VerifyAuthByRancher(username, password string) (string, string, bool) {
@@ -189,6 +229,16 @@ func NewGinJwtMiddlewares(jwta JwtAuthorizator) *jwt.GinJWTMiddleware {
 					tmp[k] = v
 				}
 				return tmp
+			} else if vela, ok := data.(*model.KubeVelaToken); ok {
+				return jwt.MapClaims{
+					"username":           vela.User.Name,
+					"token":              vela.AccessToken,
+					"refreshToken":       vela.RefreshToken,
+					"createTimestamp":    vela.User.CreateTime,
+					"lastLoginTimestamp": vela.User.LastLoginTime,
+					"email":              vela.User.Email,
+					"disabled":           vela.User.Disabled,
+				}
 			}
 			return jwt.MapClaims{}
 		},
@@ -217,13 +267,22 @@ func NewGinJwtMiddlewares(jwta JwtAuthorizator) *jwt.GinJWTMiddleware {
 					}, nil
 				}
 			} else {
-				if ok, err := VerifyAuth(userID, password); ok {
-					return &model.User{
-						Username: userID,
-						Token:    "verifyAuth",
-					}, nil
+				isDev := viper.GetBool("auth.dev")
+				if isDev {
+					if token, err := VerifyKubeVelaLogin(userID, password); err == nil {
+						return token, nil
+					} else {
+						log.Error(err.Error())
+					}
 				} else {
-					log.Error(err.Error())
+					if ok, err := VerifyAuth(userID, password); ok {
+						return &model.User{
+							Username: userID,
+							Token:    "verifyAuth",
+						}, nil
+					} else {
+						log.Error(err.Error())
+					}
 				}
 			}
 

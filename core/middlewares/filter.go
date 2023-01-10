@@ -85,6 +85,8 @@ func TokenFilter() gin.HandlerFunc {
 			c.Request.Header.Set("name", user.Name)
 			c.Request.Header.Set("userid", user.UserId)
 			c.Request.Header.Set("email", user.Email)
+			c.Request.Header.Set("token", user.Token)
+			c.Request.Header.Set("refreshtoken", user.RefreshToken)
 		} else {
 			c.Next()
 		}
@@ -110,8 +112,8 @@ func isWhilteUrl(c *gin.Context) bool {
 		`^/admin/auth/login`,
 		`^/api/login`,
 		`^/apis/*`,
-		`^/api/*`, // for debug only
-		`^/ws/*`,
+		// `^/api/*`, // for debug only
+		// `^/ws/*`,
 		`^/node_modules/*`,
 	}
 

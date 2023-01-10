@@ -112,12 +112,37 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button
+          <!-- <el-button
             size="mini"
-            @click="showLogs(scope.row)">日志</el-button>
-          <el-button
+            @click="showLogs(scope.row)">日志</el-button> -->
+          <el-select 
+            clearable
+            v-model="podValue"
+            @focus="getC(scope.row)"
+            @change="showLogs2(scope.row,podValue)"
+            placeholder="容器日志">
+            <el-option
+              v-for="item in currentNameList"
+              :key="item.name"
+              :label="item.name"
+              :value="item.name">
+            </el-option>
+          </el-select>
+          <!-- <el-button
             size="mini"
-            @click="showssh(scope.row)">SSH</el-button>
+            @click="showssh(scope.row)">SSH</el-button> -->
+          <el-select 
+            clearable
+            v-model="sshValue"
+            @change="showssh(scope.row,sshValue)"
+            placeholder="SSH容器">
+            <el-option
+              v-for="item in scope.row.spec.containers"
+              :key="item.name"
+              :label="item.name"
+              :value="item.name">
+            </el-option>
+          </el-select>
           <el-button
             size="mini"
             @click="deletepod(scope.row)">删除</el-button>
@@ -172,20 +197,43 @@ export default {
       currentPage: 1, // 当前页码
       total: 20, // 总条数
       pageSize: 10,
-      namespace: ''
+      namespace: '',
+      podValue: '',
+      sshValue: '',
+      currentNameList: []
     }
   },
   created() {
     this.fetchData()
   },
   methods: {
+    showLogs2(row,containerName) {
+      let url = '/ws/logs/html/' + row.metadata.namespace + '/' + row.metadata.name + '/' + containerName;
+      window.open(url,row.metadata.namespace + '-' + row.metadata.name,"height=600,width=1200,top=0,left=200,fullscreen=yes,scrollbars=0,location=no")
+      this.podValue = ''
+    },
     showLogs(row) {
       let url = '/ws/logs/html/' + row.metadata.namespace + '/' + row.metadata.name + '/' + row.spec.containers[0].name;
       window.open(url,row.metadata.namespace + '-' + row.metadata.name,"height=600,width=1200,top=0,left=200,fullscreen=no,scrollbars=0,location=no")
     },
-    showssh(row) {
-      let url = '/ws/ssh/html/' + row.metadata.namespace + '/' + row.metadata.name + '/' + row.spec.containers[0].name;
+    showssh(row,containerName) {
+      let url = '/ws/ssh/html/' + row.metadata.namespace + '/' + row.metadata.name + '/' + containerName;
       window.open(url,row.metadata.namespace + '-' + row.metadata.name,"height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0,location=no")
+      this.sshValue = ''
+    },
+    getC(row) {
+      this.currentNameList = []
+      if (row.spec.containers.length > 0) {
+        row.spec.containers.forEach((e) => {
+          this.currentNameList.push(e)
+        })
+      }
+      if (row.spec.initContainers.length > 0) {
+        row.spec.initContainers.forEach((e) => {
+          this.currentNameList.push(e)
+        })
+      }
+      console.log(this.currentNameList)
     },
     //每页条数改变时触发 选择一页显示多少行
     handleSizeChange(val) {

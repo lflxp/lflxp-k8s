@@ -32,6 +32,7 @@ export default {
       icon: 'globe',
       children: [
         { path: '/demo/playground/service/svc', title: 'Services', iconSvg: 'd2-admin' },
+        { path: '/demo/playground/service/ingress', title: 'Ingress', iconSvg: 'd2-admin' },
       ]
     },
     {
@@ -41,6 +42,14 @@ export default {
       children: [
         { path: '/demo/playground/workload/configmaps', title: 'ConfigMap', iconSvg: 'd2-admin' },
         { path: '/demo/playground/workload/secrets', title: 'Secret', iconSvg: 'd2-admin' },
+      ]
+    },
+    {
+      path: '/demo/playground/shop',
+      title: '应用商店',
+      icon: 'globe',
+      children: [
+        { path: '/demo/playground/shop/helm', title: '应用商店', iconSvg: 'd2-admin' },
       ]
     },
     {
