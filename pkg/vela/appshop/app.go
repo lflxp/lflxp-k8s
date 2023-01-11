@@ -19,6 +19,7 @@ func RegisterShop(router *gin.Engine) {
 	shopGroup := router.Group("/api")
 	{
 		shopGroup.GET(REPO_LIST, repo_list)
+		shopGroup.GET("/shop/test", repo_test)
 	}
 }
 
@@ -59,4 +60,8 @@ func repo_list(c *gin.Context) {
 	}
 
 	httpclient.SendSuccessMessage(c, 200, data)
+}
+
+func repo_test(c *gin.Context) {
+	c.Redirect(302, "http://localhost:8080/d2admin/")
 }

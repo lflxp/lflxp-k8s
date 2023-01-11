@@ -66,7 +66,8 @@ func TokenFilter() gin.HandlerFunc {
 			user, err := js.ParseJWTToken(c)
 			if err != nil {
 				if strings.Contains(err.Error(), "named cookie not present") {
-					c.Redirect(http.StatusFound, "/d2admin/#/login?url="+c.Request.RequestURI)
+					// c.Redirect(http.StatusFound, "/d2admin/#/login?url="+c.Request.RequestURI)
+					httpclient.SendErrorMessage(c, http.StatusUnauthorized, "token invalid", "/d2admin/#/login?url="+c.Request.RequestURI)
 					return
 				}
 				c.AbortWithStatusJSON(http.StatusUnauthorized, httpclient.Result{

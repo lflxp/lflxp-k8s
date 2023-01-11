@@ -32,71 +32,77 @@
       </el-option>
     </el-select> -->
     <el-button @click="fetchData">刷新</el-button>
+    <el-button @click="testurl">jump</el-button>
     <el-table
       v-loading="listLoading"
-      :data="list"
+      :data="list.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
       element-loading-text="Loading"
       border
       fit
       highlight-current-row
     >
-      <el-table-column
-        align="center" 
-        sortable 
-        label="State" 
-        prop="status.phase"
-        width="95">
+
+      <el-table-column label="Icon" width="200">
         <template slot-scope="scope">
-          <el-tag size="mini" type="success">Activing</el-tag>
+          <el-image
+            style="width: 100px; height: 100px"
+            :src="scope.row.icon"
+            :fit="cover"></el-image>
         </template>
       </el-table-column>
       <el-table-column label="Name">
         <template slot-scope="scope">
-          <el-button type="text" @click="openit(scope.row)">{{ scope.row.metadata.name }}</el-button>
+          <el-button type="text" @click="openit(scope.row)">{{ scope.row.name }}</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="Namespace" align="center">
+      <el-table-column label="Version" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.metadata.namespace }}</span>
+          <span>{{ scope.row.version }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Domain" width="200">
+      <el-table-column label="Tags" width="200">
         <template slot-scope="scope">
-          {{ scope.row.spec.rules[0].host }}
-          <div v-if="scope.row.spec.rules.length > 1">
-            <br/>
-            <el-button type="text">+{{ scope.row.spec.template.spec.containers.length }} more</el-button>
+          <div v-for="x in scope.row.tags" :key="x">
+            <el-tag
+              type="success"
+              disable-transitions>{{x}}</el-tag>
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="Service" align="center">
+      <el-table-column label="Dependencies" width="200">
         <template slot-scope="scope">
-          <span>{{ scope.row.spec.rules[0].http.paths[0].backend.service.name }}:{{ scope.row.spec.rules[0].http.paths[0].backend.service.port.number }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Path" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.spec.rules[0].http.paths[0].path }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="metadata.creationTimestamp" sortable label="Age" width="200">
-        <template slot-scope="scope">
-          <span>{{ timeFn(scope.row.metadata.creationTimestamp) }}</span>
+          <div v-for="x in scope.row.dependencies" :key="x.name">
+            <el-tag
+              type="primary"
+              disable-transitions>{{x.name}}</el-tag>
+          </div>
         </template>
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            @click="deletetarget(scope.row)">删除</el-button>
+            size="mini">部署</el-button>
         </template>
       </el-table-column>
     </el-table>
+    <div class="block" style="margin-top: 15px">
+      <el-pagination
+        align="center"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes="[1, 5, 10, 20]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="list.length"
+      >
+      </el-pagination>
+    </div>
   </d2-container>
 </template>
 
 <script>
-import { repolist } from '@/api/shop.js'
+import { repolist, repotest } from '@/api/shop.js'
 import vueJsonEditor from 'vue-json-editor'
 import util from '@/libs/util.js'
 
@@ -123,7 +129,11 @@ export default {
       jsonData: '',
       value: '',
       namespaces: '',
-      namespace: ''
+      namespace: '',
+      currentList: '',
+      currentPage: 1, // 当前页码
+      total: 20, // 总条数
+      pageSize: 10
     }
   },
   created() {
@@ -139,6 +149,22 @@ export default {
         this.list = resp.data.addons
         this.listLoading = false
       })
+    },
+    testurl() {
+      repotest().then(resp => {
+        console.log('repo test')
+      })
+    },
+    //每页条数改变时触发 选择一页显示多少行
+    handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+        this.currentPage = 1;
+        this.pageSize = val;
+    },
+    //当前页改变时触发 跳转其他页
+    handleCurrentChange(val) {
+        console.log(`当前页: ${val}`);
+        this.currentPage = val;
     },
     getNs() {
       this.namespace = util.cookies.get('namespace')

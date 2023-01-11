@@ -6,3 +6,10 @@ export function repolist() {
         method: 'get'
     })
 }
+
+export function repotest() {
+    return request({
+        url: '/shop/test',
+        method: 'get'
+    })
+}

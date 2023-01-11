@@ -84,9 +84,11 @@ function createService () {
         // 返回响应内容
         case 0: return response.data.data
         // 例如在 code 401 情况下退回到登录页面
-        case 401: throw new Error('请重新登录')
+        case 401: 
+          console.log('222222', error, status)
         // 根据需要添加其它判断
         case 200: return response.data
+        case 302: console.log('response 302',response)
         default: throw new Error(`${response.data.msg}: ${response.config.url}`)
       }
     },
@@ -94,7 +96,10 @@ function createService () {
       const status = get(error, 'response.status')
       switch (status) {
         case 400: error.message = '请求错误'; break
-        case 401: error.message = '未授权，请登录'; break
+        case 401: 
+          error.message = '未授权，请登录'; 
+          window.location.href = '/d2admin/#/login'
+          break
         case 403: error.message = '拒绝访问'; break
         case 404: error.message = `请求地址出错: ${error.response.config.url}`; break
         case 408: error.message = '请求超时'; break
