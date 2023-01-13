@@ -13,3 +13,18 @@ export function repotest() {
         method: 'get'
     })
 }
+
+export function repoparam(path) {
+    return request({
+        url: '/shop/param?path=' + path,
+        method: 'get'
+    })
+}
+
+export function repoparamPost(path,data) {
+    return request({
+        url: '/shop/param?path=' + path,
+        method: 'post',
+        data: data
+    })
+}
