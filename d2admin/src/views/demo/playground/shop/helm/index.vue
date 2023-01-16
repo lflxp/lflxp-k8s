@@ -31,8 +31,13 @@
         :value="item.metadata.name">
       </el-option>
     </el-select> -->
-    <el-button @click="fetchData">刷新</el-button>
-    <el-button @click="testurl">jump</el-button>
+    <el-row style="margin-bottom: 13px;">
+      <el-col>
+        <el-button @click="fetchData">刷新</el-button>
+        <el-button @click="testurl">jump</el-button>
+        <el-button @click="dialogTableVisible = true">Helm仓库</el-button>
+      </el-col>
+    </el-row>
     <el-row :gutter="20">
       <el-col :span="4" style="margin-bottom: 20px;" v-for="row in list" :key="row.name">
         <el-card :body-style="{ padding: '0px' }">
@@ -78,10 +83,29 @@
         </el-card>
       </el-col>
     </el-row>
+    
+
+    <el-dialog title="Helm仓库" :visible.sync="dialogTableVisible">
+      <el-table :data="repoList">
+        <el-table-column property="name" label="姓名" width="200"></el-table-column>
+        <el-table-column label="类型">
+          <template slot-scope="scope">
+            <span v-if="scope.row.helm !== undefined">Helm</span>
+          </template>
+        </el-table-column>
+        <el-table-column property="helm.url" label="链接"></el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button @click="removeHelm(scope.row)" type="primary" size="mini">移除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
     <el-drawer
       :title="title"
       :visible.sync="drawer"
       :direction="direction"
+      size="80%"
       custom-class="demo-drawer"
       ref="drawer"
       :before-close="handleClose">
@@ -208,9 +232,10 @@
 </template>
 
 <script>
-import { repolist, repotest, repoparam, repoparamPost } from '@/api/shop.js'
+import { repolist, repotest, repoparam, repoparamPost, repoparamDel } from '@/api/shop.js'
 import vueJsonEditor from 'vue-json-editor'
 import util from '@/libs/util.js'
+import { response } from '@/api/_tools'
 
 export default {
   components: {
@@ -260,7 +285,9 @@ export default {
       loading: false,
       timer: null,
       status2: '',
-      rules: {'cluster': [{'required': true}],'version': [{'required': true}]}
+      rules: {'cluster': [{'required': true}],'version': [{'required': true}]},
+      dialogTableVisible: false,
+      repoList: []
     }
   },
   created() {
@@ -270,7 +297,10 @@ export default {
     fetchData() {
       this.listLoading = true
       // this.getNs()
-      
+      repoparam('addon_registries').then(resp => {
+        console.log('addon_registries/',resp)
+        this.repoList = resp.data.registries 
+      });
       repolist().then(resp => {
         console.log('repolist', resp)
         this.list = resp.data.addons
@@ -279,6 +309,13 @@ export default {
       repoparam('enabled_addon').then(resp => {
         console.log('repoparam', resp)
         this.enabled_addon_list = resp.data.enabledAddons
+      })
+    },
+    removeHelm(row) {
+      repoparamDel('addon_registries/' + row.name).then(resp => {
+        console.log('remove_helm', row, resp)
+        this.$message.success("成功删除Helm仓库 " + resp.data.name)
+        this.fetchData()
       })
     },
     cancelForm() {

@@ -28,3 +28,10 @@ export function repoparamPost(path,data) {
         data: data
     })
 }
+
+export function repoparamDel(path) {
+    return request({
+        url: '/shop/param?path=' + path,
+        method: 'delete'
+    })
+}
