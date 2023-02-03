@@ -2,17 +2,103 @@
   <d2-container>
     <el-dialog
       :title="kinds"
+      center="true"
       :visible.sync="dialogVisible"
-      width="80%">
-      <vue-json-editor
-        v-model="jsonData"
-        :showBtns="true"
-        mode="tree"
-        lang="zh"
-        :expandedOnStart="true"
-        @json-change="onJsonChange"
-        @json-save="onJsonSave"
-      /> 
+      width="90%">
+      <d2-highlight :code="jsonDataStr" style="margin-bottom: 10px;"/>
+
+      <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+        <el-tab-pane label="Containers" name="first">
+          <el-table
+            :data="containers"
+            element-loading-text="Loading"
+            border
+            fit
+            highlight-current-row
+          >
+            <el-table-column
+              align="center" 
+              sortable 
+              label="Status" >
+              <template slot-scope="scope">
+                <el-tag size="mini" type="success" v-if="scope.row.state.running !== undefined">Running</el-tag>
+                <el-tag size="mini" type="warning" v-else-if="scope.row.state.terminated !== undefined">Terminated</el-tag>
+                <el-tag size="mini" type="danger" v-else>{{ scope.row.state }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="Ready" align="center">
+              <template slot-scope="scope">
+                <div v-if="scope.row.ready">
+                  <i class="el-icon-check"></i>
+                </div>
+                <div v-else>
+                  <i class="el-icon-close"></i>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="Name">
+              <template slot-scope="scope">
+                {{ scope.row.name }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Image" width="400">
+              <template slot-scope="scope">
+                <span>{{ scope.row.image }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="InitContainer" align="center">
+              <template slot-scope="scope">
+                <div v-if="scope.row.init">
+                  <i class="el-icon-check" type="success"></i>
+                </div>
+                <div v-else>
+                  -
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="Restart" align="center">
+              <template slot-scope="scope">
+                {{ scope.row.restartCount }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Started">
+              <template slot-scope="scope">
+                <div v-if="scope.row.started">
+                  <i class="el-icon-check"></i>
+                </div>
+                <div v-else>
+                  -
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <el-button
+                  size="mini"
+                  type="text"
+                  @click="showLogsstatus(scope.row.name)">日志</el-button>
+                <el-button
+                  size="mini"
+                  type="text"
+                  @click="showsshstatus(scope.row.name)">SSH</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane label="Conditions" name="Conditions">Conditions</el-tab-pane>
+        <el-tab-pane label="相关资源" name="相关资源">相关资源</el-tab-pane>
+        <el-tab-pane label="YAML" name="second">
+          <vue-json-editor
+            v-model="jsonData"
+            :showBtns="true"
+            mode="tree"
+            lang="zh"
+            :expandedOnStart="true"
+            @json-change="onJsonChange"
+            @json-save="onJsonSave"
+          /> 
+        </el-tab-pane>
+      </el-tabs>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
@@ -169,6 +255,7 @@
 import { apiserver, apiput, apidelete } from '@/api/table.js'
 import vueJsonEditor from 'vue-json-editor'
 import util from '@/libs/util.js'
+import { runInThisContext } from 'vm'
 export default {
   components: {
     vueJsonEditor
@@ -185,11 +272,13 @@ export default {
   },
   data() {
     return {
+      activeName: 'first',
       list: null,
       listLoading: true,
       kinds: '',
       dialogVisible: false,
       jsonData: '',
+      jsonDataStr: '',
       value: '',
       namespaces: '',
       podValue: '',
@@ -200,25 +289,36 @@ export default {
       namespace: '',
       podValue: '',
       sshValue: '',
-      currentNameList: []
+      currentNameList: [],
+      containers: [],
+      selecetNs: '',
+      selectName: ''
     }
   },
   created() {
     this.fetchData()
   },
   methods: {
+    handleClick(tab, event) {
+      console.log(tab, event);
+    },
     showLogs2(row,containerName) {
       let url = '/ws/logs/html/' + row.metadata.namespace + '/' + row.metadata.name + '/' + containerName;
       window.open(url,row.metadata.namespace + '-' + row.metadata.name,"height=600,width=1200,top=0,left=200,fullscreen=yes,scrollbars=0,location=no")
       this.podValue = ''
     },
-    showLogs(row) {
-      let url = '/ws/logs/html/' + row.metadata.namespace + '/' + row.metadata.name + '/' + row.spec.containers[0].name;
-      window.open(url,row.metadata.namespace + '-' + row.metadata.name,"height=600,width=1200,top=0,left=200,fullscreen=no,scrollbars=0,location=no")
+    showLogsstatus(containerName) {
+      let url = '/ws/logs/html/' + this.selecetNs + '/' + this.selectName + '/' + containerName;
+      window.open(url,this.selecetNs + '-' + this.selectName,"height=600,width=1200,top=0,left=200,fullscreen=no,scrollbars=0,location=no")
     },
     showssh(row,containerName) {
       let url = '/ws/ssh/html/' + row.metadata.namespace + '/' + row.metadata.name + '/' + containerName;
       window.open(url,row.metadata.namespace + '-' + row.metadata.name,"height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0,location=no")
+      this.sshValue = ''
+    },
+    showsshstatus(containerName) {
+      let url = '/ws/ssh/html/' + this.selecetNs + '/' + this.selectName + '/' + containerName;
+      window.open(url,this.selecetNs + '-' + this.selectName,"height=600,width=1000,top=0,left=200,fullscreen=no,scrollbars=0,location=no")
       this.sshValue = ''
     },
     getC(row) {
@@ -321,7 +421,31 @@ export default {
     },
     openit(row) {
       console.log(row)
+      this.selecetNs = row.metadata.namespace
+      this.selectName = row.metadata.name
       this.jsonData = row
+      this.jsonDataStr = {
+        "命名空间": row.metadata.namespace,
+        "开始时间": row.metadata.creationTimestamp,
+        "容器IP": row.status.podIP,
+        "节点IP": row.status.hostIP,
+        "标签": row.metadata.labels,
+        "注释": row.metadata.annotations
+      }
+      this.jsonDataStr = JSON.stringify(this.jsonDataStr, null, 2)
+      this.containers = []
+      if (row.status.containerStatuses.length > 0) {
+        row.status.containerStatuses.forEach((e) => {
+          this.containers.push(e)
+        })
+      }
+      if (row.status.initContainerStatuses.length > 0) {
+        row.status.initContainerStatuses.forEach((e) => {
+          e['init'] = true
+          this.containers.push(e)
+        })
+      }
+
       this.kinds = '[' + row.kind + '] ' + row.metadata.name
       this.dialogVisible = true
     },

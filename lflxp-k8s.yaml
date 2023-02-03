@@ -18,5 +18,5 @@ meili:
 port: 8000
 snakemapper: admin_
 auth:
-    dev: true
+    dev: false 
     url: http://192.168.64.2:30137

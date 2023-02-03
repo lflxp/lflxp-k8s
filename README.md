@@ -9,6 +9,16 @@
 3、修改go mod名称和代码import名
 4、统一后端接口路径以/api开头，/admin忽略
 5、应用商店：初始化、接口联调CRUD、UI界面
+6、k8s pod container详情页面
+  * containers
+  * conditions
+  * recent Events
+  * Related Resources
+  * deployment -> pods
+  * cronJob -> pods
+  * job -> pods
+  * sts -> pods
+  * ds -> pods
 
 # 功能列表
 
