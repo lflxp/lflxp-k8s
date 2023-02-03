@@ -61,7 +61,7 @@
                 {{ scope.row.restartCount }}
               </template>
             </el-table-column>
-            <el-table-column label="Started">
+            <el-table-column label="Started" align="center">
               <template slot-scope="scope">
                 <div v-if="scope.row.started">
                   <i class="el-icon-check"></i>
@@ -93,22 +93,22 @@
             fit
             highlight-current-row
           >
-            <el-table-column label="Condition">
+            <el-table-column label="Condition" width="200" align="center">
               <template slot-scope="scope">
                 {{ scope.row.type }}
               </template>
             </el-table-column>
-            <el-table-column label="Status">
+            <el-table-column label="Status" width="200" align="center">
               <template slot-scope="scope">
                 {{ scope.row.status }}
               </template>
             </el-table-column>
-            <el-table-column label="Updated">
+            <el-table-column label="Updated" width="200" align="center">
               <template slot-scope="scope">
                 {{ scope.row.lastTransitionTime }}
               </template>
             </el-table-column>
-            <el-table-column label="Message">
+            <el-table-column label="Message" align="center">
               <template slot-scope="scope">
                 {{ scope.row.message }}
               </template>
