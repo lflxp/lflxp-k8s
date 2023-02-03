@@ -85,7 +85,36 @@
             </el-table-column>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="Conditions" name="Conditions">Conditions</el-tab-pane>
+        <el-tab-pane label="Conditions" name="Conditions">
+          <el-table
+            :data="jsonData.status === undefined ? []:jsonData.status.conditions"
+            element-loading-text="Loading"
+            border
+            fit
+            highlight-current-row
+          >
+            <el-table-column label="Condition">
+              <template slot-scope="scope">
+                {{ scope.row.type }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Status">
+              <template slot-scope="scope">
+                {{ scope.row.status }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Updated">
+              <template slot-scope="scope">
+                {{ scope.row.lastTransitionTime }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Message">
+              <template slot-scope="scope">
+                {{ scope.row.message }}
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
         <el-tab-pane label="相关资源" name="相关资源">相关资源</el-tab-pane>
         <el-tab-pane label="YAML" name="second">
           <vue-json-editor
@@ -292,7 +321,8 @@ export default {
       currentNameList: [],
       containers: [],
       selecetNs: '',
-      selectName: ''
+      selectName: '',
+      selectCon: []
     }
   },
   created() {
@@ -434,16 +464,21 @@ export default {
       }
       this.jsonDataStr = JSON.stringify(this.jsonDataStr, null, 2)
       this.containers = []
-      if (row.status.containerStatuses.length > 0) {
-        row.status.containerStatuses.forEach((e) => {
-          this.containers.push(e)
-        })
+      if (row.status.containerStatuses !== undefined) {
+        if (row.status.containerStatuses.length > 0) {
+          row.status.containerStatuses.forEach((e) => {
+            this.containers.push(e)
+          })
+        }
       }
-      if (row.status.initContainerStatuses.length > 0) {
-        row.status.initContainerStatuses.forEach((e) => {
-          e['init'] = true
-          this.containers.push(e)
-        })
+      
+      if (row.status.initContainerStatuses !== undefined) {
+        if (row.status.initContainerStatuses.length > 0) {
+          row.status.initContainerStatuses.forEach((e) => {
+            e['init'] = true
+            this.containers.push(e)
+          })
+        }
       }
 
       this.kinds = '[' + row.kind + '] ' + row.metadata.name
