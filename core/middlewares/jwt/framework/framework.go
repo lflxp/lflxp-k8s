@@ -75,6 +75,14 @@ func VerifyAuth(username, password string) (bool, error) {
 					}
 				}
 			}
+		} else {
+			// 如果又没数据库又没yaml配置文件
+			// 默认密码： admin
+			if user.Password == "admin" {
+				return true, nil
+			} else {
+				return false, errors.New("用户名或密码错误")
+			}
 		}
 	}
 

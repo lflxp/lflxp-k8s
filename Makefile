@@ -54,3 +54,6 @@ updated:
 
 release:
 	goreleaser release --rm-dist
+
+xterm:
+	cd asset && npm install xterm@3.9.1

@@ -5,5 +5,5 @@ tmp/
 asset/dashboard/
 # asset/d2admin/
 d2admin/node_modules/
-dist/
+# dist/
 lflxp-k8s
