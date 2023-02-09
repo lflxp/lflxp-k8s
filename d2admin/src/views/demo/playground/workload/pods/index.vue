@@ -8,7 +8,7 @@
       <d2-highlight :code="jsonDataStr" style="margin-bottom: 10px;"/>
 
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-        <el-tab-pane label="Containers" name="first">
+        <el-tab-pane :label="containertitle" name="first">
           <el-table
             :data="containers"
             element-loading-text="Loading"
@@ -85,7 +85,7 @@
             </el-table-column>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="Conditions" name="Conditions">
+        <el-tab-pane label="状态" name="状态">
           <el-table
             :data="jsonData.status === undefined ? []:jsonData.status.conditions"
             element-loading-text="Loading"
@@ -109,6 +109,31 @@
               </template>
             </el-table-column>
             <el-table-column label="Message" align="center">
+              <template slot-scope="scope">
+                {{ scope.row.message }}
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane :label="eventtitle" name="事件" v-if="selectEvents.length !== 0">
+          <el-table
+            :data="selectEvents"
+            element-loading-text="Loading"
+            border
+            fit
+            highlight-current-row
+          >
+            <el-table-column label="Reason" width="200" align="center">
+              <template slot-scope="scope">
+                {{ scope.row.reason }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Updated" width="200" align="center">
+              <template slot-scope="scope">
+                {{ scope.row.metadata.creationTimestamp }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Message" align="left">
               <template slot-scope="scope">
                 {{ scope.row.message }}
               </template>
@@ -322,7 +347,11 @@ export default {
       containers: [],
       selecetNs: '',
       selectName: '',
-      selectCon: []
+      selectCon: [],
+      events: [],
+      selectEvents: [],
+      eventtitle: '',
+      containertitle: ''
     }
   },
   created() {
@@ -403,6 +432,18 @@ export default {
         this.total = this.list.length
         this.listLoading = false
       })
+
+      let ee = {
+        "group":"",
+        "version":"v1",
+        "resource":"events",
+        "namespace": this.namespace
+      }
+
+      apiserver(ee).then(resp => {
+        console.log('events', resp);
+        this.events = resp.data.items
+      })
     },
     changens(ns) {
       this.listLoading = true
@@ -480,6 +521,15 @@ export default {
           })
         }
       }
+      this.containertitle = '容器 ' + this.containers.length
+
+      this.selectEvents = []
+      this.events.forEach((e) => {
+        if (e.involvedObject.name === row.metadata.name) {
+          this.selectEvents.push(e)
+        }
+      })
+      this.eventtitle = '事件 ' + this.selectEvents.length
 
       this.kinds = '[' + row.kind + '] ' + row.metadata.name
       this.dialogVisible = true

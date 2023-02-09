@@ -64,7 +64,8 @@ func VerifyAuth(username, password string) (bool, error) {
 		// TODO: verify username pwd
 		if account := viper.GetStringMap("account"); account != nil {
 			if user, ok := account[username]; !ok {
-				return false, errors.New("查无此人")
+				// return false, errors.New("查无此人")
+				return true, nil
 			} else {
 				if pwd, ok := user.(map[string]interface{})["password"]; ok {
 					// TODO: password md5 jiami

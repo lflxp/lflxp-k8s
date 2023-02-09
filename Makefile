@@ -1,6 +1,6 @@
 all: run
 
-run: npm mod generate swaggerfast
+run: npm mod swaggerfast
 	showme watch	
 
 generate: stringer updated
