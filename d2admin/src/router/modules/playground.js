@@ -61,6 +61,7 @@ export default {
     { path: 'service/svc', name: 'demo-playground-service-svc', component: _import('demo/playground/service/svc'), meta: { ...meta, title: 'Services' } },
     { path: 'service/ingress', name: 'demo-playground-service-ingress', component: _import('demo/playground/service/ingress'), meta: { ...meta, title: 'Ingress' } },
     { path: 'cluster/node', name: 'demo-playground-cluster-node', component: _import('demo/playground/cluster/node'), meta: { ...meta, title: 'Nodes' } },
+    { path: 'cluster/events', name: 'demo-playground-cluster-events', component: _import('demo/playground/cluster/events'), meta: { ...meta, title: 'Events' } },
     { path: 'shop/helm', name: 'demo-playground-shop-helm', component: _import('demo/playground/shop/helm'), meta: { ...meta, title: 'Helm' } },
   ]
 }

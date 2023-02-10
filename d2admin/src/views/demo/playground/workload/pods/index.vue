@@ -140,7 +140,84 @@
             </el-table-column>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="相关资源" name="相关资源">相关资源</el-tab-pane>
+        <el-tab-pane :label="'相关资源 ' + (ownerresources.length + resources.length)" name="相关资源">
+          <el-card class="box-card" style="margin-bottom: 10px;">
+            <div slot="header" class="clearfix">
+              <span>关联References {{ ownerresources.length }}</span>
+            </div>
+            <el-table
+              :data="ownerresources"
+              element-loading-text="Loading"
+              border
+              fit
+              highlight-current-row
+            >
+              <el-table-column label="Name" align="center">
+                <template slot-scope="scope">
+                  {{ scope.row.name }}
+                </template>
+              </el-table-column>
+              <el-table-column label="Kind" align="center">
+                <template slot-scope="scope">
+                  {{ scope.row.kind }}
+                </template>
+              </el-table-column>
+              <el-table-column label="Controller" align="center">
+                <template slot-scope="scope">
+                  {{ scope.row.controller }}
+                </template>
+              </el-table-column>
+              <el-table-column label="是否集联删除" align="center">
+                <template slot-scope="scope">
+                  <div v-if="scope.row.blockOwnerDeletion">
+                    <i class="el-icon-check"></i>
+                  </div>
+                  <div v-else>
+                    <i class="el-icon-close"></i>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="Namespace" align="left">
+                <template slot-scope="scope">
+                  {{ namespace }}
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-card>
+          <el-card class="box-card">
+            <div slot="header" class="clearfix">
+              <span>引用资源 {{ resources.length }}</span>
+            </div>
+            <el-table
+              :data="resources"
+              element-loading-text="Loading"
+              border
+              fit
+              highlight-current-row
+            >
+              <el-table-column label="Name" align="left">
+                <template slot-scope="scope">
+                  {{ scope.row.name }}
+                </template>
+              </el-table-column>
+              <el-table-column label="Kind" align="center">
+                <template slot-scope="scope">
+                  {{ scope.row.kind }}
+                </template>
+              </el-table-column>
+              <el-table-column label="Type" align="center">
+                <template slot-scope="scope">
+                  {{ scope.row.type }}
+                </template>
+              </el-table-column>
+              <el-table-column label="Namespace" align="center">
+                <template slot-scope="scope">
+                  {{ scope.row.namespace }}
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-card>
+        </el-tab-pane>
         <el-tab-pane label="YAML" name="second">
           <vue-json-editor
             v-model="jsonData"
@@ -309,7 +386,7 @@
 import { apiserver, apiput, apidelete } from '@/api/table.js'
 import vueJsonEditor from 'vue-json-editor'
 import util from '@/libs/util.js'
-import { runInThisContext } from 'vm'
+
 export default {
   components: {
     vueJsonEditor
@@ -351,7 +428,9 @@ export default {
       events: [],
       selectEvents: [],
       eventtitle: '',
-      containertitle: ''
+      containertitle: '',
+      resources: [],
+      ownerresources: []
     }
   },
   created() {
@@ -532,6 +611,72 @@ export default {
       this.eventtitle = '事件 ' + this.selectEvents.length
 
       this.kinds = '[' + row.kind + '] ' + row.metadata.name
+
+      // 过滤资源
+      this.resources = [{
+        "type": "spec",
+        "kind": "ServiceAccount",
+        "name": row.spec.serviceAccount,
+        "namespace": row.metadata.namespace
+      }]
+      this.ownerresources = []
+      if (row.metadata.ownerReferences != undefined) {
+        row.metadata.ownerReferences.forEach((e) => {
+          this.ownerresources.push(e)
+        })
+      }
+
+      if (row.spec.containers != undefined) {
+        row.spec.containers.forEach((e) => {
+          if (e.env != undefined) {
+            e.env.forEach((v) => {
+              if (v.valueFrom != undefined) {
+                if (v.valueFrom.secretKeyRef != undefined) {
+                  var tmp = {
+                    "type": "env",
+                    "kind": "secret",
+                    "name": v.valueFrom.secretKeyRef.name,
+                    "namespace": row.metadata.namespace
+                  }
+                  this.resources.push(tmp)
+                } else if (v.valueFrom.configMapKeyRef != undefined) {
+                  var tmp = {
+                    "type": "env",
+                    "kind": "secret",
+                    "name": v.valueFrom.configMapKeyRef.name,
+                    "namespace": row.metadata.namespace
+                  }
+                  this.resources.push(tmp)
+                }
+              }
+            })
+          }
+        })
+      }
+
+      if (row.spec.volumes != undefined) {
+        row.spec.volumes.forEach((e) => {
+          if (e.secret != undefined) {
+            var tmp = {
+              "type": "volume",
+              "kind": "secret",
+              "name": e.secret.secretName,
+              "namespace": row.metadata.namespace
+            }
+            this.resources.push(tmp)
+          } else if (e.configMap != undefined) {
+            var tmp = {
+              "type": "volume",
+              "kind": "configMap",
+              "name": e.configMap.name,
+              "namespace": row.metadata.namespace
+            }
+            this.resources.push(tmp)
+          }
+        })
+      }
+
+      // console.log(this.resources,this.ownerresources)
       this.dialogVisible = true
     },
     timeFn(dateBegin) {

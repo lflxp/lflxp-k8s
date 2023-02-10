@@ -12,6 +12,7 @@ require (
 	github.com/lflxp/lflxp-tty v1.0.0
 	github.com/lflxp/tools v0.0.7
 	github.com/prometheus/client_golang v1.13.0
+	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/spf13/cobra v1.6.0
 	github.com/spf13/viper v1.13.0
 	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a

@@ -9,8 +9,9 @@ export default {
       title: '集群',
       icon: 'globe',
       children: [
-        { path: '/demo/playground/cluster/node', title: 'Nodes', iconSvg: 'd2-admin' },
-        { path: '/demo/playground/workload/apiresources', title: 'Apiresources', iconSvg: 'd2-admin' },
+        { path: '/demo/playground/cluster/node', title: '节点', iconSvg: 'd2-admin' },
+        { path: '/demo/playground/cluster/events', title: '事件', iconSvg: 'd2-admin' },
+        { path: '/demo/playground/workload/apiresources', title: '更多资源', iconSvg: 'd2-admin' },
       ]
     },
     {
