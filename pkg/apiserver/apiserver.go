@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	log "github.com/go-eden/slf4go"
+	"github.com/lflxp/lflxp-k8s/asset"
 	"github.com/lflxp/lflxp-k8s/pkg/apiserver/model"
 	"github.com/lflxp/tools/httpclient"
 	"github.com/lflxp/tools/sdk/clientgo"
@@ -16,6 +17,7 @@ const (
 	GVR_GET_GET       string = "/gvr/get"
 	GVR_GET_ALL       string = "/gvr/all"
 	GVR_GET_NAMESPACE string = "/gvr/namespace"
+	INSTALL_MONITOR   string = "/install/monitor"
 )
 
 func RegisterApiserver(router *gin.Engine) {
@@ -29,7 +31,22 @@ func RegisterApiserver(router *gin.Engine) {
 		keycloakGroup.PATCH(GVR_OTHER, gvr_patch_edit)
 		keycloakGroup.PUT(GVR_OTHER, gvr_put_update)
 		keycloakGroup.POST(GVR_OTHER, gvr_post_add)
+		keycloakGroup.GET(INSTALL_MONITOR, install_monitor)
 	}
+}
+
+func install_monitor(c *gin.Context) {
+	err := asset.RunYaml("yaml/monitor/manifests/setup")
+	if err != nil {
+		httpclient.SendErrorMessage(c, http.StatusInternalServerError, "install yaml/monitor/manifests/setup error", err.Error())
+		return
+	}
+	err = asset.RunYaml("yaml/monitor/manifests")
+	if err != nil {
+		httpclient.SendErrorMessage(c, http.StatusInternalServerError, "install yaml/monitor/manifests error", err.Error())
+		return
+	}
+	httpclient.SendSuccessMessage(c, 200, "install monitor success")
 }
 
 func get_namespaces(c *gin.Context) {

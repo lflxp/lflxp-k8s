@@ -19,6 +19,12 @@
   * job -> pods
   * sts -> pods
   * ds -> pods
+10、监控
+  * prometheus
+  * grafana
+  * metrics-server
+  * grafana-template
+  * job安装prometheus+grafana+servicemonitor+metric-server
 
 # 功能列表
 
