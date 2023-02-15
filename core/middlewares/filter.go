@@ -94,6 +94,8 @@ func TokenFilter() gin.HandlerFunc {
 	}
 }
 
+// `^/api/*`, // for debug only
+// `^/ws/*`,
 func isWhilteUrl(c *gin.Context) bool {
 	var rs bool
 	url := []string{
@@ -113,8 +115,6 @@ func isWhilteUrl(c *gin.Context) bool {
 		`^/admin/auth/login`,
 		`^/api/login`,
 		`^/apis/*`,
-		// `^/api/*`, // for debug only
-		// `^/ws/*`,
 		`^/node_modules/*`,
 	}
 

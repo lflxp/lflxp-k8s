@@ -12,7 +12,6 @@ import (
 	"github.com/lflxp/lflxp-k8s/core/middlewares/jwt/services"
 
 	log "github.com/go-eden/slf4go"
-	"github.com/lflxp/tools/sdk/clientgo"
 
 	"github.com/gin-gonic/gin"
 )
@@ -45,13 +44,13 @@ func RunYaml(path string) error {
 			return err
 		}
 		fmt.Println(de.Name(), de.IsDir(), len(info))
-		if !de.IsDir() {
-			err = clientgo.InstallYaml(info)
-			if err != nil {
-				return err
-			}
-			log.Infof("%s/%s 安装完毕", path, de.Name())
-		}
+		// if !de.IsDir() {
+		// 	err = clientgo.InstallYaml(info)
+		// 	if err != nil {
+		// 		return err
+		// 	}
+		// 	log.Infof("%s/%s 安装完毕", path, de.Name())
+		// }
 	}
 	return nil
 }
