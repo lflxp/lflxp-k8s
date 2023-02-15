@@ -4,7 +4,9 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"strings"
+	"time"
 
+	log "github.com/go-eden/slf4go"
 	"github.com/lflxp/lflxp-k8s/core/middlewares/jwt/model"
 
 	"github.com/gin-gonic/gin"
@@ -40,4 +42,44 @@ func ParseJWTToken(c *gin.Context) (*model.User, error) {
 	}
 
 	return user, nil
+}
+
+type JwtData struct {
+	Exp       int64 `json:"exp,omitempty"`
+	Iat       int64 `json:"iat,omitempty"`
+	Auth_time int64 `json:"auth_time,omitempty"`
+}
+
+// 判断jwt是否过期
+func IsExpiresHeader(c *gin.Context) bool {
+	token := c.Request.Header.Get("Authorization")
+	if token == "" {
+		return false
+	}
+
+	info := strings.Split(token, ".")[1]
+
+	payload, err := base64.RawURLEncoding.DecodeString(info)
+	if err != nil {
+		log.Errorf("error decoding payload %s: %v", info, err)
+		return false
+	}
+
+	var data JwtData
+	err = json.Unmarshal(payload, &data)
+	if err != nil {
+		log.Errorf("error Unmarshal payload %s", err.Error())
+		return false
+	}
+
+	now := time.Now()
+
+	t := time.Unix(data.Exp, 0)
+
+	if now.Before(t) {
+		log.Debugf("now %s before exp %s", now.String(), t.String())
+		return true
+	}
+	log.Debugf("ERROR: now %s after exp %s", now.String(), t.String())
+	return false
 }
