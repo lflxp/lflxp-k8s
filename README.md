@@ -25,6 +25,7 @@
   * metrics-server
   * grafana-template
   * job安装prometheus+grafana+servicemonitor+metric-server
+11、node节点 cordon 污点等功能
 
 # 功能列表
 
