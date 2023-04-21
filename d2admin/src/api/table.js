@@ -31,6 +31,14 @@ export function apidelete(data) {
     })
 }
 
+export function apipatch(data) {
+    return request({
+        url: '/gvr/patchstrate',
+        method: 'patch',
+        data
+    })
+}
+
 export function apiresource() {
     return request({
         url: '/gvr/all',

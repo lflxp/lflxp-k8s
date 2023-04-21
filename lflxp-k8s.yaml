@@ -15,7 +15,7 @@ meili:
     apikey: masterKey
     enable: false
     host: http://127.0.0.1:7700
-port: 8000
+port: 8002
 snakemapper: admin_
 auth:
     dev: false 

@@ -1,5 +1,33 @@
 <template>
   <d2-container>
+    <el-dialog title="添加/修改Labels" :visible.sync="dialogFormVisible">
+      <el-form>
+        <el-form-item label="Key" :label-width="formLabelWidth">
+          <el-input v-model="currentLabelKey" autocomplete="off" :disabled="disableKey"></el-input>
+        </el-form-item>
+        <el-form-item label="Value" :label-width="formLabelWidth">
+          <el-input v-model="currentLabelValue" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="patchLabels(currentLabelName)">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="添加/修改Annotations" :visible.sync="dialogFormVisibleAnnotations">
+      <el-form>
+        <el-form-item label="Key" :label-width="formLabelWidth">
+          <el-input v-model="currentATKey" autocomplete="off" :disabled="disableKey"></el-input>
+        </el-form-item>
+        <el-form-item label="Value" :label-width="formLabelWidth">
+          <el-input v-model="currentATValue" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleAnnotations = false">取 消</el-button>
+        <el-button type="primary" @click="patchAnnotations(currentLabelName)">确 定</el-button>
+      </div>
+    </el-dialog>
     <el-dialog
       :title="kinds"
       center="true"
@@ -84,6 +112,76 @@
               </template>
             </el-table-column>
           </el-table>
+        </el-tab-pane>
+        <el-tab-pane :label="labelTitle" name="labels">
+          <el-table
+            :data="labels"
+            element-loading-text="Loading"
+            border
+            fit
+            highlight-current-row
+          >
+            <el-table-column label="Key" align="left">
+              <template slot-scope="scope">
+                {{ scope.row.key }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Value" align="center">
+              <template slot-scope="scope">
+                {{ scope.row.value }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <el-button
+                  size="mini"
+                  type="primary"
+                  @click="editlabels(scope.row)">修改</el-button>
+                  <el-button
+                  size="mini"
+                  type="danger"
+                  @click="deletelabels(scope.row)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div style="margin-top: 20px">
+            <el-button type="success" @click="addlabel">添加</el-button>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane :label="annotationsTitle" name="annotations">
+          <el-table
+            :data="annotations"
+            element-loading-text="Loading"
+            border
+            fit
+            highlight-current-row
+          >
+            <el-table-column label="Key" align="left">
+              <template slot-scope="scope">
+                {{ scope.row.key }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Value" align="center">
+              <template slot-scope="scope">
+                {{ scope.row.value }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <el-button
+                  size="mini"
+                  type="primary"
+                  @click="editAnnotations(scope.row)">修改</el-button>
+                  <el-button
+                  size="mini"
+                  type="danger"
+                  @click="deleteAnnotations(scope.row)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div style="margin-top: 20px">
+            <el-button type="success" @click="addAnnotations">添加</el-button>
+          </div>
         </el-tab-pane>
         <el-tab-pane label="状态" name="状态">
           <el-table
@@ -383,7 +481,7 @@
 </template>
 
 <script>
-import { apiserver, apiput, apidelete } from '@/api/table.js'
+import { apiserver, apiput, apidelete, apipatch } from '@/api/table.js'
 import vueJsonEditor from 'vue-json-editor'
 import util from '@/libs/util.js'
 
@@ -430,13 +528,199 @@ export default {
       eventtitle: '',
       containertitle: '',
       resources: [],
-      ownerresources: []
+      ownerresources: [],
+      timer: null,
+      labelTitle: '',
+      dialogFormVisible: false,
+      dialogFormVisibleAnnotations: false,
+      formLabelWidth: '120px',
+      currentLabelKey: '',
+      currentLabelValue: '',
+      currentLabelName: '',
+      currentATKey: '',
+      currentATValue: '',
+      labels: [],
+      annotations: [],
+      annotationsTitle: '',
+      disableKey: true,
     }
   },
   created() {
     this.fetchData()
+
+    if (this.timer) {
+      clearInterval(this.timer);
+    } else {
+      this.timer = setInterval(this.fetchData, 3000);
+    }
   },
   methods: {
+    editlabels(row) {
+      this.dialogFormVisible = true
+      console.log('editlabels', row)
+      this.currentLabelKey = row['key']
+      this.currentLabelValue = row['value']
+      this.disableKey = true
+    },
+    editAnnotations(row) {
+      this.dialogFormVisibleAnnotations = true
+      console.log('editlabels', row)
+      this.currentATKey = row['key']
+      this.currentATValue = row['value']
+      this.disableKey = true
+    },
+    addlabel() {
+      this.currentLabelKey = ''
+      this.currentLabelValue = ''
+      this.dialogFormVisible = true
+      this.disableKey = false
+    },
+    addAnnotations() {
+      this.currentATKey = ''
+      this.disableKey = false
+      this.currentATValue = ''
+      this.dialogFormVisibleAnnotations = true
+    },
+    parseLabels(row) {
+      console.log('parseLabels',row)
+      if (row.labels !== undefined) {
+        var rowL = new Map(Object.entries(row.labels))
+        this.labels = []
+        for(let key of rowL.keys()) {
+          var tmp = {
+            'key': key,
+            'value': rowL.get(key)
+          }
+          this.labels.push(tmp)
+        }
+      }
+      
+      if (row.annotations !== undefined) {
+        var adata = new Map(Object.entries(row.annotations))
+        this.annotations = []
+        for(let key of adata.keys()) {
+          var tmp = {
+            'key': key,
+            'value': adata.get(key)
+          }
+          this.annotations.push(tmp)
+        }
+      }
+      
+      console.log('labels', this.labels, this.annotations)
+    },
+    deletelabels(row) {
+      console.log(this.currentLabelName, row)
+      this.listLoading = true
+      var tData = this.jsonData
+      delete tData['metadata']['labels'][row['key']]
+
+      let tmp = {
+          "group":"",
+          "version":"v1",
+          "resource":"pods",
+          "namespace": this.selecetNs,
+          "name": this.currentLabelName,
+          "data": tData
+      }
+      
+      apiput(tmp).then(resp => {
+        console.log('delete labels', resp)
+        this.listLoading = false
+        this.dialogFormVisible = false
+        this.labels.forEach((e,index) => {
+          if (e['key'] == row['key']) {
+            this.labels.splice(index, 1)
+          }
+        })
+        this.fetchData()
+      })
+    },
+    deleteAnnotations(row) {
+      console.log(this.currentLabelName, row)
+      this.listLoading = true
+      var tData = this.jsonData
+      delete tData['metadata']['annotations'][row['key']]
+
+      let tmp = {
+          "group":"",
+          "version":"v1",
+          "resource":"pods",
+          "namespace": this.selecetNs,
+          "name": this.currentLabelName,
+          "data": tData
+      }
+      
+      apiput(tmp).then(resp => {
+        console.log('delete labels', resp)
+        this.listLoading = false
+        this.dialogFormVisibleAnnotations = false
+        this.labels.forEach((e,index) => {
+          if (e['key'] == row['key']) {
+            this.labels.splice(index, 1)
+          }
+        })
+        this.fetchData()
+      })
+    },
+    patchLabels(name) {
+      console.log(name)
+      this.listLoading = true
+      var vv = {}
+      vv[this.currentLabelKey] = this.currentLabelValue
+      let tmp = {
+          "group":"",
+          "version":"v1",
+          "resource":"pods",
+          "namespace": this.selecetNs,
+          "name": name,
+          "patchdatastrate": {
+            "metadata": {
+              "labels": vv
+            }
+          }
+      }
+      apipatch(tmp).then(resp => {
+        console.log('patch resp', resp)
+        this.listLoading = false
+        this.dialogFormVisible = false
+        this.labels.forEach((e,index) => {
+          if (e['key'] == this.currentLabelKey) {
+            this.labels.splice(index, 1)
+          }
+        })
+        this.fetchData()
+      })
+    },
+    patchAnnotations(name) {
+      console.log(name)
+      this.listLoading = true
+      var vv = {}
+      vv[this.currentATKey] = this.currentATValue
+      let tmp = {
+          "group":"",
+          "version":"v1",
+          "resource":"pods",
+          "namespace": this.selecetNs,
+          "name": name,
+          "patchdatastrate": {
+            "metadata": {
+              "annotations": vv
+            }
+          }
+      }
+      apipatch(tmp).then(resp => {
+        console.log('patch resp', resp)
+        this.listLoading = false
+        this.dialogFormVisibleAnnotations = false
+        this.labels.forEach((e,index) => {
+          if (e['key'] == this.currentATKey) {
+            this.labels.splice(index, 1)
+          }
+        })
+        this.fetchData()
+      })
+    },
     handleClick(tab, event) {
       console.log(tab, event);
     },
@@ -487,6 +771,10 @@ export default {
     getNs() {
       this.namespace = util.cookies.get('namespace')
     },
+    clears() {
+      this.dialogVisible = false
+      this.jsonData = ''
+    },
     fetchData() {
       this.listLoading = true
       // tablelist().then(response => {
@@ -510,6 +798,18 @@ export default {
         this.list = resp.data.items
         this.total = this.list.length
         this.listLoading = false
+        // 判断节点状态
+        this.list.forEach((node, index) => {
+          // 删除label后刷新数据
+          // 删除annotations后刷新数据
+          if (this.jsonData !== '') {
+            if (node.metadata.name === this.jsonData.metadata.name) {
+              this.jsonData = node
+              // this.openit(node)
+              this.parseLabels(node.metadata)
+            }
+          }
+        })
       })
 
       let ee = {
@@ -537,6 +837,19 @@ export default {
         this.list = resp.data.items
         this.total = this.list.length
         this.listLoading = false
+        // 判断节点状态
+        this.list.forEach((node, index) => {
+          // 删除label后刷新数据
+          // 删除annotations后刷新数据
+          if (this.jsonData !== '') {
+            
+            if (node.metadata.name === this.jsonData.metadata.name) {
+              this.jsonData = node
+              // this.openit(node)
+              this.parseLabels(node.metadata)
+            }
+          }
+        })
       })
     },
     deletepod(row) {
@@ -574,6 +887,8 @@ export default {
       this.selecetNs = row.metadata.namespace
       this.selectName = row.metadata.name
       this.jsonData = row
+      this.currentLabelName = row.metadata.name
+      this.parseLabels(row.metadata)
       this.jsonDataStr = {
         "命名空间": row.metadata.namespace,
         "开始时间": row.metadata.creationTimestamp,
@@ -678,6 +993,17 @@ export default {
 
       // console.log(this.resources,this.ownerresources)
       this.dialogVisible = true
+      if (row.metadata.labels !== undefined) {
+        this.labelTitle = '标签 ' + Object.keys(row.metadata.labels).length
+      } else {
+        this.labelTitle = '标签 0'
+      }
+      if (row.metadata.annotations !== undefined) {
+        this.annotationsTitle = '注释 ' + Object.keys(row.metadata.annotations).length
+      } else {
+        this.annotationsTitle = '注释 0'
+      }
+      
     },
     timeFn(dateBegin) {
       //如果时间格式是正确的，那下面这一步转化时间格式就可以不用了

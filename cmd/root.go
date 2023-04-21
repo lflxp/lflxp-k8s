@@ -94,6 +94,7 @@ to quickly create a Cobra application.`,
 				panic(err)
 			}
 		}()
+
 		core.Run(isHttps)
 	},
 }

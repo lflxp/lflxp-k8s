@@ -1,18 +1,182 @@
 <template>
   <d2-container>
+    <el-dialog title="添加/修改Labels" :visible.sync="dialogFormVisible">
+      <el-form>
+        <el-form-item label="Key" :label-width="formLabelWidth">
+          <el-input v-model="currentLabelKey" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="Value" :label-width="formLabelWidth">
+          <el-input v-model="currentLabelValue" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="patchLabels(currentLabelName)">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="添加/修改Annotations" :visible.sync="dialogFormVisibleAnnotations">
+      <el-form>
+        <el-form-item label="Key" :label-width="formLabelWidth">
+          <el-input v-model="currentATKey" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="Value" :label-width="formLabelWidth">
+          <el-input v-model="currentATValue" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleAnnotations = false">取 消</el-button>
+        <el-button type="primary" @click="patchAnnotations(currentLabelName)">确 定</el-button>
+      </div>
+    </el-dialog>
     <el-dialog
       :title="kinds"
       :visible.sync="dialogVisible"
       width="80%">
-      <vue-json-editor
-        v-model="jsonData"
-        :showBtns="true"
-        mode="tree"
-        lang="zh"
-        :expandedOnStart="true"
-        @json-change="onJsonChange"
-        @json-save="onJsonSave"
-      />
+      <d2-highlight :code="jsonDataStr" style="margin-bottom: 10px;"/>
+
+      <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+        <el-tab-pane :label="labelTitle" name="first">
+          <el-table
+            :data="labels"
+            element-loading-text="Loading"
+            border
+            fit
+            highlight-current-row
+          >
+            <el-table-column label="Key" align="left">
+              <template slot-scope="scope">
+                {{ scope.row.key }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Value" align="center">
+              <template slot-scope="scope">
+                {{ scope.row.value }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <el-button
+                  size="mini"
+                  type="primary"
+                  @click="editlabels(scope.row)">修改</el-button>
+                  <el-button
+                  size="mini"
+                  type="danger"
+                  @click="deletelabels(scope.row)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div style="margin-top: 20px">
+            <el-button type="success" @click="addlabel">添加</el-button>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane :label="annotationsTitle" name="annotations">
+          <el-table
+            :data="annotations"
+            element-loading-text="Loading"
+            border
+            fit
+            highlight-current-row
+          >
+            <el-table-column label="Key" align="left">
+              <template slot-scope="scope">
+                {{ scope.row.key }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Value" align="center">
+              <template slot-scope="scope">
+                {{ scope.row.value }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <el-button
+                  size="mini"
+                  type="primary"
+                  @click="editAnnotations(scope.row)">修改</el-button>
+                  <el-button
+                  size="mini"
+                  type="danger"
+                  @click="deleteAnnotations(scope.row)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div style="margin-top: 20px">
+            <el-button type="success" @click="addAnnotations">添加</el-button>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane :label="imagesTitle" name="second">
+          <el-table
+            :data="jsonData.status === undefined ? []:jsonData.status.images"
+            element-loading-text="Loading"
+            border
+            fit
+            highlight-current-row
+          >
+            <el-table-column label="镜像名" align="left">
+              <template slot-scope="scope">
+                <span v-for="(image, index) in scope.row.names" :key="image">
+                  <el-tag type="success" v-if="index == 0">{{ image }}</el-tag>
+                  <el-tag type="info" v-else-if="index == 1">{{ image }}</el-tag>
+                  <el-tag type="warning" v-else-if="index == 2">{{ image }}</el-tag>
+                  <el-tag type="danger" v-else>{{ image }}</el-tag>
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column label="大小(Bytes)" width="200" align="center">
+              <template slot-scope="scope">
+                {{ scope.row.sizeBytes }}
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane :label="statusTitle" name="状态">
+          <el-table
+            :data="jsonData.status === undefined ? []:jsonData.status.conditions"
+            element-loading-text="Loading"
+            border
+            fit
+            highlight-current-row
+          >
+            <el-table-column label="Condition" width="200" align="left">
+              <template slot-scope="scope">
+                {{ scope.row.type }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Status" width="200" align="center">
+              <template slot-scope="scope">
+                {{ scope.row.status }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Updated" align="center">
+              <template slot-scope="scope">
+                {{ scope.row.lastTransitionTime }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Reason" align="left">
+              <template slot-scope="scope">
+                {{ scope.row.reason }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Message" align="left">
+              <template slot-scope="scope">
+                {{ scope.row.message }}
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane label="YAML" name="fourth">
+          <vue-json-editor
+            v-model="jsonData"
+            :showBtns="true"
+            mode="tree"
+            lang="zh"
+            :expandedOnStart="true"
+            @json-change="onJsonChange"
+            @json-save="onJsonSave"
+          />
+        </el-tab-pane>
+      </el-tabs>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
@@ -32,7 +196,8 @@
         label="State" 
         width="95">
         <template slot-scope="scope">
-          <el-tag size="mini" type="success">Active</el-tag>
+          <el-tag size="mini" type="success" v-if="scope.row.active === true">Active</el-tag>
+          <el-tag size="mini" type="danger" v-else>unReady</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="Name">
@@ -55,9 +220,18 @@
           <span>{{ scope.row.spec.podCIDR }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Provider" align="center">
+      <el-table-column label="禁止调度" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.spec.providerID }}</span>
+          <span v-if="scope.row.spec.unschedulable !== undefined && scope.row.spec.unschedulable === true">
+            <el-popover
+              placement="top-start"
+              title="taints"
+              trigger="hover"
+              :content="scope.row.spec.taints">
+              <el-button type="text" slot="reference">是</el-button>
+            </el-popover>
+          </span>
+          <span v-else>否</span>
         </template>
       </el-table-column>
       <el-table-column label="InternalIP" align="center">
@@ -93,6 +267,20 @@
           <span>{{ timeFn(scope.row.metadata.creationTimestamp) }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button
+            v-if="scope.row.spec.unschedulable === undefined"
+            size="mini"
+            type="danger"
+            @click="cordon(scope.row)">禁止调度</el-button>
+          <el-button
+            v-if="scope.row.spec.unschedulable !== undefined"
+            size="mini"
+            type="success"
+            @click="cordon(scope.row)">恢复调度</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <div class="block" style="margin-top: 15px">
       <el-pagination
@@ -111,7 +299,7 @@
 </template>
 
 <script>
-import { apiserver } from '@/api/table.js'
+import { apiserver, apipatch, apiput } from '@/api/table.js'
 import vueJsonEditor from 'vue-json-editor'
 
 export default {
@@ -140,13 +328,117 @@ export default {
       currentList: '',
       currentPage: 1, // 当前页码
       total: 20, // 总条数
-      pageSize: 10
+      pageSize: 10,
+      activeName: 'first',
+      jsonDataStr: '',
+      statusTitle: '',
+      imagesTitle: '',
+      labelTitle: '',
+      dialogFormVisible: false,
+      dialogFormVisibleAnnotations: false,
+      formLabelWidth: '120px',
+      currentLabelKey: '',
+      currentLabelValue: '',
+      currentLabelName: '',
+      currentATKey: '',
+      currentATValue: '',
+      labels: [],
+      annotations: [],
+      annotationsTitle: ''
     }
   },
   created() {
     this.fetchData()
   },
   methods: {
+    cordon(row) {
+      this.listLoading = true
+      var tmp
+      if (row.spec.unschedulable !== undefined) {
+        tmp = {
+          "group":"",
+          "version":"v1",
+          "resource":"nodes",
+          "name": row.metadata.name,
+          "patchdatastrate": {
+            "spec": {
+              "unschedulable": false 
+            }
+          }
+        }
+      } else {
+        tmp = {
+          "group":"",
+          "version":"v1",
+          "resource":"nodes",
+          "name": row.metadata.name,
+          "patchdatastrate": {
+            "spec": {
+              "unschedulable": true 
+            }
+          }
+        }
+      }
+
+      apipatch(tmp).then(resp => {
+        console.log('patch resp', resp)
+        this.listLoading = false
+        this.fetchData()
+        this.$notify({
+          title: '成功',
+          message: '修改节点调度成功',
+          type: 'success'
+        });
+      })
+    },
+    editlabels(row) {
+      this.dialogFormVisible = true
+      console.log('editlabels', row)
+      this.currentLabelKey = row['key']
+      this.currentLabelValue = row['value']
+    },
+    editAnnotations(row) {
+      this.dialogFormVisibleAnnotations = true
+      console.log('editlabels', row)
+      this.currentATKey = row['key']
+      this.currentATValue = row['value']
+    },
+    addlabel() {
+      this.currentLabelKey = ''
+      this.currentLabelValue = ''
+      this.dialogFormVisible = true
+    },
+    addAnnotations() {
+      this.currentATKey = ''
+      this.currentATValue = ''
+      this.dialogFormVisibleAnnotations = true
+    },
+    handleClick(tab, event) {
+      console.log(tab, event);
+    },
+    parseLabels(row, adata) {
+      console.log('parseLabels',row, adata)
+      row = new Map(Object.entries(row))
+      this.labels = []
+      for(let key of row.keys()) {
+        var tmp = {
+          'key': key,
+          'value': row.get(key)
+        }
+        this.labels.push(tmp)
+      }
+
+      adata = new Map(Object.entries(adata))
+      this.annotations = []
+      for(let key of adata.keys()) {
+        var tmp = {
+          'key': key,
+          'value': adata.get(key)
+        }
+        this.annotations.push(tmp)
+      }
+      console.log('labels', this.labels, this.annotations)
+    },
     fetchData() {
       this.listLoading = true
       // tablelist().then(response => {
@@ -164,6 +456,27 @@ export default {
         console.log('apiserver', resp)
         this.list = resp.data.items
         this.listLoading = false
+        // 判断节点状态
+        this.list.forEach((node, index) => {
+          node['active'] = false
+          node.status.conditions.forEach((e) => {
+            if(e.type == 'Ready' && e.status == 'True') {
+              node['active'] = true
+            }
+          })
+          this.list[index] = node
+          console.log('list', this.list, node, index)
+
+          // 删除label后刷新数据
+          // 删除annotations后刷新数据
+          if (this.jsonData !== '') {
+            
+            if (node.metadata.name === this.jsonData.metadata.name) {
+              this.jsonData = node
+              this.openit(node)
+            }
+          }
+        })
       })
     },
     changens(ns) {
@@ -178,13 +491,168 @@ export default {
         console.log('apiserver', resp)
         this.list = resp.data.items
         this.listLoading = false
+        this.list.forEach((node, index) => {
+          node['active'] = false
+          node.status.conditions.forEach((e) => {
+            if(e.type == 'Ready' && e.status == 'True') {
+              node['active'] = true
+            }
+          })
+          this.list[index] = node
+          console.log('list', this.list, node, index)
+
+          // 删除label后刷新数据
+          // 删除annotations后刷新数据
+          if (this.jsonData !== '') {
+            
+            if (node.metadata.name === this.jsonData.metadata.name) {
+              this.jsonData = node
+              this.openit(node)
+            }
+          }
+        })
+      })
+    },
+    deletelabels(row) {
+      console.log(this.currentLabelName, row)
+      this.listLoading = true
+      var tData = this.jsonData
+      delete tData['metadata']['labels'][row['key']]
+
+      let tmp = {
+          "group":"",
+          "version":"v1",
+          "resource":"nodes",
+          "name": this.currentLabelName,
+          "data": tData
+      }
+      
+      apiput(tmp).then(resp => {
+        console.log('delete labels', resp)
+        this.listLoading = false
+        this.dialogFormVisible = false
+        this.labels.forEach((e,index) => {
+          if (e['key'] == row['key']) {
+            this.labels.splice(index, 1)
+          }
+        })
+        this.fetchData()
+      })
+    },
+    deleteAnnotations(row) {
+      console.log(this.currentLabelName, row)
+      this.listLoading = true
+      var tData = this.jsonData
+      delete tData['metadata']['annotations'][row['key']]
+
+      let tmp = {
+          "group":"",
+          "version":"v1",
+          "resource":"nodes",
+          "name": this.currentLabelName,
+          "data": tData
+      }
+      
+      apiput(tmp).then(resp => {
+        console.log('delete labels', resp)
+        this.listLoading = false
+        this.dialogFormVisibleAnnotations = false
+        this.labels.forEach((e,index) => {
+          if (e['key'] == row['key']) {
+            this.labels.splice(index, 1)
+          }
+        })
+        this.fetchData()
+      })
+    },
+    patchLabels(name) {
+      console.log(name)
+      this.listLoading = true
+      var vv = {}
+      vv[this.currentLabelKey] = this.currentLabelValue
+      let tmp = {
+          "group":"",
+          "version":"v1",
+          "resource":"nodes",
+          "name": name,
+          "patchdatastrate": {
+            "metadata": {
+              "labels": vv
+            }
+          }
+      }
+      apipatch(tmp).then(resp => {
+        console.log('patch resp', resp)
+        this.listLoading = false
+        this.dialogFormVisible = false
+        // this.dialogVisible = false
+        var t = {
+          "key": this.currentLabelKey,
+          "value": this.currentLabelValue
+        }
+        this.labels.push(t)
+        this.fetchData()
+      })
+    },
+    patchAnnotations(name) {
+      console.log(name)
+      this.listLoading = true
+      var vv = {}
+      vv[this.currentATKey] = this.currentATValue
+      let tmp = {
+          "group":"",
+          "version":"v1",
+          "resource":"nodes",
+          "name": name,
+          "patchdatastrate": {
+            "metadata": {
+              "annotations": vv
+            }
+          }
+      }
+      apipatch(tmp).then(resp => {
+        console.log('patch resp', resp)
+        this.listLoading = false
+        this.dialogFormVisibleAnnotations = false
+        // this.dialogVisible = false
+        var t = {
+          "key": this.currentATKey,
+          "value": this.currentATValue
+        }
+        this.labels.push(t)
+        this.fetchData()
       })
     },
     openit(row) {
-      console.log(row)
+      // console.log(row)
       this.jsonData = row
-      this.kinds = '[' + row.kind + '] ' + row.metadata.name
+      this.currentLabelName = row.metadata.name
+      this.parseLabels(row.metadata.labels, row.metadata.annotations)
+      this.kinds = '[' + row.kind + '][ ' + row.metadata.uid + '] ' + row.metadata.name
       this.dialogVisible = true
+      this.jsonDataStr = {
+        '创建时间': row.metadata.creationTimestamp,
+        '节点信息': row.status.nodeInfo,
+        // '标签': row.metadata.labels,
+        // '注释': row.metadata.annotations,
+        '网络地址': {
+          'addresses': row.status.addresses,
+          'podCIDR': row.spec.podCIDR,
+          'podCIDRs': row.spec.podCIDRs
+        },
+        '容量': {
+          'allocatable': row.status.allocatable,
+          'capacity': row.status.capacity
+        },
+        'kubelet': row.status.daemonEndpoints,
+        'Spec': row.spec
+      }
+      this.statusTitle = '状态 ' + row.status.conditions.length
+      this.imagesTitle = '镜像 ' + row.status.images.length
+      this.labelTitle = '标签 ' + Object.keys(row.metadata.labels).length
+      this.annotationsTitle = '注释 ' + Object.keys(row.metadata.annotations).length
+      this.jsonDataStr = JSON.stringify(this.jsonDataStr, null, 2)
+      // console.log('1111111', this.jsonDataStr)
     },
     timeFn(dateBegin) {
       //如果时间格式是正确的，那下面这一步转化时间格式就可以不用了

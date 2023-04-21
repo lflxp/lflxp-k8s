@@ -144,11 +144,18 @@ export default {
       currentPage: 1, // 当前页码
       total: 20, // 总条数
       pageSize: 10,
-      namespace: ''
+      namespace: '',
+      timer: null
     }
   },
   created() {
     this.fetchData()
+
+    if (this.timer) {
+      clearInterval(this.timer);
+    } else {
+      this.timer = setInterval(this.fetchData, 3000);
+    }
   },
   methods: {
     showLogs(row) {

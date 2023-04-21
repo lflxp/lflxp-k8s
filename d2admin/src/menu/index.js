@@ -31,11 +31,11 @@ export const menuAside = supplementPath([
 
 // 菜单 顶栏
 export const menuHeader = supplementPath([
-  {
-    path: '/index',
-    title: '首页',
-    icon: 'home'
-  },
+  // {
+  //   path: '/index',
+  //   title: '首页',
+  //   icon: 'home'
+  // },
   demoPlayground,
   demoComponents,
   demoPlugins

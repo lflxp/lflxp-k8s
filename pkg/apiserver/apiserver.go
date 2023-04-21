@@ -14,6 +14,7 @@ import (
 const (
 	GVR_GET_LIST      string = "/gvr/list"
 	GVR_OTHER         string = "/gvr"
+	GVR_PATCH_OTHER   string = "/gvr/patchstrate"
 	GVR_GET_GET       string = "/gvr/get"
 	GVR_GET_ALL       string = "/gvr/all"
 	GVR_GET_NAMESPACE string = "/gvr/namespace"
@@ -29,6 +30,7 @@ func RegisterApiserver(router *gin.Engine) {
 		keycloakGroup.GET(GVR_GET_NAMESPACE, get_namespaces)
 		keycloakGroup.DELETE(GVR_OTHER, gvr_delete_del)
 		keycloakGroup.PATCH(GVR_OTHER, gvr_patch_edit)
+		keycloakGroup.PATCH(GVR_PATCH_OTHER, gvr_patch_strate)
 		keycloakGroup.PUT(GVR_OTHER, gvr_put_update)
 		keycloakGroup.POST(GVR_OTHER, gvr_post_add)
 		keycloakGroup.GET(INSTALL_MONITOR, install_monitor)
@@ -144,6 +146,23 @@ func gvr_patch_edit(c *gin.Context) {
 	}
 
 	list, err := data.Patch()
+	if err != nil {
+		log.Errorf("patch error: %s", err.Error())
+		httpclient.SendErrorMessage(c, 500, "patcg error", err.Error())
+		return
+	}
+
+	httpclient.SendSuccessMessage(c, 200, list)
+}
+
+func gvr_patch_strate(c *gin.Context) {
+	var data model.GetGVR
+	if err := c.BindJSON(&data); err != nil {
+		httpclient.SendErrorMessage(c, http.StatusBadRequest, "not found", err.Error())
+		return
+	}
+
+	list, err := data.PatchStrate()
 	if err != nil {
 		log.Errorf("patch error: %s", err.Error())
 		httpclient.SendErrorMessage(c, 500, "patcg error", err.Error())

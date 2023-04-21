@@ -129,11 +129,18 @@ export default {
       jsonData: '',
       value: '',
       namespaces: '',
-      namespace: ''
+      namespace: '',
+      timer: null
     }
   },
   created() {
     this.fetchData()
+
+    if (this.timer) {
+      clearInterval(this.timer);
+    } else {
+      this.timer = setInterval(this.fetchData, 3000);
+    }
   },
   methods: {
     fetchData() {

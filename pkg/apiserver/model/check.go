@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 
 	"github.com/lflxp/tools/sdk/clientgo"
@@ -14,13 +15,14 @@ import (
 )
 
 type GetGVR struct {
-	Group     string                     `json:"group"`
-	Version   string                     `json:"version"`
-	Resource  string                     `json:"resource"`
-	Namespace string                     `json:"namespace"`
-	Name      string                     `json:"name"`
-	Data      *unstructured.Unstructured `json:"data"`
-	PatchData string                     `json:"patchdata"`
+	Group           string                     `json:"group"`
+	Version         string                     `json:"version"`
+	Resource        string                     `json:"resource"`
+	Namespace       string                     `json:"namespace"`
+	Name            string                     `json:"name"`
+	Data            *unstructured.Unstructured `json:"data"`
+	PatchData       string                     `json:"patchdata"`
+	PatchDataStrate map[string]interface{}     `json:"patchdatastrate"`
 }
 
 func (g *GetGVR) GetStruct() schema.GroupVersionResource {
@@ -127,6 +129,34 @@ func (g *GetGVR) Patch() (*unstructured.Unstructured, error) {
 		list, err = cli.Resource(gvr).Namespace(g.Namespace).Patch(context.TODO(), g.Name, types.MergePatchType, []byte(g.PatchData), metav1.PatchOptions{})
 	} else {
 		list, err = cli.Resource(gvr).Patch(context.TODO(), g.Name, types.MergePatchType, []byte(g.PatchData), metav1.PatchOptions{})
+	}
+
+	return list, err
+}
+
+func (g *GetGVR) PatchStrate() (*unstructured.Unstructured, error) {
+	if g.PatchDataStrate == nil {
+		log.Error("PatchDataStrate is empty")
+		return nil, errors.New("PatchDataStrate is empty")
+	}
+
+	gvr := g.GetStruct()
+	cli, err := clientgo.InitClientDynamic()
+	if err != nil {
+		return nil, err
+	}
+
+	var list *unstructured.Unstructured
+
+	playLoadBytes, err := json.Marshal(g.PatchDataStrate)
+	if err != nil {
+		return nil, err
+	}
+
+	if g.Namespace != "" {
+		list, err = cli.Resource(gvr).Namespace(g.Namespace).Patch(context.TODO(), g.Name, types.StrategicMergePatchType, playLoadBytes, metav1.PatchOptions{})
+	} else {
+		list, err = cli.Resource(gvr).Patch(context.TODO(), g.Name, types.StrategicMergePatchType, playLoadBytes, metav1.PatchOptions{})
 	}
 
 	return list, err
