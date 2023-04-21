@@ -144,7 +144,7 @@ export default {
       namespaces: '',
       namespace: '',
       timer: null,
-      refreash: true
+      refresh: true
     }
   },
   created() {
@@ -223,7 +223,11 @@ export default {
       console.log('openit', row)
       this.jsonData = row
       // this.kinds = '[' + row.kind + '] ' + row.metadata.name
-      this.dialogVisible = true
+      // this.refresh = false
+      // this.$nextTick(() => {
+      //   this.refresh = true
+      // })
+      this.dialogVisible = !this.dialogVisible
     },
     timeFn(dateBegin) {
       //如果时间格式是正确的，那下面这一步转化时间格式就可以不用了

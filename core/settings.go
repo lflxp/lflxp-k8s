@@ -35,7 +35,7 @@ func Run(ishttps bool) {
 	if ip == "" || port == "" {
 		// instance.Fatal("Check Host or Port config already!!!")
 		ip = "0.0.0.0"
-		port = "8000"
+		port = "8002"
 	}
 
 	var server *http.Server
