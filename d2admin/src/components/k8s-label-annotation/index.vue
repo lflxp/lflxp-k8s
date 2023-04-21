@@ -201,6 +201,7 @@ export default {
     },
     kinds: function() {
       console.log('kinds', this.data)
+      // this.dialogVisible = true
       return '[' + this.data.kind + '] ' + this.data.metadata.name
     },
     currentLabelName: function() {
@@ -258,6 +259,7 @@ export default {
             result.push(tmp)
           }
         }
+        // this.dialogVisible = true
         return result
       },
       set(v) {
