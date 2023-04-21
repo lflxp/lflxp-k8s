@@ -1,23 +1,32 @@
 <template>
   <d2-container>
-    <el-dialog
+    <!-- <el-dialog
       :title="kinds"
       :visible.sync="dialogVisible"
       width="80%">
-      <vue-json-editor
-        v-model="jsonData"
-        :showBtns="true"
-        mode="tree"
-        lang="zh"
-        :expandedOnStart="true"
-        @json-change="onJsonChange"
-        @json-save="onJsonSave"
-      />
+
+      <el-tabs v-model="activeName" type="card">
+        <el-tab-pane label="用户管理" name="first">用户管理</el-tab-pane>
+        <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
+        <k8s-label-annotation :data="jsonData"></k8s-label-annotation>
+        <el-tab-pane label="YAML" name="fourth">
+          <vue-json-editor
+            v-model="jsonData"
+            :showBtns="true"
+            mode="tree"
+            lang="zh"
+            :expandedOnStart="true"
+            @json-change="onJsonChange"
+            @json-save="onJsonSave"
+          />
+        </el-tab-pane>
+      </el-tabs>
+      
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
       </span>
-    </el-dialog>
+    </el-dialog> -->
     <!-- <el-select 
       v-model="value" 
       filterable 
@@ -31,6 +40,7 @@
         :value="item.metadata.name">
       </el-option>
     </el-select> -->
+    <k8s-label-annotation :data="jsonData" group="apps" version="v1" resource="deployments" :namespace="namespace" :show="dialogVisible"></k8s-label-annotation>
     <el-button @click="fetchData">刷新</el-button>
     <el-table
       v-loading="listLoading"
@@ -126,11 +136,15 @@ export default {
       listLoading: true,
       kinds: '',
       dialogVisible: false,
-      jsonData: '',
+      jsonData: {
+        "kind": "1",
+        "metadata": {"labels": {}, "annotations":{}}
+      },
       value: '',
       namespaces: '',
       namespace: '',
-      timer: null
+      timer: null,
+      refreash: true
     }
   },
   created() {
@@ -139,7 +153,7 @@ export default {
     if (this.timer) {
       clearInterval(this.timer);
     } else {
-      this.timer = setInterval(this.fetchData, 3000);
+      this.timer = setInterval(this.fetchData, 2000);
     }
   },
   methods: {
@@ -160,6 +174,17 @@ export default {
         console.log('apiserver', resp)
         this.list = resp.data.items
         this.listLoading = false
+        // if (this.list.length > 0) {
+        //   this.jsonData = this.list[0]
+        // }
+        this.list.forEach((node) => {
+          if (this.jsonData !== '') {
+            if (node.metadata.name === this.jsonData.metadata.name) {
+              this.jsonData = node
+              // this.openit(node)
+            }
+          }
+        })
       })
     },
     getNs() {
@@ -195,9 +220,9 @@ export default {
       })
     },
     openit(row) {
-      console.log(row)
+      console.log('openit', row)
       this.jsonData = row
-      this.kinds = '[' + row.kind + '] ' + row.metadata.name
+      // this.kinds = '[' + row.kind + '] ' + row.metadata.name
       this.dialogVisible = true
     },
     timeFn(dateBegin) {
@@ -235,8 +260,8 @@ export default {
       }
       apiput(tmp).then(resp => {
         console.log('resp', resp)
-        this.fetchData()
-        this.dialogVisible = false
+        // this.fetchData()
+        // this.dialogVisible = false
       })
     }
   }
