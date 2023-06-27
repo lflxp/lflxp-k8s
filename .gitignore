@@ -7,3 +7,4 @@ asset/dashboard/
 d2admin/node_modules/
 # dist/
 lflxp-k8s
+.vscode

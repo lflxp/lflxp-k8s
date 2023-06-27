@@ -117,6 +117,7 @@ func isWhilteUrl(c *gin.Context) bool {
 		`^/api/login`,
 		`^/apis/*`,
 		`^/node_modules/*`,
+		// `^/monitor/*`,
 	}
 
 	for _, x := range url {

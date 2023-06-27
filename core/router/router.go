@@ -5,6 +5,7 @@ import (
 	"github.com/lflxp/lflxp-k8s/core/middlewares"
 	"github.com/lflxp/lflxp-k8s/core/pages"
 	"github.com/lflxp/lflxp-k8s/pkg/apiserver"
+	"github.com/lflxp/lflxp-k8s/pkg/monitor"
 	"github.com/lflxp/lflxp-k8s/pkg/vela/appshop"
 
 	"github.com/lflxp/lflxp-k8s/asset"
@@ -20,7 +21,7 @@ func PreGinServe(r *gin.Engine) {
 	log.Info("注册Gin路由")
 
 	r.Use(middlewares.TokenFilter())
-	// r.Use(gin.Logger())
+	r.Use(gin.Logger())
 	// TODO: 自定义Panic 处理
 	// r.Use(middlewares.PanicAdviceMiddleware())
 	//r.Use(gin.RecoveryWithWriter(os.Stdout))
@@ -65,4 +66,5 @@ func PreGinServe(r *gin.Engine) {
 	apiserver.RegisterApiserver(r)
 	apiserver.RegisterApiserverWS(r)
 	appshop.RegisterShop(r)
+	monitor.RegisterMonitor(r)
 }

@@ -20,3 +20,8 @@ snakemapper: admin_
 auth:
     dev: false 
     url: http://192.168.64.2:30137
+proxy:
+#   grafana: http://grafana.monitoring:3000
+  grafana: http://grafana2.ks.x
+#   prometheus: http://prometheus-k8s.monitoring:9090
+  prometheus: http://prometheus.ks.x
