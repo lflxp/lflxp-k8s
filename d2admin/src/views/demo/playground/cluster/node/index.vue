@@ -267,6 +267,12 @@
           <span>{{ timeFn(scope.row.metadata.creationTimestamp) }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="监控">
+        <template slot-scope="scope">
+          <el-progress :percentage="scope.row.cpu" :format="format"></el-progress>
+          <el-progress :percentage="scope.row.mem" :format="format"></el-progress>
+        </template>
+      </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
@@ -300,6 +306,7 @@
 
 <script>
 import { apiserver, apipatch, apiput } from '@/api/table.js'
+import { prom } from '@/api/monitor'
 import vueJsonEditor from 'vue-json-editor'
 
 export default {
@@ -344,7 +351,11 @@ export default {
       currentATValue: '',
       labels: [],
       annotations: [],
-      annotationsTitle: ''
+      annotationsTitle:'',
+      metrics: [],
+      cpu: [],
+      mem: [],
+      disk: []
     }
   },
   created() {
@@ -439,13 +450,29 @@ export default {
       }
       console.log('labels', this.labels, this.annotations)
     },
+    getUtils() {
+      // https://songjiayang.gitbooks.io/prometheus/content/exporter/nodeexporter_query.html
+      prom('100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)').then(resp => {
+        console.log('prom', resp)
+        this.metrics = resp.data.data.result
+      })
+      prom('100 - ((node_memory_MemFree_bytes + node_memory_Cached_bytes + node_memory_Buffers_bytes)/node_memory_MemTotal_bytes) * 100').then(resp => {
+        console.log('prom mem', resp)
+        this.mem = resp.data.data.result
+      })
+    },
+    format(percentage) {
+      return percentage === 100 ? 'cpu 满' : `cpu ${percentage}%`;
+    },
     fetchData() {
+      this.getUtils()
       this.listLoading = true
       // tablelist().then(response => {
       //   console.log('response: ', response)
       //   this.list = response.data.items
       //   this.listLoading = false
       // })
+      console.log('prom metrics', this.metrics)
       let tmp = {
           "group":"",
           "version":"v1",
@@ -462,6 +489,18 @@ export default {
           node.status.conditions.forEach((e) => {
             if(e.type == 'Ready' && e.status == 'True') {
               node['active'] = true
+            }
+          })
+          this.metrics.forEach(m => {
+            if (node.status.addresses[0].address === m.metric.instance) {
+              console.log('m', m,m.value[1])
+              node['cpu'] = m.value[1]
+            }
+          })
+          this.mem.forEach(m => {
+            if (node.status.addresses[0].address === m.metric.instance) {
+              console.log('m', m,m.value[1])
+              node['mem'] = m.value[1]
             }
           })
           this.list[index] = node

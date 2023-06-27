@@ -89,6 +89,7 @@ function createService () {
         // 根据需要添加其它判断
         case 200: return response.data
         case 302: console.log('response 302',response)
+        case '0000': return response.data
         default: throw new Error(`${response.data.msg}: ${response.config.url}`)
       }
     },
