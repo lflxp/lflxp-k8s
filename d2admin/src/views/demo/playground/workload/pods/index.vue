@@ -551,7 +551,7 @@ export default {
     if (this.timer) {
       clearInterval(this.timer);
     } else {
-      this.timer = setInterval(this.fetchData, 3000);
+      this.timer = setInterval(this.fetchData, 30000);
     }
   },
   methods: {
