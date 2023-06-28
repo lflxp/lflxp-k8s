@@ -32,7 +32,12 @@
       :title="kinds"
       :visible.sync="dialogVisible"
       width="80%">
-      <d2-highlight :code="jsonDataStr" style="margin-bottom: 10px;"/>
+      <el-row>
+        <el-col :span="24">
+          <d2-highlight :code="jsonDataStr" style="margin-bottom: 10px;"/>
+        </el-col>
+      </el-row>
+      
 
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
         <el-tab-pane :label="labelTitle" name="first">
@@ -165,6 +170,9 @@
             </el-table-column>
           </el-table>
         </el-tab-pane>
+        <el-tab-pane label="监控" name="grafana">
+          <d2-container-frame :src="'/monitor/grafana/d/efa86fd1d0c121a26444b636a3f509a8/kubernetes-compute-resources-cluster?orgId=1&refresh=10s&var-instance=' + currentnode + '&from=now-30m&to=now&kiosk'"/>
+        </el-tab-pane>
         <el-tab-pane label="YAML" name="fourth">
           <vue-json-editor
             v-model="jsonData"
@@ -203,6 +211,9 @@
       <el-table-column label="Name">
         <template slot-scope="scope">
           <el-button type="text" @click="openit(scope.row)">{{ scope.row.metadata.name }}</el-button>
+          <div v-for="data in scope.row.status.addresses" :key="data.address">
+            <span v-if="data.type === 'InternalIP'"> {{ data.address }} </span>
+          </div>
         </template>
       </el-table-column>
       <el-table-column label="Kubernetes" align="center">
@@ -212,10 +223,10 @@
       </el-table-column>
       <el-table-column label="OS" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.metadata.labels['kubernetes.io/os'] }} / {{ scope.row.metadata.labels['kubernetes.io/arch'] }}</span>
+          <span>{{ scope.row.metadata.labels['kubernetes.io/os'] }} </span>
         </template>
       </el-table-column>
-      <el-table-column label="PodCIDR">
+      <!--el-table-column label="PodCIDR">
         <template slot-scope="scope">
           <span>{{ scope.row.spec.podCIDR }}</span>
         </template>
@@ -240,37 +251,36 @@
             <span v-if="data.type === 'InternalIP'"> {{ data.address }} </span>
           </div>
         </template>
-      </el-table-column>
-      <el-table-column label="Capacity" align="center">
+      </el-table-column-->
+      <el-table-column label="容量" align="center" width="200">
         <template slot-scope="scope">
-          {{ scope.row.status.capacity.cpu }} 核 {{ parseInt(parseInt(scope.row.status.capacity.memory.replace('Ki',''))/1024/1024) }} G {{ scope.row.status.capacity.pods }} Pods / {{ parseInt(parseInt(scope.row.status.capacity['ephemeral-storage'].replace('Ki',''))/1024/1024) }} G
+          {{ scope.row.status.capacity.cpu }} 核 {{ parseInt(parseInt(scope.row.status.capacity.memory.replace('Ki',''))/1024/1024) }} G {{ parseInt(parseInt(scope.row.status.capacity['ephemeral-storage'].replace('Mi',''))/1024) }} G
         </template>
       </el-table-column>
-      <el-table-column label="Status" align="center">
+      <el-table-column label="CPU使用率">
         <template slot-scope="scope">
-          <div v-for="tag in scope.row.status.conditions" :key="tag.type">
-            <el-tag
-              v-if="tag.status === 'False' || tag.type === 'Ready'"
-              type="success">
-              {{tag.type}}
-            </el-tag>
-            <el-tag
-              v-else
-              type="danger">
-              {{tag.type}}
-            </el-tag>
-          </div>
+          <!--el-progress v-if="scope.row.cpu !== undefined" type="dashboard" :percentage="scope.row.cpu" :format="format" :color="customColors"></el-progress-->
+          <el-progress v-if="scope.row.cpu !== undefined" :text-inside="true" :stroke-width="26" :percentage="scope.row.cpu" :color="customColors"></el-progress>
+          <span v-else>-</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="内存使用率">
+        <template slot-scope="scope">
+          <!--el-progress v-if="scope.row.mem !== undefined" type="dashboard" :percentage="scope.row.mem" :format="format" :color="customColors"></el-progress-->
+          <el-progress v-if="scope.row.mem !== undefined" :text-inside="true" :stroke-width="26" :percentage="scope.row.mem" :color="customColors"></el-progress>
+          <span v-else>-</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="磁盘使用率">
+        <template slot-scope="scope">
+          <!--el-progress v-if="scope.row.disk !== undefined" type="dashboard" :percentage="scope.row.disk" :color="customColors"></el-progress-->
+          <el-progress v-if="scope.row.disk !== undefined" :text-inside="true" :stroke-width="26" :percentage="scope.row.disk" :color="customColors"></el-progress>
+          <span v-else>-</span>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="metadata.creationTimestamp" sortable label="Age" width="200">
         <template slot-scope="scope">
           <span>{{ timeFn(scope.row.metadata.creationTimestamp) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="监控">
-        <template slot-scope="scope">
-          <el-progress :percentage="scope.row.cpu" :format="format"></el-progress>
-          <el-progress :percentage="scope.row.mem" :format="format"></el-progress>
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -328,6 +338,7 @@ export default {
       list: null,
       listLoading: true,
       kinds: '',
+      currentnode: '',
       dialogVisible: false,
       jsonData: '',
       value: '',
@@ -355,7 +366,14 @@ export default {
       metrics: [],
       cpu: [],
       mem: [],
-      disk: []
+      disk: [],
+      customColors: [
+        {color: '#f56c6c', percentage: 100},
+        {color: '#e6a23c', percentage: 80},
+        {color: '#5cb87a', percentage: 60},
+        {color: '#1989fa', percentage: 40},
+        {color: '#6f7ad3', percentage: 20}
+      ]
     }
   },
   created() {
@@ -456,13 +474,17 @@ export default {
         console.log('prom', resp)
         this.metrics = resp.data.data.result
       })
-      prom('100 - ((node_memory_MemFree_bytes + node_memory_Cached_bytes + node_memory_Buffers_bytes)/node_memory_MemTotal_bytes) * 100').then(resp => {
-        console.log('prom mem', resp)
+      prom('100 - (avg by (instance) (node_memory_MemAvailable_bytes) /avg by (instance) (node_memory_MemTotal_bytes) * 100)').then(resp => {
+        console.log('prom', resp)
         this.mem = resp.data.data.result
+      })
+      prom('100 - ((sum by (instance) (node_filesystem_avail_bytes{job="node-exporter", fstype!=""}) / sum by (instance) (node_filesystem_size_bytes{job="node-exporter", fstype!=""})) * 100)').then(resp => {
+        console.log('prom', resp)
+        this.disk = resp.data.data.result
       })
     },
     format(percentage) {
-      return percentage === 100 ? 'cpu 满' : `cpu ${percentage}%`;
+      return percentage === 100 ? '满' : `${percentage}%`;
     },
     fetchData() {
       this.getUtils()
@@ -494,15 +516,24 @@ export default {
           this.metrics.forEach(m => {
             if (node.status.addresses[0].address === m.metric.instance) {
               console.log('m', m,m.value[1])
-              node['cpu'] = m.value[1]
+              node['cpu'] = parseInt(m.value[1], 10)
             }
           })
+
           this.mem.forEach(m => {
             if (node.status.addresses[0].address === m.metric.instance) {
               console.log('m', m,m.value[1])
-              node['mem'] = m.value[1]
+              node['mem'] = parseInt(m.value[1], 10)
             }
           })
+
+          this.disk.forEach(m => {
+            if (node.status.addresses[0].address === m.metric.instance) {
+              console.log('m', m,m.value[1])
+              node['disk'] = parseInt(m.value[1], 10)
+            }
+          })
+
           this.list[index] = node
           console.log('list', this.list, node, index)
 
@@ -515,6 +546,7 @@ export default {
               this.openit(node)
             }
           }
+          
         })
       })
     },
@@ -667,6 +699,7 @@ export default {
       this.jsonData = row
       this.currentLabelName = row.metadata.name
       this.parseLabels(row.metadata.labels, row.metadata.annotations)
+      this.currentnode = row.metadata.name 
       this.kinds = '[' + row.kind + '][ ' + row.metadata.uid + '] ' + row.metadata.name
       this.dialogVisible = true
       this.jsonDataStr = {
@@ -710,7 +743,19 @@ export default {
       // var leave4=leave3%(60*1000)   //计算分钟数后剩余的毫秒数
       // var minseconds=Math.round(leave4/1000)
       // var timeFn = dayDiff+"天 "+hours+"小时 "+minutes+" 分钟"+seconds+" 秒"+minseconds+"毫秒";
-      var timeFn = dayDiff+"d"+hours+"h"+minutes+"m"+seconds+"s";
+      var timeFn = ''
+      if (dayDiff !== 0) {
+        timeFn += dayDiff+" 天 "
+      }
+      if (hours !== 0) {
+        timeFn += hours+" 小时 "
+      }
+      if (minutes !== 0) {
+        timeFn += minutes+" 分钟 "
+      }
+      if (seconds !== 0) {
+        timeFn += seconds+" 秒"
+      }
       return timeFn;
     },
     //每页条数改变时触发 选择一页显示多少行

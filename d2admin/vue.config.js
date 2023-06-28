@@ -87,6 +87,9 @@ module.exports = {
       },
       '/ws': {
         target: process.env.BACKGROUND_APPLICATION_URL
+      },
+      '/monitor': {
+        target: process.env.BACKGROUND_APPLICATION_URL
       }
     }
   },
