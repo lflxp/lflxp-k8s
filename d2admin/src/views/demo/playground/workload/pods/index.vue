@@ -33,7 +33,15 @@
       center="true"
       :visible.sync="dialogVisible"
       width="90%">
-      <d2-highlight :code="jsonDataStr" style="margin-bottom: 10px;"/>
+      <el-row style="margin-bottom: 10px;">
+        <el-col :span="24">
+          <el-collapse accordion>
+            <el-collapse-item title="基础数据" name="1">
+              <d2-highlight :code="jsonDataStr" style="margin-bottom: 10px;"/>
+            </el-collapse-item>
+          </el-collapse>
+        </el-col>
+      </el-row>
 
       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
         <el-tab-pane :label="containertitle" name="first">
@@ -316,6 +324,10 @@
             </el-table>
           </el-card>
         </el-tab-pane>
+        <el-tab-pane label="监控" name="grafana">
+          <!-- <d2-container-frame :src="grafanaurl"/> -->
+          <iframe :src="grafanaurl" width="100%" height="1600" frameborder="0"></iframe>
+        </el-tab-pane>
         <el-tab-pane label="YAML" name="second">
           <vue-json-editor
             v-model="jsonData"
@@ -542,7 +554,12 @@ export default {
       labels: [],
       annotations: [],
       annotationsTitle: '',
-      disableKey: true,
+      disableKey: true
+    }
+  },
+  computed: {
+    grafanaurl: function() {
+      return '/monitor/grafana/d/6581e46e4e5c7ba40a07646395ef7b23/kubernetes-compute-resources-pod?orgId=1&refresh=10s&var-datasource=prometheus&var-namespace=' + this.namespace + '&var-pod=' + this.currentLabelName + '&from=now-30m&to=now&theme=light&kiosk'
     }
   },
   created() {
