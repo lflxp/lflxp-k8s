@@ -383,6 +383,12 @@ export default {
   },
   created() {
     this.fetchData()
+
+    if (this.timer) {
+      clearInterval(this.timer);
+    } else {
+      this.timer = setInterval(this.fetchData, 3000);
+    }
   },
   computed: {
     grafanaurl: function() {
@@ -549,13 +555,13 @@ export default {
 
           // 删除label后刷新数据
           // 删除annotations后刷新数据
-          if (this.jsonData !== '') {
+          // if (this.jsonData !== '') {
             
-            if (node.metadata.name === this.jsonData.metadata.name) {
-              this.jsonData = node
-              this.openit(node)
-            }
-          }
+          //   if (node.metadata.name === this.jsonData.metadata.name) {
+          //     this.jsonData = node
+          //     this.openit(node)
+          //   }
+          // }
           
         })
       })
