@@ -15,6 +15,9 @@ import (
 // http://192.168.99.115:8002/monitor/prometheus/api/v1/query?query=up
 func GetPrometheus(path, query string) (*map[string]interface{}, int, error) {
 	prometheus := viper.GetString("proxy.prometheus")
+	if prometheus == "" {
+		prometheus = "http://prometheus-k8s.monitoring:9090"
+	}
 
 	var resp *map[string]interface{}
 	body := ""
