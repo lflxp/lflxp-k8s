@@ -24,7 +24,7 @@ const frameIn = [
           title: '首页',
           auth: true
         },
-        component: _import('demo/playground/workload/pods') // _import('system/index')
+        component: _import('demo/playground/cluster/node') // _import('system/index')
       },
       // 系统 前端日志
       {
