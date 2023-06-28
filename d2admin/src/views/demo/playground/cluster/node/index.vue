@@ -34,12 +34,16 @@
       width="80%">
       <el-row>
         <el-col :span="24">
-          <d2-highlight :code="jsonDataStr" style="margin-bottom: 10px;"/>
+          <el-collapse accordion>
+            <el-collapse-item title="基础数据" name="1">
+              <d2-highlight :code="jsonDataStr" style="margin-bottom: 10px;"/>
+            </el-collapse-item>
+          </el-collapse>
         </el-col>
       </el-row>
       
 
-      <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+      <el-tabs v-model="activeName" type="card" @tab-click="handleClick" style="margin-top: 10px;">
         <el-tab-pane :label="labelTitle" name="first">
           <el-table
             :data="labels"
@@ -171,7 +175,8 @@
           </el-table>
         </el-tab-pane>
         <el-tab-pane label="监控" name="grafana">
-          <d2-container-frame :src="'/monitor/grafana/d/efa86fd1d0c121a26444b636a3f509a8/kubernetes-compute-resources-cluster?orgId=1&refresh=10s&var-instance=' + currentnode + '&from=now-30m&to=now&kiosk'"/>
+          <!-- <d2-container-frame :src="grafanaurl"/> -->
+          <iframe :src="grafanaurl" width="100%" height="1600" frameborder="0"></iframe>
         </el-tab-pane>
         <el-tab-pane label="YAML" name="fourth">
           <vue-json-editor
@@ -378,6 +383,11 @@ export default {
   },
   created() {
     this.fetchData()
+  },
+  computed: {
+    grafanaurl: function() {
+      return '/monitor/grafana/d/c_N7_i94k/node-exporter-nodes?orgId=1&refresh=10s&var-datasource=prometheus&var-instance=' + this.currentnode + '&from=now-30m&to=now&theme=light&kiosk'
+    }
   },
   methods: {
     cordon(row) {
