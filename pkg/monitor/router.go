@@ -13,6 +13,9 @@ import (
 
 func RegisterMonitor(router *gin.Engine) {
 	grafana := viper.GetString("proxy.grafana")
+	if grafana == "" {
+		grafana = "http://grafana.monitoring:3000"
+	}
 
 	monitorGroup := router.Group("")
 	{

@@ -4,13 +4,13 @@ COPY . /go/src/
 WORKDIR /go/src/
 RUN unset GOPATH && pwd && ls -l && \
     export GOPROXY="https://goproxy.cn" && \
-    go build -mod=vendor -v
+    go build -v
 
 FROM alpine:3.15
 # COPY --from=builder /usr/local/go/lib/time/zoneinfo.zip /opt/zoneinfo.zip
 # ENV ZONEINFO /opt/zoneinfo.zip
-COPY --from=builder /go/src/go-vue-template /go-vue-template
+COPY --from=builder /go/src/lflxp-k8s /lflxp-k8s
 # COPY demo /demo
-ADD go-vue-template.yaml /go-vue-template.yaml
-EXPOSE 8000
-CMD ["/go-vue-template"]
+ADD lflxp-k8s.yaml /lflxp-k8s.yaml
+EXPOSE 8002
+CMD ["/lflxp-k8s"]
