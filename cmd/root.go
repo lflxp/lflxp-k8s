@@ -18,9 +18,11 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/lflxp/lflxp-k8s/core/middlewares/jwt/framework"
+	"github.com/lflxp/lflxp-k8s/utils"
 
 	log "github.com/go-eden/slf4go"
 
@@ -30,6 +32,7 @@ import (
 
 	"github.com/lflxp/lflxp-tty/pkg"
 	"github.com/spf13/viper"
+	"k8s.io/client-go/util/homedir"
 )
 
 var (
@@ -156,15 +159,52 @@ func initConfig() {
 		viper.SetConfigFile(cfgFile)
 	} else {
 		// Find home directory.
-		home, err := os.Getwd()
-		if err != nil {
-			panic(err)
+		home := homedir.HomeDir()
+		target := filepath.Join(home, ".lflxp-k8s.yaml")
+		if !utils.IsPathExists(target) {
+			file, err := os.OpenFile(target, os.O_CREATE|os.O_WRONLY, 0666)
+			if err != nil {
+				panic(err)
+			}
+			defer file.Close()
+
+			_, err = file.WriteString(`account:
+	admin:
+		claim: '[{"id":1,"auth":"admin","type":"nav","value":"dashboard"}]'
+		password: admin
+admin: true
+app:
+	- test
+global:
+	Name: demo 
+	Pkg: demo
+host: 0.0.0.0
+log:
+	level: info 
+meili:
+	apikey: masterKey
+	enable: false
+	host: http://127.0.0.1:7700
+port: 8002
+snakemapper: admin_
+auth:
+	dev: false 
+	url: http://192.168.64.2:30137
+proxy:
+#   grafana: http://grafana.monitoring:3000
+	grafana: http://grafana2.ks.x
+#   prometheus: http://prometheus-k8s.monitoring:9090
+	prometheus: http://prometheus.ks.x`)
+			if err != nil {
+				panic(err)
+			}
+
 		}
 
 		// Search config in home directory with name ".gin-template" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName("lflxp-k8s")
+		viper.SetConfigName(".lflxp-k8s")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
