@@ -6,3 +6,17 @@ export function prom(query) {
         method: 'get'
     })
 }
+
+export function metricsNode() {
+    return request({
+        url: '/monitor/metrics/node',
+        method: 'get'
+    })
+}
+
+export function metricsPod(ns) {
+    return request({
+        url: '/monitor/metrics/pod/' + ns,
+        method: 'get'
+    })
+}

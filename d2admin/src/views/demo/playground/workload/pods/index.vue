@@ -326,6 +326,13 @@
         </el-tab-pane>
         <el-tab-pane label="监控" name="grafana">
           <!-- <d2-container-frame :src="grafanaurl"/> -->
+          <vue-json-editor
+            v-model="metricsC"
+            mode="tree"
+            lang="zh"
+            :expandedOnStart="true"
+            :showBtns="false" 
+          /> 
           <iframe :src="grafanaurl" width="100%" height="1600" frameborder="0"></iframe>
         </el-tab-pane>
         <el-tab-pane label="YAML" name="second">
@@ -373,7 +380,10 @@
       </el-option>
     </el-select>
     <el-button @click="fetchData">刷新</el-button>
+    <el-button v-if="isrefresh" @click="closeRefresh">停止自动刷新</el-button>
+    <el-button v-else @click="autoRefresh">自动刷新</el-button>
     <el-table
+      style="margin-top: 10px;"
       v-loading="listLoading"
       :data="list.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
       element-loading-text="Loading"
@@ -496,6 +506,7 @@
 import { apiserver, apiput, apidelete, apipatch } from '@/api/table.js'
 import vueJsonEditor from 'vue-json-editor'
 import util from '@/libs/util.js'
+import { metricsPod } from '@/api/monitor'
 
 export default {
   components: {
@@ -554,7 +565,10 @@ export default {
       labels: [],
       annotations: [],
       annotationsTitle: '',
-      disableKey: true
+      disableKey: true,
+      metrics: [],
+      isrefresh: false,
+      metricsC: ''
     }
   },
   computed: {
@@ -564,14 +578,16 @@ export default {
   },
   created() {
     this.fetchData()
-
-    if (this.timer) {
-      clearInterval(this.timer);
-    } else {
-      this.timer = setInterval(this.fetchData, 30000);
-    }
   },
   methods: {
+    closeRefresh() {
+      clearInterval(this.timer);
+      this.isrefresh = false;
+    },
+    autoRefresh() {
+      this.isrefresh = true;
+      this.timer = setInterval(this.fetchData, 3000);
+    },
     editlabels(row) {
       this.dialogFormVisible = true
       console.log('editlabels', row)
@@ -787,6 +803,12 @@ export default {
     },
     getNs() {
       this.namespace = util.cookies.get('namespace')
+      if (this.namespace !== '') {
+        metricsPod(this.namespace).then(resp => {
+          console.log('podlllllll', resp)
+          this.metrics = resp.data.items;
+        })
+      }
     },
     clears() {
       this.dialogVisible = false
@@ -817,6 +839,11 @@ export default {
         this.listLoading = false
         // 判断节点状态
         this.list.forEach((node, index) => {
+          this.metrics.forEach(m => {
+            if (node.metadata.name === m.metadata.name) {
+              node['metrics'] = m
+            }
+          })
           // 删除label后刷新数据
           // 删除annotations后刷新数据
           if (this.jsonData !== '') {
@@ -905,6 +932,7 @@ export default {
       this.selectName = row.metadata.name
       this.jsonData = row
       this.currentLabelName = row.metadata.name
+      this.metricsC = row['metrics']
       this.parseLabels(row.metadata)
       this.jsonDataStr = {
         "命名空间": row.metadata.namespace,

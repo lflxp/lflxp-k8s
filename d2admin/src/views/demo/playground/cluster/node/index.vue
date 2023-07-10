@@ -276,13 +276,12 @@
           <span v-else>-</span>
         </template>
       </el-table-column>
-      <el-table-column label="磁盘使用率">
+      <!--el-table-column label="磁盘使用率">
         <template slot-scope="scope">
-          <!--el-progress v-if="scope.row.disk !== undefined" type="dashboard" :percentage="scope.row.disk" :color="customColors"></el-progress-->
           <el-progress v-if="scope.row.disk !== undefined" :text-inside="true" :stroke-width="26" :percentage="scope.row.disk" :color="customColors"></el-progress>
           <span v-else>-</span>
         </template>
-      </el-table-column>
+      </el-table-column-->
       <el-table-column align="center" prop="metadata.creationTimestamp" sortable label="Age" width="200">
         <template slot-scope="scope">
           <span>{{ timeFn(scope.row.metadata.creationTimestamp) }}</span>
@@ -321,7 +320,7 @@
 
 <script>
 import { apiserver, apipatch, apiput } from '@/api/table.js'
-import { prom } from '@/api/monitor'
+import { metricsNode } from '@/api/monitor'
 import vueJsonEditor from 'vue-json-editor'
 
 export default {
@@ -378,7 +377,8 @@ export default {
         {color: '#5cb87a', percentage: 60},
         {color: '#1989fa', percentage: 40},
         {color: '#6f7ad3', percentage: 20}
-      ]
+      ],
+      nodelist: []
     }
   },
   created() {
@@ -486,17 +486,21 @@ export default {
     },
     getUtils() {
       // https://songjiayang.gitbooks.io/prometheus/content/exporter/nodeexporter_query.html
-      prom('100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)').then(resp => {
-        console.log('prom', resp)
-        this.metrics = resp.data.data.result
-      })
-      prom('100 - (avg by (instance) (node_memory_MemAvailable_bytes) /avg by (instance) (node_memory_MemTotal_bytes) * 100)').then(resp => {
-        console.log('prom', resp)
-        this.mem = resp.data.data.result
-      })
-      prom('100 - ((sum by (instance) (node_filesystem_avail_bytes{job="node-exporter", fstype!=""}) / sum by (instance) (node_filesystem_size_bytes{job="node-exporter", fstype!=""})) * 100)').then(resp => {
-        console.log('prom', resp)
-        this.disk = resp.data.data.result
+      // prom('100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)').then(resp => {
+      //   console.log('prom', resp)
+      //   this.metrics = resp.data.data.result
+      // })
+      // prom('100 - (avg by (instance) (node_memory_MemAvailable_bytes) /avg by (instance) (node_memory_MemTotal_bytes) * 100)').then(resp => {
+      //   console.log('prom', resp)
+      //   this.mem = resp.data.data.result
+      // })
+      // prom('100 - ((sum by (instance) (node_filesystem_avail_bytes{job="node-exporter", fstype!=""}) / sum by (instance) (node_filesystem_size_bytes{job="node-exporter", fstype!=""})) * 100)').then(resp => {
+      //   console.log('prom', resp)
+      //   this.disk = resp.data.data.result
+      // })
+      metricsNode().then(resp => {
+        console.log('nodelist', resp)
+        this.nodelist = resp.data.items
       })
     },
     format(percentage) {
@@ -529,24 +533,32 @@ export default {
               node['active'] = true
             }
           })
-          this.metrics.forEach(m => {
-            if (node.status.addresses[0].address === m.metric.instance) {
-              console.log('m', m,m.value[1])
-              node['cpu'] = parseInt(m.value[1], 10)
-            }
-          })
+          // this.metrics.forEach(m => {
+          //   if (node.status.addresses[0].address === m.metric.instance) {
+          //     console.log('m', m,m.value[1])
+          //     node['cpu'] = parseInt(m.value[1], 10)
+          //   }
+          // })
 
-          this.mem.forEach(m => {
-            if (node.status.addresses[0].address === m.metric.instance) {
-              console.log('m', m,m.value[1])
-              node['mem'] = parseInt(m.value[1], 10)
-            }
-          })
+          // this.mem.forEach(m => {
+          //   if (node.status.addresses[0].address === m.metric.instance) {
+          //     console.log('m', m,m.value[1])
+          //     node['mem'] = parseInt(m.value[1], 10)
+          //   }
+          // })
 
-          this.disk.forEach(m => {
-            if (node.status.addresses[0].address === m.metric.instance) {
-              console.log('m', m,m.value[1])
-              node['disk'] = parseInt(m.value[1], 10)
+          // this.disk.forEach(m => {
+          //   if (node.status.addresses[0].address === m.metric.instance) {
+          //     console.log('m', m,m.value[1])
+          //     node['disk'] = parseInt(m.value[1], 10)
+          //   }
+          // })
+
+          this.nodelist.forEach(m => {
+            if (node.status.addresses[0].address === m.metadata.name) {
+              console.log('m', m.usage.cpu)
+              node['cpu'] = parseInt((parseInt(m.usage.cpu.replace('n',''), 10)/(1000000000 * parseInt(node.status.capacity.cpu))) * 100, 10)
+              node['mem'] = parseInt((parseInt(m.usage.memory.replace('Ki',''), 10)/parseInt(node.status.capacity.memory.replace('Ki',''), 10)) * 100, 10)
             }
           })
 
