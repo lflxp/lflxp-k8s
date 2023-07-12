@@ -555,7 +555,7 @@ export default {
           // })
 
           this.nodelist.forEach(m => {
-            if (node.status.addresses[0].address === m.metadata.name) {
+            if (node.status.addresses[0].address === m.metadata.name || node.status.addresses[1].address === m.metadata.name) {
               console.log('m', m.usage.cpu)
               node['cpu'] = parseInt((parseInt(m.usage.cpu.replace('n',''), 10)/(1000000000 * parseInt(node.status.capacity.cpu))) * 100, 10)
               node['mem'] = parseInt((parseInt(m.usage.memory.replace('Ki',''), 10)/parseInt(node.status.capacity.memory.replace('Ki',''), 10)) * 100, 10)
@@ -563,7 +563,6 @@ export default {
           })
 
           this.list[index] = node
-          console.log('list', this.list, node, index)
 
           // 删除label后刷新数据
           // 删除annotations后刷新数据
@@ -576,6 +575,7 @@ export default {
           // }
           
         })
+        console.log('list', this.list, node, index)
       })
     },
     changens(ns) {
