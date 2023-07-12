@@ -32,7 +32,10 @@
       </el-option>
     </el-select> -->
     <el-button @click="fetchData">刷新</el-button>
+    <el-button v-if="isrefresh" @click="closeRefresh">停止自动刷新</el-button>
+    <el-button v-else @click="autoRefresh">自动刷新</el-button>
     <el-table
+      style="margin-top: 10px;"
       v-loading="listLoading"
       :data="list"
       element-loading-text="Loading"
@@ -123,13 +126,22 @@ export default {
       jsonData: '',
       value: '',
       namespaces: '',
-      namespace: ''
+      namespace: '',
+      isrefresh: false
     }
   },
   created() {
     this.fetchData()
   },
   methods: {
+    closeRefresh() {
+      clearInterval(this.timer);
+      this.isrefresh = false;
+    },
+    autoRefresh() {
+      this.isrefresh = true;
+      this.timer = setInterval(this.fetchData, 3000);
+    },
     fetchData() {
       this.listLoading = true
       this.getNs() 

@@ -42,7 +42,10 @@
     </el-select> -->
     <k8s-label-annotation :data="jsonData" group="apps" version="v1" resource="deployments" :namespace="namespace" :show="dialogVisible"></k8s-label-annotation>
     <el-button @click="fetchData">刷新</el-button>
+    <el-button v-if="isrefresh" @click="closeRefresh">停止自动刷新</el-button>
+    <el-button v-else @click="autoRefresh">自动刷新</el-button>
     <el-table
+      style="margin-top: 10px;"
       v-loading="listLoading"
       :data="list"
       element-loading-text="Loading"
@@ -144,19 +147,28 @@ export default {
       namespaces: '',
       namespace: '',
       timer: null,
-      refresh: true
+      refresh: true,
+      isrefresh: false
     }
   },
   created() {
     this.fetchData()
 
-    if (this.timer) {
-      clearInterval(this.timer);
-    } else {
-      this.timer = setInterval(this.fetchData, 2000);
-    }
+    // if (this.timer) {
+    //   clearInterval(this.timer);
+    // } else {
+    //   this.timer = setInterval(this.fetchData, 2000);
+    // }
   },
   methods: {
+    closeRefresh() {
+      clearInterval(this.timer);
+      this.isrefresh = false;
+    },
+    autoRefresh() {
+      this.isrefresh = true;
+      this.timer = setInterval(this.fetchData, 3000);
+    },
     fetchData() {
       this.listLoading = true
       this.getNs() 

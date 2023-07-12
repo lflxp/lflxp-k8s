@@ -396,6 +396,14 @@ export default {
     }
   },
   methods: {
+    closeRefresh() {
+      clearInterval(this.timer);
+      this.isrefresh = false;
+    },
+    autoRefresh() {
+      this.isrefresh = true;
+      this.timer = setInterval(this.fetchData, 3000);
+    },
     cordon(row) {
       this.listLoading = true
       var tmp

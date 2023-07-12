@@ -46,7 +46,10 @@
       </el-option>
     </el-select>
     <el-button @click="fetchData">刷新</el-button>
+    <el-button v-if="isrefresh" @click="closeRefresh">停止自动刷新</el-button>
+    <el-button v-else @click="autoRefresh">自动刷新</el-button>
     <el-table
+      style="margin-top: 10px;"
       v-loading="listLoading"
       :data="list.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
       element-loading-text="Loading"
@@ -149,13 +152,22 @@ export default {
       currentPage: 1, // 当前页码
       total: 20, // 总条数
       pageSize: 10,
-      namespace: ''
+      namespace: '',
+      isrefresh: false
     }
   },
   created() {
     this.fetchData()
   },
   methods: {
+    closeRefresh() {
+      clearInterval(this.timer);
+      this.isrefresh = false;
+    },
+    autoRefresh() {
+      this.isrefresh = true;
+      this.timer = setInterval(this.fetchData, 3000);
+    },
     showLogs(row) {
       let url = '/ws/logs/html/' + row.metadata.namespace + '/' + row.metadata.name + '/' + row.spec.containers[0].name;
       window.open(url,row.metadata.namespace + '-' + row.metadata.name,"height=600,width=1200,top=0,left=200,fullscreen=no,scrollbars=0,location=no")
