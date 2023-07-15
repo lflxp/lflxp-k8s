@@ -107,6 +107,18 @@
                 </div>
               </template>
             </el-table-column>
+            <el-table-column label="CPU消耗" align="center" v-if="namespace !== ''">
+              <template slot-scope="scope">
+                <span v-if="scope.row.metrics !== undefined">{{ parseInt(scope.row.metrics.usage.cpu.replace('n',''), 10)/1000000 }} m</span>
+                <span v-else>-</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="内存消耗" align="center" v-if="namespace !== ''">
+              <template slot-scope="scope">
+                <span v-if="scope.row.metrics !== undefined">{{ parseInt(scope.row.metrics.usage.memory.replace('Ki',''), 10)/1000 }} Mb</span>
+                <span v-else>-</span> 
+              </template>
+            </el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button
@@ -439,12 +451,22 @@
       </el-table-column>
       <el-table-column label="Node" width="110" align="center">
         <template slot-scope="scope">
-          {{ scope.row.status.hostIP }}
+          <el-tag type="warning" size="mini">{{ scope.row.status.hostIP }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="CPU消耗" align="center" v-if="namespace !== ''">
+        <template slot-scope="scope">
+          <el-tag type="danger" size="mini">{{ scope.row.cpus / 1000000 }} m</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="内存消耗" align="center" v-if="namespace !== ''">
+        <template slot-scope="scope">
+          <el-tag type="danger" size="mini">{{ scope.row.mems / 1000 }} Mb</el-tag>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="metadata.creationTimestamp" sortable label="Age" width="200">
         <template slot-scope="scope">
-          <span>{{ timeFn(scope.row.metadata.creationTimestamp) }}</span>
+          <el-tag type="success" size="mini">{{ timeFn(scope.row.metadata.creationTimestamp) }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -803,7 +825,7 @@ export default {
     },
     getNs() {
       this.namespace = util.cookies.get('namespace')
-      if (this.namespace !== '') {
+      if (this.namespace !== undefined) {
         metricsPod(this.namespace).then(resp => {
           console.log('podlllllll', resp)
           this.metrics = resp.data.items;
@@ -834,16 +856,39 @@ export default {
       // })
       apiserver(tmp).then(resp => {
         console.log('apiserver', resp)
-        this.list = resp.data.items
-        this.total = this.list.length
+        this.list = []
+        this.total = resp.data.items.length
         this.listLoading = false
         // 判断节点状态
-        this.list.forEach((node, index) => {
+        resp.data.items.forEach((node, index) => {
           this.metrics.forEach(m => {
+            
             if (node.metadata.name === m.metadata.name) {
-              node['metrics'] = m
+              // console.log('mmmmmmm', m, node)
+              // 计算pod 资源总量
+              let cpus = 0;
+              let mems = 0;
+              m.containers.forEach(xd => {
+                console.log('mmmmmmmcpus', xd, mems, xd.usage.cpu, xd.usage.memory)
+                cpus += parseInt(xd.usage.cpu.replace('n',''), 10)
+                mems += parseInt(xd.usage.memory.replace('Ki',''), 10)
+                console.log('cpus', cpus, mems)
+              })
+              node['cpus'] = cpus
+              node['mems'] = mems 
+              node.status.containerStatuses.forEach((n2, ind) => {
+                m.containers.forEach(m2 => {
+                  if (n2.name === m2.name) {
+                    // 设置单个container资源使用量
+                    node.status.containerStatuses[ind]['metrics'] = m2 
+                  }
+                })
+              })
+              // node['metrics'] = m
             }
           })
+          // console.log('nodesssss', node)
+          this.list.push(node)
           // 删除label后刷新数据
           // 删除annotations后刷新数据
           if (this.jsonData !== '') {
@@ -933,6 +978,7 @@ export default {
       this.jsonData = row
       this.currentLabelName = row.metadata.name
       this.metricsC = row['metrics']
+      console.log('mmmmmetrics', this.metricsC)
       this.parseLabels(row.metadata)
       this.jsonDataStr = {
         "命名空间": row.metadata.namespace,
