@@ -2,10 +2,10 @@ package template
 
 import (
 	"fmt"
+	"log/slog"
 	"reflect"
 	"strings"
 
-	log "github.com/go-eden/slf4go"
 	"github.com/lflxp/tools/orm/sqlite"
 )
 
@@ -107,14 +107,14 @@ func RigsterStruct(data interface{}) map[string]string {
 func Register(data ...interface{}) error {
 	tmp := GetRegistered()
 	for _, model := range data {
-		// log.Debugf("Register %v", RigsterStruct(model))
+		// slog.Debug("Register %v", RigsterStruct(model))
 		tmp = append(tmp, RigsterStruct(model))
 	}
 
 	// 注册Model
 	err := sqlite.NewOrm().Sync2(data...)
 	if err != nil {
-		log.Error(err)
+		slog.Error(err.Error())
 		return err
 	}
 

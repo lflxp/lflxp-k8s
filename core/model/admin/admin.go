@@ -3,11 +3,11 @@ package admin
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/lflxp/lflxp-k8s/core/middlewares/template"
 
-	log "github.com/go-eden/slf4go"
 	"github.com/lflxp/tools/orm/sqlite"
 )
 
@@ -18,7 +18,7 @@ func init() {
 	user := User{Username: "admin"}
 	has, err := sqlite.NewOrm().Get(&user)
 	if err != nil {
-		log.Error(err)
+		slog.Error(err.Error())
 	}
 
 	if !has {
@@ -30,13 +30,13 @@ func init() {
 
 		sqlite.NewOrm().Insert(&claims)
 
-		log.Info("init admin user")
+		slog.Info("init admin user")
 		sql := "insert into user('username','password','claims_id') values ('admin','admin','1');"
 		n, err := sqlite.NewOrm().Query(sql)
 		if err != nil {
-			log.Errorf("init admin user err %s", err.Error())
+			slog.Error("init admin user err %s", err.Error())
 		}
-		log.Infof("insert admin user count: %d", len(n))
+		slog.Info("insert admin user count: %d", len(n))
 	}
 }
 
@@ -132,7 +132,7 @@ func InsertHistory(beans ...interface{}) (int64, error) {
 	defer func() {
 		data, err := json.Marshal(beans)
 		if err != nil {
-			log.Error(err)
+			slog.Error(err.Error())
 			return
 		}
 		info := History{
@@ -142,7 +142,7 @@ func InsertHistory(beans ...interface{}) (int64, error) {
 		}
 		_, err = AddHistory(&info)
 		if err != nil {
-			log.Error(err)
+			slog.Error(err.Error())
 		}
 
 	}()

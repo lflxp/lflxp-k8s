@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log/slog"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -15,9 +16,6 @@ import (
 	"time"
 
 	"github.com/lflxp/lflxp-k8s/utils"
-
-	log "github.com/go-eden/slf4go"
-	"github.com/sirupsen/logrus"
 
 	"github.com/gin-gonic/gin"
 )
@@ -135,8 +133,8 @@ func NewHttpProxyByGinCustomRaw(target string, filter map[string]string) func(c 
 
 				needReplaceStrHttp := "http://" + c.Request.URL.Host
 				needReplaceStrHttps := "https://" + c.Request.URL.Host
-				log.Infof("needReplaceStrHttp: %s", needReplaceStrHttp)
-				log.Infof("needReplaceStrHttps: %s", needReplaceStrHttps)
+				slog.Info("needReplaceStrHttp: %s", needReplaceStrHttp)
+				slog.Info("needReplaceStrHttps: %s", needReplaceStrHttps)
 
 				if resp.Header.Get("Content-Encoding") == "gzip" {
 					orgBodyGzipReader, err := gzip.NewReader(resp.Body)
@@ -204,7 +202,7 @@ func NewHttpProxyByGinCustomRaw(target string, filter map[string]string) func(c 
 
 			body, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				log.Error(err)
+				slog.Error(err.Error())
 			}
 			err = json.Unmarshal(body, &msg)
 			if err != nil {
@@ -299,8 +297,8 @@ func handleGrafanaHtmlResponse(c *gin.Context, resp *http.Response) {
 
 	needReplaceStrHttp := "http://" + c.Request.URL.Host
 	needReplaceStrHttps := "https://" + c.Request.URL.Host
-	log.Infof("needReplaceStrHttp: %s", needReplaceStrHttp)
-	log.Infof("needReplaceStrHttps: %s", needReplaceStrHttps)
+	slog.Info("needReplaceStrHttp: %s", needReplaceStrHttp)
+	slog.Info("needReplaceStrHttps: %s", needReplaceStrHttps)
 
 	if resp.Header.Get("Content-Encoding") == "gzip" {
 		orgBodyGzipReader, err := gzip.NewReader(resp.Body)
@@ -495,7 +493,7 @@ func WebSocketProxy2(target string, c *gin.Context) {
 func WebSocketProxy(target string, c *gin.Context) {
 	parsedUrl, err := url.Parse(target)
 	if err != nil {
-		logrus.Errorf("error to parse the url in the proxyRequest method, proxy path: %s, error: %v", target, err)
+		slog.Error("error to parse the url in the proxyRequest method, proxy", "PATH", target, "ERROR", err.Error())
 		return
 	}
 	director := func(req *http.Request) {

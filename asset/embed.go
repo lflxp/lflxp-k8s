@@ -11,7 +11,7 @@ import (
 	"github.com/lflxp/lflxp-k8s/core/middlewares/jwt/framework"
 	"github.com/lflxp/lflxp-k8s/core/middlewares/jwt/services"
 
-	log "github.com/go-eden/slf4go"
+	"log/slog"
 
 	"github.com/gin-gonic/gin"
 )
@@ -49,7 +49,7 @@ func RunYaml(path string) error {
 		// 	if err != nil {
 		// 		return err
 		// 	}
-		// 	log.Infof("%s/%s 安装完毕", path, de.Name())
+		// 	slog.Info("%s/%s 安装完毕", path, de.Name())
 		// }
 	}
 	return nil
@@ -114,7 +114,7 @@ func wrapHandlerDocs(h http.FileSystem) http.HandlerFunc {
 		nfrw := &NotFoundRedirectRespWr{ResponseWriter: w}
 		hserver.ServeHTTP(nfrw, r)
 		if nfrw.status == 404 {
-			log.Debugf("Redirecting %s to index.html.", r.RequestURI)
+			slog.Debug("Redirecting %s to index.html.", r.RequestURI)
 			// hardCode
 			path := "/docs/index.html"
 			f, err := h.Open(path)
@@ -146,7 +146,7 @@ func wrapHandler(h http.FileSystem) http.HandlerFunc {
 		nfrw := &NotFoundRedirectRespWr{ResponseWriter: w}
 		hserver.ServeHTTP(nfrw, r)
 		if nfrw.status == 404 {
-			log.Debugf("Redirecting %s to index.html.", r.RequestURI)
+			slog.Debug("Redirecting %s to index.html.", r.RequestURI)
 			// hardCode
 			path := "/dashboard/index.html"
 			f, err := h.Open(path)

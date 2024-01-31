@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"log/slog"
 	"sort"
 	"strings"
 	"time"
 
-	log "github.com/go-eden/slf4go"
 	"github.com/lflxp/tools/orm/sqlite"
 )
 
@@ -48,15 +48,15 @@ func BeegoLi(info []map[string]string) string {
 	tmp := map[string][]map[string]string{}
 
 	for _, in := range info {
-		log.Debugf("Service %s", in["Services"])
+		slog.Debug("Service %s", in["Services"])
 		if d, ok := tmp[in["Services"]]; ok {
 			d = append(d, in)
 			tmp[in["Services"]] = d
-			// log.Debugf("Service ADD %v", tmp)
+			// slog.Debug("Service ADD %v", tmp)
 		} else {
 			t := []map[string]string{in}
 			tmp[in["Services"]] = t
-			// log.Debugf("New Service %v", tmp)
+			// slog.Debug("New Service %v", tmp)
 		}
 	}
 
@@ -218,9 +218,9 @@ jQuery(function($){
 	   });
 });
 </script>`
-	log.Errorf("Col %s|", data["Col"])
-	log.Error("List", data["List"])
-	log.Error("Search", data["Search"])
+	slog.Error("Col %s|", data["Col"])
+	slog.Error("List", data["List"])
+	slog.Error("Search", data["Search"])
 	if data["Col"] == "" {
 		return "Col is none"
 	}
@@ -271,7 +271,7 @@ jQuery(function($){
 			// log.Error(sql)
 			resultSql, err := sqlite.NewOrm().Query(sql)
 			if err != nil {
-				log.Error(err.Error())
+				slog.Error(err.Error())
 			}
 			showCol := strings.Split(fmt.Sprintf("id,%s", tmp_o2o[1]), ",")
 			for _, x := range resultSql {
@@ -293,9 +293,8 @@ jQuery(function($){
 			// log.Error(sql)
 			resultSql, err := sqlite.NewOrm().Query(sql)
 			if err != nil {
-				log.Error(err.Error())
+				slog.Error(err.Error())
 			}
-			log.Error(resultSql)
 			showCol := strings.Split(fmt.Sprintf("id,%s", tmp_o2o[1]), ",")
 			for _, x := range resultSql {
 				t_s := "<option value=\"%id\">%value</option>"
@@ -391,9 +390,9 @@ jQuery(function($){
 	   });
 });
 </script>`
-	log.Error("Col", data["Col"])
-	log.Error("List", data["List"])
-	log.Error("Search", data["Search"])
+	slog.Error("Col", data["Col"])
+	slog.Error("List", data["List"])
+	slog.Error("Search", data["Search"])
 	for _, info := range strings.Split(strings.TrimSpace(data["Col"]), " ") {
 		// log.Error(info)
 		tmp := strings.Split(info, ":")
@@ -451,7 +450,7 @@ jQuery(function($){
 			// log.Error(sql)
 			resultSql, err := sqlite.NewOrm().Query(sql)
 			if err != nil {
-				log.Error(err.Error())
+				slog.Error(err.Error())
 			}
 			showCol := strings.Split(fmt.Sprintf("id,%s", tmp_o2o[1]), ",")
 			for _, x := range resultSql {
@@ -478,9 +477,8 @@ jQuery(function($){
 			// log.Error(sql)
 			resultSql, err := sqlite.NewOrm().Query(sql)
 			if err != nil {
-				log.Error(err.Error())
+				slog.Error(err.Error())
 			}
-			log.Error(resultSql)
 			showCol := strings.Split(fmt.Sprintf("id,%s", tmp_o2o[1]), ",")
 			for _, x := range resultSql {
 				var t_s string

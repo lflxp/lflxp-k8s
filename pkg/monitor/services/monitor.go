@@ -3,10 +3,10 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 
 	"github.com/lflxp/lflxp-k8s/utils"
 
-	log "github.com/go-eden/slf4go"
 	"github.com/guonaihong/gout"
 	"github.com/spf13/viper"
 )
@@ -24,7 +24,7 @@ func GetPrometheus(path, query string) (*map[string]interface{}, int, error) {
 	code := 0
 
 	url := fmt.Sprintf("%s%s?%s", prometheus, path, query)
-	log.Infof("url %s", url)
+	slog.Info("url %s", url)
 	err := utils.NewGoutClient().
 		GET(url).
 		Debug(true).
@@ -39,18 +39,18 @@ func GetPrometheus(path, query string) (*map[string]interface{}, int, error) {
 		Do()
 
 	if err != nil {
-		log.Error(err)
+		slog.Error(err.Error())
 		return resp, code, err
 	}
 
 	if code < 400 {
 		err = json.Unmarshal([]byte(body), &resp)
 		if err != nil {
-			log.Error(err)
+			slog.Error(err.Error())
 			return resp, code, fmt.Errorf("json解析错误: %s", err.Error())
 		}
 
-		// log.Debugf("resp %s", resp)
+		// slog.Debug("resp %s", resp)
 		return resp, code, nil
 	} else {
 		return resp, code, fmt.Errorf("code %d, error: %s", code, string(body))

@@ -1,6 +1,8 @@
 package router
 
 import (
+	"log/slog"
+
 	"github.com/lflxp/lflxp-k8s/core/controller"
 	"github.com/lflxp/lflxp-k8s/core/middlewares"
 	"github.com/lflxp/lflxp-k8s/core/pages"
@@ -13,12 +15,11 @@ import (
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
-	log "github.com/go-eden/slf4go"
 )
 
 // 注册插件和路由
 func PreGinServe(r *gin.Engine) {
-	log.Info("注册Gin路由")
+	slog.Info("注册Gin路由")
 
 	r.Use(middlewares.TokenFilter())
 	r.Use(gin.Logger())

@@ -3,10 +3,10 @@ package services
 import (
 	"encoding/base64"
 	"encoding/json"
+	"log/slog"
 	"strings"
 	"time"
 
-	log "github.com/go-eden/slf4go"
 	"github.com/lflxp/lflxp-k8s/core/middlewares/jwt/model"
 
 	"github.com/gin-gonic/gin"
@@ -61,14 +61,14 @@ func IsExpiresHeader(c *gin.Context) bool {
 
 	payload, err := base64.RawURLEncoding.DecodeString(info)
 	if err != nil {
-		log.Errorf("error decoding payload %s: %v", info, err)
+		slog.Error("error decoding payload %s: %v", info, err)
 		return false
 	}
 
 	var data JwtData
 	err = json.Unmarshal(payload, &data)
 	if err != nil {
-		log.Errorf("error Unmarshal payload %s", err.Error())
+		slog.Error("error Unmarshal payload %s", err.Error())
 		return false
 	}
 
@@ -77,9 +77,9 @@ func IsExpiresHeader(c *gin.Context) bool {
 	t := time.Unix(data.Exp, 0)
 
 	if now.Before(t) {
-		log.Debugf("now %s before exp %s", now.String(), t.String())
+		slog.Debug("now %s before exp %s", now.String(), t.String())
 		return true
 	}
-	log.Debugf("ERROR: now %s after exp %s", now.String(), t.String())
+	slog.Debug("ERROR: now %s after exp %s", now.String(), t.String())
 	return false
 }

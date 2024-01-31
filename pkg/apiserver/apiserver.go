@@ -1,10 +1,10 @@
 package apiserver
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	log "github.com/go-eden/slf4go"
 	"github.com/lflxp/lflxp-k8s/asset"
 	"github.com/lflxp/lflxp-k8s/pkg/apiserver/model"
 	"github.com/lflxp/tools/httpclient"
@@ -96,7 +96,7 @@ func gvr_get_list(c *gin.Context) {
 
 	list, err := data.List()
 	if err != nil {
-		log.Errorf("list error: %s", err.Error())
+		slog.Error("list error: %s", err.Error())
 		httpclient.SendErrorMessage(c, 500, "list error", err.Error())
 		return
 	}
@@ -113,7 +113,7 @@ func gvr_get_get(c *gin.Context) {
 
 	list, err := data.Get()
 	if err != nil {
-		log.Errorf("get error: %s", err.Error())
+		slog.Error("get error: %s", err.Error())
 		httpclient.SendErrorMessage(c, 500, "get error", err.Error())
 		return
 	}
@@ -130,7 +130,7 @@ func gvr_post_add(c *gin.Context) {
 
 	list, err := data.Post()
 	if err != nil {
-		log.Errorf("post error: %s", err.Error())
+		slog.Error("post error: %s", err.Error())
 		httpclient.SendErrorMessage(c, 500, "post error", err.Error())
 		return
 	}
@@ -147,7 +147,7 @@ func gvr_patch_edit(c *gin.Context) {
 
 	list, err := data.Patch()
 	if err != nil {
-		log.Errorf("patch error: %s", err.Error())
+		slog.Error("patch error: %s", err.Error())
 		httpclient.SendErrorMessage(c, 500, "patcg error", err.Error())
 		return
 	}
@@ -164,7 +164,7 @@ func gvr_patch_strate(c *gin.Context) {
 
 	list, err := data.PatchStrate()
 	if err != nil {
-		log.Errorf("patch error: %s", err.Error())
+		slog.Error("patch error: %s", err.Error())
 		httpclient.SendErrorMessage(c, 500, "patcg error", err.Error())
 		return
 	}
@@ -181,7 +181,7 @@ func gvr_put_update(c *gin.Context) {
 
 	list, err := data.Put()
 	if err != nil {
-		log.Errorf("put error: %s", err.Error())
+		slog.Error("put error: %s", err.Error())
 		httpclient.SendErrorMessage(c, 500, "put error", err.Error())
 		return
 	}
@@ -198,7 +198,7 @@ func gvr_delete_del(c *gin.Context) {
 
 	err := data.Delete()
 	if err != nil {
-		log.Errorf("delete error: %s", err.Error())
+		slog.Error("delete error: %s", err.Error())
 		httpclient.SendErrorMessage(c, 500, "delete error", err.Error())
 		return
 	}

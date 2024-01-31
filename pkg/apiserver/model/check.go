@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"log/slog"
 
 	"github.com/lflxp/tools/sdk/clientgo"
 
-	log "github.com/go-eden/slf4go"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -57,13 +57,13 @@ func (g *GetGVR) List() (list *unstructured.UnstructuredList, err error) {
 
 	// toBytes, err := list.MarshalJSON()
 	// if err != nil {
-	// 	log.Errorf("Error marshalling namespace %s: %v", data.Namespace, err)
+	// 	slog.Error("Error marshalling namespace %s: %v", data.Namespace, err)
 	// 	httpclient.SendErrorMessage(c, 500, "error marshalling namespace", err.Error())
 	// 	return
 	// }
 
 	// if err := json.Unmarshal(toBytes, &target.Object); err != nil {
-	// 	log.Errorf("Error unmarshalling namespace %s: %v")
+	// 	slog.Error("Error unmarshalling namespace %s: %v")
 	// 	httpclient.SendErrorMessage(c, 500, "error Unmarshal", err.Error())
 	// 	return
 	// }
@@ -113,7 +113,7 @@ func (g *GetGVR) Post() (*unstructured.Unstructured, error) {
 
 func (g *GetGVR) Patch() (*unstructured.Unstructured, error) {
 	if g.PatchData == "" {
-		log.Error("PatchData is empty")
+		slog.Error("PatchData is empty")
 		return nil, errors.New("PatchData is empty")
 	}
 
@@ -136,7 +136,7 @@ func (g *GetGVR) Patch() (*unstructured.Unstructured, error) {
 
 func (g *GetGVR) PatchStrate() (*unstructured.Unstructured, error) {
 	if g.PatchDataStrate == nil {
-		log.Error("PatchDataStrate is empty")
+		slog.Error("PatchDataStrate is empty")
 		return nil, errors.New("PatchDataStrate is empty")
 	}
 
