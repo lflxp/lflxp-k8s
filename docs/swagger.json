@@ -33,9 +33,9 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "success",
                         "schema": {
-                            "$ref": "#/definitions/admin.Vpn"
+                            "type": "string"
                         }
                     }
                 }
@@ -126,23 +126,6 @@
         }
     },
     "definitions": {
-        "admin.Vpn": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "ip": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "vpn": {
-                    "type": "string"
-                }
-            }
-        },
         "model.Resp": {
             "type": "object",
             "properties": {

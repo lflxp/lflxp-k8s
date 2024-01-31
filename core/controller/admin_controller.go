@@ -359,7 +359,7 @@ func process(c *gin.Context) {
 // @Tags admin
 // @Param token query string false "token"
 // @Param key query string true "查询key"
-// @Success 200 {object} admin.Vpn admin{}
+// @Success 200 {string} string "success"
 // @Security ApiKeyAuth
 // @Router /api/v1/admin/get [get]
 func getadmin(c *gin.Context) {

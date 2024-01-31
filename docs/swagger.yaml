@@ -1,15 +1,4 @@
 definitions:
-  admin.Vpn:
-    properties:
-      id:
-        type: integer
-      ip:
-        type: string
-      name:
-        type: string
-      vpn:
-        type: string
-    type: object
   model.Resp:
     properties:
       baseType:
@@ -41,9 +30,9 @@ paths:
         type: string
       responses:
         "200":
-          description: OK
+          description: success
           schema:
-            $ref: '#/definitions/admin.Vpn'
+            type: string
       security:
       - ApiKeyAuth: []
       summary: 查询指定key的值

@@ -29,7 +29,7 @@ gowatch:
 	go get github.com/silenceper/gowatch
 
 swagger:
-	go get -u github.com/swaggo/swag/cmd/swag
+	go install github.com/swaggo/swag/cmd/swag@latest
 	swag init
 	go mod tidy
 

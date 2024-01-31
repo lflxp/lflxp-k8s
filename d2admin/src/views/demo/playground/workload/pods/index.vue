@@ -600,6 +600,12 @@ export default {
   },
   created() {
     this.fetchData()
+
+    if (this.timer) {
+      clearInterval(this.timer);
+    } else {
+      this.timer = setInterval(this.fetchData, 30000);
+    }
   },
   methods: {
     closeRefresh() {
@@ -831,6 +837,10 @@ export default {
           this.metrics = resp.data.items;
         })
       }
+    },
+    clears() {
+      this.dialogVisible = false
+      this.jsonData = ''
     },
     clears() {
       this.dialogVisible = false
