@@ -5,13 +5,13 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/lflxp/lflxp-k8s/core/middlewares/template"
+	// "github.com/lflxp/lflxp-k8s/core/middlewares/template"
 
 	"github.com/lflxp/tools/orm/sqlite"
 )
 
 func init() {
-	template.Register(new(Demotest))
+	// template.Register(new(Demotest))
 	// log.Debug("注册Demo test")
 }
 

@@ -6,38 +6,38 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/lflxp/lflxp-k8s/core/middlewares/template"
+	// "github.com/lflxp/lflxp-k8s/core/middlewares/template"
 
 	"github.com/lflxp/tools/orm/sqlite"
 )
 
 func init() {
 	// vpn := Vpn{}s
-	template.Register(new(Vpn), new(Machine), new(Cdn), new(More), new(User), new(Claims), new(Groups), new(Userauth), new(History))
+	// template.Register(new(Vpn), new(Machine), new(Cdn), new(More), new(User), new(Claims), new(Groups), new(Userauth), new(History))
 
-	user := User{Username: "admin"}
-	has, err := sqlite.NewOrm().Get(&user)
-	if err != nil {
-		slog.Error(err.Error())
-	}
+	// user := User{Username: "admin"}
+	// has, err := sqlite.NewOrm().Get(&user)
+	// if err != nil {
+	// 	slog.Error(err.Error())
+	// }
 
-	if !has {
-		claims := Claims{
-			Auth:  "admin",
-			Type:  "nav",
-			Value: "dashboard",
-		}
+	// if !has {
+	// 	claims := Claims{
+	// 		Auth:  "admin",
+	// 		Type:  "nav",
+	// 		Value: "dashboard",
+	// 	}
 
-		sqlite.NewOrm().Insert(&claims)
+	// 	sqlite.NewOrm().Insert(&claims)
 
-		slog.Info("init admin user")
-		sql := "insert into user('username','password','claims_id') values ('admin','admin','1');"
-		n, err := sqlite.NewOrm().Query(sql)
-		if err != nil {
-			slog.Error("init admin user err %s", err.Error())
-		}
-		slog.Info("insert admin user count: %d", len(n))
-	}
+	// 	slog.Info("init admin user")
+	// 	sql := "insert into user('username','password','claims_id') values ('admin','admin','1');"
+	// 	n, err := sqlite.NewOrm().Query(sql)
+	// 	if err != nil {
+	// 		slog.Error("init admin user err %s", err.Error())
+	// 	}
+	// 	slog.Info("insert admin user count: %d", len(n))
+	// }
 }
 
 /*
