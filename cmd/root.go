@@ -219,7 +219,7 @@ proxy:
 
 func initLog() {
 	// 日志配置
-	lvl.Set(slog.LevelError)
+	lvl.Set(slog.LevelInfo)
 	opts := slog.HandlerOptions{
 		AddSource: true,
 		Level:     &lvl,
