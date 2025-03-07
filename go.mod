@@ -3,7 +3,7 @@ module github.com/lflxp/lflxp-k8s
 go 1.21.6
 
 require (
-	github.com/appleboy/gin-jwt/v2 v2.9.0
+	github.com/appleboy/gin-jwt/v2 v2.8.0
 	github.com/gin-contrib/gzip v0.0.6
 	github.com/gin-gonic/gin v1.8.1
 	github.com/gorilla/websocket v1.5.0
