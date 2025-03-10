@@ -60,7 +60,6 @@ func PreGinServe(r *gin.Engine, port string) {
 	// 登陆
 	auth.RegisterAuth(r)
 
-	// tty.RegisterTTY(r)
 	asset.RegisterAsset(r)
 	pages.RegisterTemplate(r)
 	controller.RegisterAdmin(r)

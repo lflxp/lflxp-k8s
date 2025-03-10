@@ -1,11 +1,10 @@
 package tty
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/lflxp/lflxp-tty/pkg"
 )
 
-func RegisterTTY(router *gin.Engine) {
+func RegisterTTY() {
 	args := &pkg.Tty{
 		EnableTLS:      false,
 		CrtPath:        "",
@@ -22,12 +21,12 @@ func RegisterTTY(router *gin.Engine) {
 		Port:           "19999",
 		Host:           "0.0.0.0",
 		Cmds:           []string{"bash"},
-		Url:            "/tty",
+		Url:            "/",
 	}
 
-	// err := args.Execute()
-	// if err != nil {
-	// 	panic(err)
-	// }
-	pkg.RegisterTty(router, args)
+	err := args.Execute()
+	if err != nil {
+		panic(err)
+	}
+	// pkg.RegisterTty(router, args)
 }

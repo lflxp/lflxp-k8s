@@ -13,6 +13,7 @@ import (
 	ctls "github.com/lflxp/lflxp-k8s/tls"
 
 	"github.com/lflxp/lflxp-k8s/utils"
+	"github.com/lflxp/lflxp-k8s/pkg/tty"
 
 	"github.com/lflxp/lflxp-k8s/core/router"
 
@@ -22,6 +23,7 @@ import (
 )
 
 func Run(ishttps bool) {
+	go tty.RegisterTTY()
 	// gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
