@@ -18,7 +18,7 @@ import (
 )
 
 // 注册插件和路由
-func PreGinServe(r *gin.Engine) {
+func PreGinServe(r *gin.Engine, port string) {
 	slog.Info("注册Gin路由")
 
 	r.Use(middlewares.TokenFilter())
@@ -60,6 +60,7 @@ func PreGinServe(r *gin.Engine) {
 	// 登陆
 	auth.RegisterAuth(r)
 
+	// tty.RegisterTTY(r)
 	asset.RegisterAsset(r)
 	pages.RegisterTemplate(r)
 	controller.RegisterAdmin(r)

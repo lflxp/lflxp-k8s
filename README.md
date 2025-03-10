@@ -276,8 +276,8 @@ Using config file: /opt/gopath/src/gitee.com/lflxp/demo/demo.yaml
 [GIN-debug] CONNECT /docs/*any                --> demo/asset.RegisterAsset.func3 (7 handlers)
 [GIN-debug] TRACE  /docs/*any                --> demo/asset.RegisterAsset.func3 (7 handlers)
 [GIN-debug] GET    /favicon.ico              --> demo/asset.RegisterAsset.func4 (6 handlers)
-[GIN-debug] GET    /adminfs/*filepath        --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (6 handlers)
-[GIN-debug] HEAD   /adminfs/*filepath        --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (6 handlers)
+[GIN-debug] GET    /adminfs2/*filepath        --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (6 handlers)
+[GIN-debug] HEAD   /adminfs2/*filepath        --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (6 handlers)
 [GIN-debug] [WARNING] Since SetHTMLTemplate() is NOT thread-safe. It should only be called
 at initialization. ie. before any route is registered or the router is listening in a socket:
 

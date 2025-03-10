@@ -103,7 +103,7 @@ func isWhilteUrl(c *gin.Context) bool {
 		`^/$`,
 		`^/swagger/*`,
 		`^/login`,
-		`^/adminfs/*`,
+		`^/adminfs2/*`,
 		`^/favicon.ico`,
 		`^/auth/*`,
 		`^/v3/*`,

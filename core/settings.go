@@ -27,7 +27,6 @@ func Run(ishttps bool) {
 
 	// 注册路由
 
-	router.PreGinServe(r)
 	ip := viper.GetString("host")
 	port := viper.GetString("port")
 	slog.Info("ip %s port %s", ip, port)
@@ -38,6 +37,7 @@ func Run(ishttps bool) {
 		port = "8002"
 	}
 
+	router.PreGinServe(r, port)
 	var server *http.Server
 	if ishttps {
 		err := ctls.Refresh()
