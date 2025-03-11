@@ -17,7 +17,7 @@ import (
 	"github.com/lflxp/lflxp-k8s/core/middlewares/template"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lflxp/tools/orm/sqlite"
+	"github.com/lflxp/lflxp-k8s/utils/db"
 )
 
 func RegisterAdmin(router *gin.Engine) {
@@ -43,7 +43,7 @@ func process(c *gin.Context) {
 	if c.Request.Method == "GET" {
 		if typed == "index" {
 			Hs := make([]admin.History, 0)
-			err := sqlite.NewOrm().Desc("id").Limit(10, 0).Find(&Hs)
+			err := db.NewOrm().Desc("id").Limit(10, 0).Find(&Hs)
 			if err != nil {
 				c.JSON(400, err)
 			} else {
@@ -110,7 +110,7 @@ func process(c *gin.Context) {
 		} else if typed == "test1" {
 			// fmt.Println(models.Registered)
 			Hs := make([]admin.History, 0)
-			err := sqlite.NewOrm().Desc("id").Limit(10, 0).Find(&Hs)
+			err := db.NewOrm().Desc("id").Limit(10, 0).Find(&Hs)
 			if err != nil {
 				panic(err)
 			}
@@ -142,7 +142,7 @@ func process(c *gin.Context) {
 			if name != "" && id != "" {
 				//查询sql
 				check_sql := fmt.Sprintf("select * from %s where id=%s", name, id)
-				result, err := sqlite.NewOrm().Query(check_sql)
+				result, err := db.NewOrm().Query(check_sql)
 				if err != nil {
 					c.String(400, err.Error())
 					return
@@ -178,11 +178,11 @@ func process(c *gin.Context) {
 				}
 			}
 			slog.Error(sql)
-			result, err := sqlite.NewOrm().Query(sql)
+			result, err := db.NewOrm().Query(sql)
 			if err != nil {
 				slog.Error(err.Error())
 			}
-			total, err := sqlite.NewOrm().Table(strings.ToLower(name)).Count()
+			total, err := db.NewOrm().Table(strings.ToLower(name)).Count()
 			if err != nil {
 				slog.Error(err.Error())
 			}
@@ -216,7 +216,7 @@ func process(c *gin.Context) {
 			name := c.Query("name")
 			slog.Error(ids, name)
 			sql := fmt.Sprintf("delete from %s where id in (%s)", name, ids)
-			_, err := sqlite.NewOrm().Query(sql)
+			_, err := db.NewOrm().Query(sql)
 			if err != nil {
 				c.String(400, err.Error())
 				return
@@ -256,7 +256,7 @@ func process(c *gin.Context) {
 
 			sql := fmt.Sprintf("insert into %s(%s) values (%s)", name, strings.Join(col, ","), strings.Join(value, ","))
 			slog.Debug(sql)
-			_, err = sqlite.NewOrm().Query(sql)
+			_, err = db.NewOrm().Query(sql)
 			if err != nil {
 				c.String(400, err.Error())
 				return
@@ -320,7 +320,7 @@ func process(c *gin.Context) {
 				}
 				sql := fmt.Sprintf("update %s set %s where id=%s", name, strings.Join(set_string, ","), id)
 				// core.Debug(sql)
-				_, err = sqlite.NewOrm().Query(sql)
+				_, err = db.NewOrm().Query(sql)
 				if err != nil {
 					slog.Error("sql error", err.Error())
 					c.String(400, err.Error())

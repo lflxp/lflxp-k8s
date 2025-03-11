@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/lflxp/tools/orm/sqlite"
+	"github.com/lflxp/lflxp-k8s/utils/db"
 )
 
 var registered []map[string]string
@@ -112,7 +112,7 @@ func Register(data ...interface{}) error {
 	}
 
 	// 注册Model
-	err := sqlite.NewOrm().Sync2(data...)
+	err := db.NewOrm().Sync2(data...)
 	if err != nil {
 		slog.Error(err.Error())
 		return err

@@ -406,7 +406,7 @@
       <el-table-column
         align="center" 
         sortable 
-        label="Status" 
+        label="状态" 
         prop="status.phase"
         width="95">
         <template slot-scope="scope">
@@ -415,21 +415,40 @@
           <el-tag size="mini" type="danger" v-else>{{ scope.row.status.phase }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="Name">
+      <el-table-column label="容器名称" width="180">
         <template slot-scope="scope">
-          <el-button type="text" @click="openit(scope.row)">{{ scope.row.metadata.name }}</el-button>
+          <el-tooltip placement="top" effect="light">
+            <div slot="content">{{ scope.row.metadata.name }}</div>
+            <div class="name-cell">
+              <el-button type="text" class="truncate-text" @click="openit(scope.row)">
+                {{ scope.row.metadata.name }}
+              </el-button>
+            </div>
+          </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="Image" width="200">
+      <el-table-column label="镜像" width="180">
         <template slot-scope="scope">
-          {{ scope.row.spec.containers[0].image }}
-          <div v-if="scope.row.spec.containers.length > 1">
-            <br/>
-            <el-button type="text">+{{ scope.row.spec.containers.length }} more</el-button>
-          </div>
+          <el-tooltip placement="top" effect="light">
+            <div slot="content" class="image-tooltip">
+              <div><strong>主容器:</strong> {{ scope.row.spec.containers[0].image }}</div>
+              <div v-for="(container, index) in scope.row.spec.containers.slice(1)" :key="'c-'+index">
+                <strong>容器 {{ index + 1 }}:</strong> {{ container.image }}
+              </div>
+              <div v-for="(container, index) in scope.row.spec.initContainers || []" :key="'i-'+index">
+                <strong>初始化容器 {{ index }}:</strong> {{ container.image }}
+              </div>
+            </div>
+            <div class="image-cell">
+              <div class="truncate-text">{{ scope.row.spec.containers[0].image }}</div>
+              <div v-if="scope.row.spec.containers.length > 1" class="more-containers">
+                <el-tag size="mini" type="info">+{{ scope.row.spec.containers.length - 1 }} 更多</el-tag>
+              </div>
+            </div>
+          </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="Namespace" align="center">
+      <el-table-column label="命名空间" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.metadata.namespace }}</span>
         </template>
@@ -439,7 +458,7 @@
           <span>{{ scope.row.status.containerStatuses === undefined ? '-' : scope.row.status.containerStatuses.map(data => data.ready === true ? 1:0).reduce(function(prev,curr,idx,arr) { return prev + curr}) }}/{{ scope.row.spec.containers.length }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Restart" align="center">
+      <el-table-column label="重启次数" align="center">
         <template slot-scope="scope">
           {{ scope.row.status.containerStatuses === undefined ? '-' : scope.row.status.containerStatuses[0].restartCount }}
         </template>
@@ -449,7 +468,7 @@
           <el-tag type="primary" size="mini">{{ scope.row.status.podIP }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="Node" width="110" align="center">
+      <el-table-column label="节点" width="110" align="center">
         <template slot-scope="scope">
           <el-tag type="warning" size="mini">{{ scope.row.status.hostIP }}</el-tag>
         </template>
@@ -469,42 +488,76 @@
           <el-tag type="success" size="mini">{{ timeFn(scope.row.metadata.creationTimestamp) }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <!-- For the main table operations column -->
+      <el-table-column label="操作" width="220">
         <template slot-scope="scope">
-          <!-- <el-button
-            size="mini"
-            @click="showLogs(scope.row)">日志</el-button> -->
-          <el-select 
-            clearable
-            v-model="podValue"
-            @focus="getC(scope.row)"
-            @change="showLogs2(scope.row,podValue)"
-            placeholder="容器日志">
-            <el-option
-              v-for="item in currentNameList"
-              :key="item.name"
-              :label="item.name"
-              :value="item.name">
-            </el-option>
-          </el-select>
-          <!-- <el-button
-            size="mini"
-            @click="showssh(scope.row)">SSH</el-button> -->
-          <el-select 
-            clearable
-            v-model="sshValue"
-            @change="showssh(scope.row,sshValue)"
-            placeholder="SSH容器">
-            <el-option
-              v-for="item in scope.row.spec.containers"
-              :key="item.name"
-              :label="item.name"
-              :value="item.name">
-            </el-option>
-          </el-select>
-          <el-button
-            size="mini"
-            @click="deletepod(scope.row)">删除</el-button>
+          <div class="operation-buttons">
+            <!-- Action buttons group -->
+            <el-button-group class="action-group">
+              <!-- Logs dropdown -->
+              <el-dropdown 
+                trigger="hover" 
+                @command="(command) => showLogs2(scope.row, command)"
+                placement="bottom-start"
+                size="mini">
+                <el-button size="mini" type="text">
+                  <i class="el-icon-document"></i> 日志
+                  <i class="el-icon-arrow-down el-icon--right"></i>
+                </el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <div class="dropdown-title">选择容器</div>
+                  <el-dropdown-item 
+                    v-for="item in scope.row.spec.containers" 
+                    :key="item.name" 
+                    :command="item.name">
+                    <i class="el-icon-box"></i> {{ item.name }}
+                  </el-dropdown-item>
+                  <el-divider v-if="scope.row.spec.initContainers && scope.row.spec.initContainers.length > 0"></el-divider>
+                  <div class="dropdown-title" v-if="scope.row.spec.initContainers && scope.row.spec.initContainers.length > 0">初始化容器</div>
+                  <el-dropdown-item 
+                    v-for="item in scope.row.spec.initContainers || []" 
+                    :key="item.name" 
+                    :command="item.name">
+                    <i class="el-icon-setting"></i> {{ item.name }}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+
+              <!-- SSH dropdown -->
+              <el-dropdown 
+                trigger="hover" 
+                @command="(command) => showssh(scope.row, command)"
+                placement="bottom-start"
+                size="mini">
+                <el-button size="mini" type="text">
+                  <i class="el-icon-terminal"></i> SSH
+                  <i class="el-icon-arrow-down el-icon--right"></i>
+                </el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <div class="dropdown-title">选择容器</div>
+                  <el-dropdown-item 
+                    v-for="item in scope.row.spec.containers" 
+                    :key="item.name" 
+                    :command="item.name">
+                    <i class="el-icon-box"></i> {{ item.name }}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+              <!-- Delete button -->
+              <el-popconfirm
+                title="确定要删除此Pod吗?"
+                @confirm="deletepod(scope.row)"
+                icon="el-icon-warning"
+                icon-color="red">
+                <el-button 
+                  slot="reference"
+                  size="mini"
+                  type="text">
+                  <i class="el-icon-delete"></i> 删除
+                </el-button>
+              </el-popconfirm>
+            </el-button-group>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -1156,7 +1209,109 @@ export default {
         this.fetchData()
         this.dialogVisible = false
       })
+    },
+    confirmDelete(row) {
+      this.$confirm('确定要删除此Pod吗?', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.deletepod(row);
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
     }
   }
 }
 </script>
+
+<style>
+/* Add these styles to your component */
+.operation-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.action-group {
+  margin-right: 8px;
+}
+
+.el-dropdown {
+  display: inline-block;
+}
+
+.el-dropdown-menu {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 5px 0;
+}
+
+.dropdown-title {
+  font-size: 12px;
+  color: #909399;
+  padding: 5px 15px;
+  margin-bottom: 5px;
+}
+
+.el-divider--horizontal {
+  margin: 5px 0;
+}
+
+.el-dropdown-item i {
+  margin-right: 5px;
+}
+
+/* Make the popconfirm more visible */
+.el-popconfirm__main {
+  padding: 12px;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Improve button spacing in button groups */
+.el-button-group .el-button + .el-button {
+  margin-left: -1px;
+}
+
+/* Add hover effect to operation buttons */
+.operation-buttons .el-button:hover {
+  transform: translateY(-2px);
+  transition: all 0.2s;
+}
+
+/* Add these styles to your component */
+.truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.image-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.more-containers {
+  margin-top: 5px;
+}
+
+.image-tooltip {
+  max-width: 500px;
+  word-break: break-all;
+  white-space: normal;
+  line-height: 1.5;
+}
+
+.image-tooltip div {
+  margin-bottom: 5px;
+}
+
+.image-tooltip div:last-child {
+  margin-bottom: 0;
+}
+</style>

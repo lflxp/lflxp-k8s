@@ -6,38 +6,37 @@ import (
 	"log/slog"
 	"time"
 
-	// "github.com/lflxp/lflxp-k8s/core/middlewares/template"
-
-	"github.com/lflxp/tools/orm/sqlite"
+	"github.com/lflxp/lflxp-k8s/core/middlewares/template"
+	"github.com/lflxp/lflxp-k8s/utils/db"
 )
 
 func init() {
 	// vpn := Vpn{}s
-	// template.Register(new(Vpn), new(Machine), new(Cdn), new(More), new(User), new(Claims), new(Groups), new(Userauth), new(History))
+	template.Register(new(Vpn), new(Machine), new(Cdn), new(More), new(User), new(Claims), new(Groups), new(Userauth), new(History))
 
-	// user := User{Username: "admin"}
-	// has, err := sqlite.NewOrm().Get(&user)
-	// if err != nil {
-	// 	slog.Error(err.Error())
-	// }
+	user := User{Username: "admin"}
+	has, err := db.NewOrm().Get(&user)
+	if err != nil {
+		slog.Error(err.Error())
+	}
 
-	// if !has {
-	// 	claims := Claims{
-	// 		Auth:  "admin",
-	// 		Type:  "nav",
-	// 		Value: "dashboard",
-	// 	}
+	if !has {
+		claims := Claims{
+			Auth:  "admin",
+			Type:  "nav",
+			Value: "dashboard",
+		}
 
-	// 	sqlite.NewOrm().Insert(&claims)
+		db.NewOrm().Insert(&claims)
 
-	// 	slog.Info("init admin user")
-	// 	sql := "insert into user('username','password','claims_id') values ('admin','admin','1');"
-	// 	n, err := sqlite.NewOrm().Query(sql)
-	// 	if err != nil {
-	// 		slog.Error("init admin user err %s", err.Error())
-	// 	}
-	// 	slog.Info("insert admin user count: %d", len(n))
-	// }
+		slog.Info("init admin user")
+		sql := "insert into user('username','password','claims_id') values ('admin','admin','1');"
+		n, err := db.NewOrm().Query(sql)
+		if err != nil {
+			slog.Error("init admin user err %s", err.Error())
+		}
+		slog.Info("insert admin user count: %d", len(n))
+	}
 }
 
 /*
@@ -91,28 +90,6 @@ type More struct {
 	MoreVpn  string `xorm:"more" colType:"o2m" o2m:"vpn|id,name,ip,vpn" verbose_name:"vpn一对多" name:"more"` //id1,id2,id3,id4
 }
 
-type User struct {
-	Id        int64    `xorm:"id pk not null autoincr" name:"id"`
-	Username  string   `xorm:"username" name:"username" verbose_name:"用户名" list:"true" search:"true"`
-	Password  string   `xorm:"password" name:"password" verbose_name:"密码" colType:"password" list:"true" search:"true"`
-	Name      string   `xorm:"name" name:"name" verbose_name:"名字" list:"true" search:"true"`
-	FirstName string   `xorm:"firstname" name:"firstname" verbose_name:"姓氏" list:"true" search:"true"`
-	Email     string   `xorm:"email" name:"email" verbose_name:"电子邮件" list:"true" search:"true"`
-	IsVaild   string   `xorm:"isvaild" name:"isvaild" verbose_name:"有效" list:"true" search:"false" colType:"radio" radio:"有效|1,无效|0"`
-	Status    string   `xorm:"status" name:"status" verbose_name:"状态" list:"true" search:"false" colType:"radio" radio:"有效|1,无效|0"`
-	IsAdmin   string   `xorm:"isadmin" name:"isadmin" verbose_name:"超级用户状态" list:"true" search:"false" colType:"radio" radio:"是|1,不是|0"`
-	Claims    []Claims `xorm:"claims_id int(11)" colType:"o2m" o2m:"claims|id,auth,type,value" verbose_name:"权限配置" name:"claims_id"`
-	Token     string   `xorm:"token" name:"token" verbose_name:"rancher token"`
-}
-
-// 用户权限表
-type Claims struct {
-	Id    int64  `xorm:"id pk not null autoincr" name:"id"`
-	Auth  string `xorm:"auth varchar(255) unique(only)" name:"auth" verbose_name:"权限" list:"true" search:"true"`               // 对应Auth => Username  eg: admin
-	Type  string `json:"type" xorm:"type varchar(255) unique(only)" name:"type" verbose_name:"类型" list:"true" search:"true"`   // 权限类型 eg: nav
-	Value string `json:"value" xorm:"value varchar(255) unique(only)" name:"value" verbose_name:"值" list:"true" search:"true"` // 权限指 eg: dashboard
-}
-
 type Groups struct {
 	Id   int64  `xorm:"id pk not null autoincr" name:"id"`
 	Name string `xorm:"name" name:"name" verbose_name:"名称" list:"true" search:"true"`
@@ -146,7 +123,7 @@ func InsertHistory(beans ...interface{}) (int64, error) {
 		}
 
 	}()
-	return sqlite.NewOrm().Insert(beans...)
+	return db.NewOrm().Insert(beans...)
 }
 
 type History struct {
@@ -160,22 +137,22 @@ type History struct {
 
 func getByUUIDHistory(uuid string) (*History, bool, error) {
 	data := new(History)
-	has, err := sqlite.NewOrm().Where("uuid = ?", uuid).Get(data)
+	has, err := db.NewOrm().Where("uuid = ?", uuid).Get(data)
 	return data, has, err
 }
 
 func AddHistory(data *History) (int64, error) {
-	affected, err := sqlite.NewOrm().Insert(data)
+	affected, err := db.NewOrm().Insert(data)
 	return affected, err
 }
 
 func DelHistory(id string) (int64, error) {
 	data := new(History)
-	affected, err := sqlite.NewOrm().ID(id).Delete(data)
+	affected, err := db.NewOrm().ID(id).Delete(data)
 	return affected, err
 }
 
 func UpdateHistory(id string, data *History) (int64, error) {
-	affected, err := sqlite.NewOrm().Table(new(History)).ID(id).Update(data)
+	affected, err := db.NewOrm().Table(new(History)).ID(id).Update(data)
 	return affected, err
 }

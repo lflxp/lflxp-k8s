@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lflxp/tools/orm/sqlite"
+	"github.com/lflxp/lflxp-k8s/utils/db"
 )
 
 var FuncMap template.FuncMap = map[string]interface{}{
@@ -218,14 +218,15 @@ jQuery(function($){
 	   });
 });
 </script>`
-	slog.Error("Col %s|", data["Col"])
-	slog.Error("List", data["List"])
-	slog.Error("Search", data["Search"])
+	slog.With("Col", data["Col"]).Info("debug数据")
+	slog.With("List", data["List"]).Info("debug数据")
+	slog.With("Search", data["Search"]).Info("debug数据")
 	if data["Col"] == "" {
 		return "Col is none"
 	}
 
-	for _, info := range strings.Split(strings.TrimSpace(data["Col"]), " ") {
+	for index, info := range strings.Split(strings.TrimSpace(data["Col"]), " ") {
+		slog.With("Index", index, "info", info).Info("info数据")
 		tmp := strings.Split(info, ":")
 		switch tmp[1] {
 		case "string":
@@ -269,7 +270,7 @@ jQuery(function($){
 			// log.Error("tmp_o2o", tmp[3])
 			sql := fmt.Sprintf("select * from %s", tmp_o2o[0])
 			// log.Error(sql)
-			resultSql, err := sqlite.NewOrm().Query(sql)
+			resultSql, err := db.NewOrm().Query(sql)
 			if err != nil {
 				slog.Error(err.Error())
 			}
@@ -291,7 +292,7 @@ jQuery(function($){
 			// log.Error("tmp_o2o", tmp[3])
 			sql := fmt.Sprintf("select * from %s", tmp_o2o[0])
 			// log.Error(sql)
-			resultSql, err := sqlite.NewOrm().Query(sql)
+			resultSql, err := db.NewOrm().Query(sql)
 			if err != nil {
 				slog.Error(err.Error())
 			}
@@ -448,7 +449,7 @@ jQuery(function($){
 			// log.Error("tmp_o2o", tmp[3])
 			sql := fmt.Sprintf("select * from %s", tmp_o2o[0])
 			// log.Error(sql)
-			resultSql, err := sqlite.NewOrm().Query(sql)
+			resultSql, err := db.NewOrm().Query(sql)
 			if err != nil {
 				slog.Error(err.Error())
 			}
@@ -475,7 +476,7 @@ jQuery(function($){
 			// log.Error("tmp_o2o", tmp[3])
 			sql := fmt.Sprintf("select * from %s", tmp_o2o[0])
 			// log.Error(sql)
-			resultSql, err := sqlite.NewOrm().Query(sql)
+			resultSql, err := db.NewOrm().Query(sql)
 			if err != nil {
 				slog.Error(err.Error())
 			}

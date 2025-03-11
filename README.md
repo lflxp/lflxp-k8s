@@ -4,12 +4,12 @@
 
 # TODO
 
-1、切换git提交的username和email
-2、切换项目名称，叫脚手架比较好听
-3、修改go mod名称和代码import名
-4、统一后端接口路径以/api开头，/admin忽略
-5、应用商店：初始化、接口联调CRUD、UI界面
-6、k8s pod container详情页面
+1. 切换git提交的username和email
+2. 切换项目名称，叫脚手架比较好听
+3. 修改go mod名称和代码import名
+4. 统一后端接口路径以/api开头，/admin忽略
+5. 应用商店：初始化、接口联调CRUD、UI界面
+6. k8s pod container详情页面
   * containers
   * conditions
   * recent Events
@@ -19,14 +19,20 @@
   * job -> pods
   * sts -> pods
   * ds -> pods
-10、监控
+10. 监控
   * prometheus
   * grafana
   * metrics-server
   * grafana-template
   * job安装prometheus+grafana+servicemonitor+metric-server
-11、node节点 cordon 污点等功能
-12、将detail内的标签和annotations放到下面table里面提供CRUD
+11. node节点 cordon 污点等功能
+12. 将detail内的标签和annotations放到下面table里面提供CRUD
+13. 完善租户、项目、环境、用户、角色、角色绑定（独立与k8s的saas化应用去管理k8s,方便后期扩容，升级为业务系统或者中台）
+    1.  单机版不考虑oauth
+    2.  不用下层数据库，直接用sqlite
+    3.  用jwt做认证
+    4.  用rbac做权限
+    5.  项目-〉项目子集-〉命名空间
 
 # 功能列表
 

@@ -52,7 +52,7 @@ func tablelist(c *gin.Context) {
 // @Tags Auth
 // @Success 200 {object} model.Resp{}
 // @Security ApiKeyAuth
-// @Router /apis/auth/login/local [post]
+// @Router /api/login [post]
 func loginlocal(c *gin.Context) {
 	jwts.GetMiddleware().LoginHandler(c)
 }
