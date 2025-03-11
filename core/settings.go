@@ -12,8 +12,8 @@ import (
 
 	ctls "github.com/lflxp/lflxp-k8s/tls"
 
-	"github.com/lflxp/lflxp-k8s/utils"
 	"github.com/lflxp/lflxp-k8s/pkg/tty"
+	"github.com/lflxp/lflxp-k8s/utils"
 
 	"github.com/lflxp/lflxp-k8s/core/router"
 
@@ -93,7 +93,8 @@ func Run(ishttps bool) {
 		}
 
 		if index == 0 {
-			openUrl = fmt.Sprintf("%s:%s", ip, port)
+			// openUrl = fmt.Sprintf("%s:%s", ip, port)
+			openUrl = fmt.Sprintf("localhost:%s", port)
 		}
 	}
 	if ishttps {

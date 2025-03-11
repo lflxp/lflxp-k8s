@@ -1,0 +1,1 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d21064e"],{b868:function(n,t,e){"use strict";e.r(t);var r=function(){var n=this,t=n._self._c;return t("d2-container-frame",{attrs:{src:"https://lflxp.gitee.io/"}})},s=[],c=e("2877"),l={},u=Object(c["a"])(l,r,s,!1,null,null,null);t["default"]=u.exports}}]);

@@ -10,7 +10,7 @@ func RegisterTTY() {
 		CrtPath:        "",
 		KeyPath:        "",
 		IsProf:         false,
-		IsXsrf:         false,
+		IsXsrf:         true,
 		IsAudit:        false,
 		IsPermitWrite:  true,
 		MaxConnections: 10,

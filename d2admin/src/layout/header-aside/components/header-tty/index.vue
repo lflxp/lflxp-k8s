@@ -10,12 +10,14 @@
       title="远程终端"
       :visible.sync="dialogVisible"
       :fullscreen="false"
+      :modal="true"
+      top="0px"
       width="100%">
-      <d2-container-frame style="height: 580px;" :src="url"/>
-      <span slot="footer" class="dialog-footer">
+      <d2-container-frame style="height: 480px;" :src="url"/>
+      <!-- <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-      </span>
+      </span> -->
     </el-dialog>
   </div>
 </template>
@@ -29,7 +31,7 @@ export default {
     }
   },
   mounted() {
-    this.url = window.location.protocol + '//' + window.location.hostname + ':32322'
+    this.url = window.location.protocol + '//' + window.location.hostname + ':19999'
   },
   methods: {
     openit(row) {

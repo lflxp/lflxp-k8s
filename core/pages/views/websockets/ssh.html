@@ -4,144 +4,238 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal - {{.Pod}}/{{.Container}}</title>
     <link rel="stylesheet" href="/node_modules/xterm/dist/xterm.css" />
     <script src="/node_modules/xterm/dist/xterm.js"></script>
     <script src="/node_modules/xterm/dist/addons/fit/fit.js"></script>
     <script src="/node_modules/xterm/dist/addons/winptyCompat/winptyCompat.js"></script>
     <script src="/node_modules/xterm/dist/addons/webLinks/webLinks.js"></script>
+    <style>
+        /* Reset default margins and paddings */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        
+        /* Form styling */
+        .terminal-form {
+            background-color: #222;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #444;
+        }
+        
+        .terminal-form input[type="text"] {
+            padding: 6px 10px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: #fff;
+            border-radius: 3px;
+            flex-grow: 1;
+            min-width: 150px;
+        }
+        
+        .terminal-form input[type="button"] {
+            padding: 6px 15px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .terminal-form input[type="button"]:hover {
+            background-color: #0055aa;
+        }
+        
+        .terminal-form label {
+            margin-right: 5px;
+        }
+        
+        /* Terminal container */
+        #terminal {
+            flex-grow: 1;
+            width: 100%;
+            height: calc(100vh - 60px); /* Adjust based on form height */
+            background-color: #000;
+        }
+        
+        /* Make xterm fill its container */
+        .xterm {
+            height: 100%;
+        }
+        
+        .xterm-viewport {
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body>
-<form>
-    namespace:<input type="text" id="podNs" placeholder="{{.Namespace}}">
-    podName:<input  type="text" id="podName" placeholder="{{.Pod}}">
-    containerName:<input  type="text" id="containerName" placeholder="{{.Container}}">
-    <input id="ssh" type="button" value="ssh">
-</form>
-<div id="terminal" style="height: 575px;"></div>
-<script>
-    // xterm配置自适应大小插件
-    Terminal.applyAddon(fit);
+    <form class="terminal-form">
+        <label for="podNs">namespace:</label>
+        <input type="text" id="podNs" placeholder="{{.Namespace}}">
+        <label for="podName">podName:</label>
+        <input type="text" id="podName" placeholder="{{.Pod}}">
+        <label for="containerName">containerName:</label>
+        <input type="text" id="containerName" placeholder="{{.Container}}">
+        <!-- If you want to keep the button, uncomment this line -->
+        <!-- <input id="ssh" type="button" value="ssh"> -->
+    </form>
+    <div id="terminal"></div>
+    <script>
+        // xterm配置自适应大小插件
+        Terminal.applyAddon(fit);
 
-    // 这俩插件不知道干嘛的, 用总比不用好
-    Terminal.applyAddon(winptyCompat)
-    Terminal.applyAddon(webLinks)
+        // 这俩插件不知道干嘛的, 用总比不用好
+        Terminal.applyAddon(winptyCompat);
+        Terminal.applyAddon(webLinks);
 
-    // 新建终端
-    function openTerminal() {
-        // 创建终端
-        var term = new Terminal();
-        term.open(document.getElementById('terminal'));
+        // 新建终端
+        function openTerminal() {
+            // 创建终端
+            var term = new Terminal({
+                cursorBlink: true,
+                fontSize: 14,
+                fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+                bellStyle: 'sound',
+                theme: {
+                    background: '#000000',
+                    foreground: '#ffffff'
+                }
+            });
+            term.open(document.getElementById('terminal'));
 
-        // 使用fit插件自适应terminal size
-        term.fit();
-        term.winptyCompatInit()
-        term.webLinksInit()
+            // 使用fit插件自适应terminal size
+            term.fit();
+            term.winptyCompatInit();
+            term.webLinksInit();
 
-        // 取得输入焦点
-        term.focus();
+            // 取得输入焦点
+            term.focus();
 
-        // 获取要连接的容器信息
-        // var podNs = document.getElementById("podNs").value
-        // var podName = document.getElementById("podName").value
-        // var containerName = document.getElementById("containerName").value
+            // 连接websocket
+            ws = new WebSocket("ws://{{.Host}}/ws/ssh/backend/{{.Namespace}}/{{.Pod}}/{{.Container}}");
+            ws.onopen = function(event) {
+                console.log("onopen");
+            }
+            ws.onclose = function(event) {
+                console.log("onclose");
+                term.writeln('\r\n\nConnection closed');
+            }
+            ws.onmessage = function(event) {
+                // 服务端ssh输出, 写到web shell展示
+                term.write(event.data);
+            }
+            ws.onerror = function(event) {
+                console.log("onerror");
+                term.writeln('\r\n\nConnection error');
+            }
 
-        // 连接websocket
-        ws = new WebSocket("ws://{{.Host}}/ws/ssh/backend/{{.Namespace}}/{{.Pod}}/{{.Container}}");
-        ws.onopen = function(event) {
-            console.log("onopen")
-        }
-        ws.onclose = function(event) {
-            console.log("onclose")
-        }
-        ws.onmessage = function(event) {
-            // 服务端ssh输出, 写到web shell展示
-            term.write(event.data)
-        }
-        ws.onerror = function(event) {
-            console.log("onerror")
-        }
+            // 当浏览器窗口变化时, 重新适配终端
+            window.addEventListener("resize", function () {
+                term.fit();
 
-        // 当浏览器窗口变化时, 重新适配终端
-        window.addEventListener("resize", function () {
-            term.fit()
+                // 把web终端的尺寸term.rows和term.cols发给服务端, 通知sshd调整输出宽度
+                var msg = {type: "resize", rows: term.rows, cols: term.cols};
+                ws.send(JSON.stringify(msg));
+            });
 
-            // 把web终端的尺寸term.rows和term.cols发给服务端, 通知sshd调整输出宽度
-            var msg = {type: "resize", rows: term.rows, cols: term.cols}
-            ws.send(JSON.stringify(msg))
-
-            // console.log(term.rows + "," + term.cols)
-        })
-
-        // 当向web终端敲入字符时候的回调
-        term.on('data', function(input) {
-            // 写给服务端, 由服务端发给container
-            var msg = {type: "input", input: input}
-            ws.send(JSON.stringify(msg))
-        })
-    }
-
-    function openTerminalManual() {
-        // 创建终端
-        var term = new Terminal();
-        term.open(document.getElementById('terminal'));
-
-        // 使用fit插件自适应terminal size
-        term.fit();
-        term.winptyCompatInit()
-        term.webLinksInit()
-
-        // 取得输入焦点
-        term.focus();
-
-        // 获取要连接的容器信息
-        var podNs = document.getElementById("podNs").value
-        var podName = document.getElementById("podName").value
-        var containerName = document.getElementById("containerName").value
-
-        // 连接websocket
-        ws = new WebSocket("ws://{{.Host}}/ws/ssh/backend/" + podNs + "/" + podName + "/" + containerName);
-        ws.onopen = function(event) {
-            console.log("onopen")
-        }
-        ws.onclose = function(event) {
-            console.log("onclose")
-        }
-        ws.onmessage = function(event) {
-            // 服务端ssh输出, 写到web shell展示
-            term.write(event.data)
-        }
-        ws.onerror = function(event) {
-            console.log("onerror")
+            // 当向web终端敲入字符时候的回调
+            term.on('data', function(input) {
+                // 写给服务端, 由服务端发给container
+                var msg = {type: "input", input: input};
+                ws.send(JSON.stringify(msg));
+            });
         }
 
-        // 当浏览器窗口变化时, 重新适配终端
-        window.addEventListener("resize", function () {
-            term.fit()
+        function openTerminalManual() {
+            // 创建终端
+            var term = new Terminal({
+                cursorBlink: true,
+                fontSize: 14,
+                fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+                bellStyle: 'sound',
+                theme: {
+                    background: '#000000',
+                    foreground: '#ffffff'
+                }
+            });
+            term.open(document.getElementById('terminal'));
 
-            // 把web终端的尺寸term.rows和term.cols发给服务端, 通知sshd调整输出宽度
-            var msg = {type: "resize", rows: term.rows, cols: term.cols}
-            ws.send(JSON.stringify(msg))
+            // 使用fit插件自适应terminal size
+            term.fit();
+            term.winptyCompatInit();
+            term.webLinksInit();
 
-            // console.log(term.rows + "," + term.cols)
-        })
+            // 取得输入焦点
+            term.focus();
 
-        // 当向web终端敲入字符时候的回调
-        term.on('data', function(input) {
-            // 写给服务端, 由服务端发给container
-            var msg = {type: "input", input: input}
-            ws.send(JSON.stringify(msg))
-        })
-    }
+            // 获取要连接的容器信息
+            var podNs = document.getElementById("podNs").value || "{{.Namespace}}";
+            var podName = document.getElementById("podName").value || "{{.Pod}}";
+            var containerName = document.getElementById("containerName").value || "{{.Container}}";
 
-    // 点击ssh建立websocket连接, 启动xterm终端
-    document.getElementById("ssh").addEventListener("click", function() {
-        document.getElementById('terminal').innerHTML = ""
-        openTerminalManual()
-    })
+            // 连接websocket
+            ws = new WebSocket("ws://{{.Host}}/ws/ssh/backend/" + podNs + "/" + podName + "/" + containerName);
+            ws.onopen = function(event) {
+                console.log("onopen");
+            }
+            ws.onclose = function(event) {
+                console.log("onclose");
+                term.writeln('\r\n\nConnection closed');
+            }
+            ws.onmessage = function(event) {
+                // 服务端ssh输出, 写到web shell展示
+                term.write(event.data);
+            }
+            ws.onerror = function(event) {
+                console.log("onerror");
+                term.writeln('\r\n\nConnection error');
+            }
 
-    document.getElementById('terminal').innerHTML = ""
-    openTerminal()
-</script>
+            // 当浏览器窗口变化时, 重新适配终端
+            window.addEventListener("resize", function () {
+                term.fit();
+
+                // 把web终端的尺寸term.rows和term.cols发给服务端, 通知sshd调整输出宽度
+                var msg = {type: "resize", rows: term.rows, cols: term.cols};
+                ws.send(JSON.stringify(msg));
+            });
+
+            // 当向web终端敲入字符时候的回调
+            term.on('data', function(input) {
+                // 写给服务端, 由服务端发给container
+                var msg = {type: "input", input: input};
+                ws.send(JSON.stringify(msg));
+            });
+        }
+
+        // REMOVED: The event listener for the SSH button that doesn't exist
+        // document.getElementById("ssh").addEventListener("click", function() {
+        //     document.getElementById('terminal').innerHTML = "";
+        //     openTerminalManual();
+        // });
+
+        // Initial terminal setup
+        document.getElementById('terminal').innerHTML = "";
+        openTerminal();
+        
+        // Trigger resize event to make sure terminal fits properly on load
+        window.dispatchEvent(new Event('resize'));
+    </script>
 </body>
 </html>
 
