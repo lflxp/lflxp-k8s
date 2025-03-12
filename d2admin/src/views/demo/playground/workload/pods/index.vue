@@ -415,7 +415,7 @@
           <el-tag size="mini" type="danger" v-else>{{ scope.row.status.phase }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="容器名称" width="180">
+      <el-table-column label="容器名称">
         <template slot-scope="scope">
           <el-tooltip placement="top" effect="light">
             <div slot="content">{{ scope.row.metadata.name }}</div>
@@ -427,7 +427,7 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="镜像" width="180">
+      <el-table-column label="镜像">
         <template slot-scope="scope">
           <el-tooltip placement="top" effect="light">
             <div slot="content" class="image-tooltip">
@@ -473,7 +473,7 @@
           <el-tag type="warning" size="mini">{{ scope.row.status.hostIP }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="CPU消耗" align="center" v-if="namespace !== ''">
+      <!-- <el-table-column label="CPU消耗" align="center" v-if="namespace !== ''">
         <template slot-scope="scope">
           <el-tag type="danger" size="mini">{{ scope.row.cpus / 1000000 }} m</el-tag>
         </template>
@@ -482,7 +482,7 @@
         <template slot-scope="scope">
           <el-tag type="danger" size="mini">{{ scope.row.mems / 1000 }} Mb</el-tag>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column align="center" prop="metadata.creationTimestamp" sortable label="Age" width="200">
         <template slot-scope="scope">
           <el-tag type="success" size="mini">{{ timeFn(scope.row.metadata.creationTimestamp) }}</el-tag>
@@ -581,7 +581,7 @@
 import { apiserver, apiput, apidelete, apipatch } from '@/api/table.js'
 import vueJsonEditor from 'vue-json-editor'
 import util from '@/libs/util.js'
-import { metricsPod } from '@/api/monitor'
+// import { metricsPod } from '@/api/monitor'
 
 export default {
   components: {
@@ -884,12 +884,12 @@ export default {
     },
     getNs() {
       this.namespace = util.cookies.get('namespace')
-      if (this.namespace !== undefined) {
-        metricsPod(this.namespace).then(resp => {
-          console.log('podlllllll', resp)
-          this.metrics = resp.data.items;
-        })
-      }
+      // if (this.namespace !== undefined) {
+      //   metricsPod(this.namespace).then(resp => {
+      //     console.log('podlllllll', resp)
+      //     this.metrics = resp.data.items;
+      //   })
+      // }
     },
     clears() {
       this.dialogVisible = false
@@ -923,45 +923,45 @@ export default {
         this.total = resp.data.items.length
         this.listLoading = false
         // 判断节点状态
-        resp.data.items.forEach((node, index) => {
-          this.metrics.forEach(m => {
+        // resp.data.items.forEach((node, index) => {
+        //   this.metrics.forEach(m => {
             
-            if (node.metadata.name === m.metadata.name) {
-              // console.log('mmmmmmm', m, node)
-              // 计算pod 资源总量
-              let cpus = 0;
-              let mems = 0;
-              m.containers.forEach(xd => {
-                console.log('mmmmmmmcpus', xd, mems, xd.usage.cpu, xd.usage.memory)
-                cpus += parseInt(xd.usage.cpu.replace('n',''), 10)
-                mems += parseInt(xd.usage.memory.replace('Ki',''), 10)
-                console.log('cpus', cpus, mems)
-              })
-              node['cpus'] = cpus
-              node['mems'] = mems 
-              node.status.containerStatuses.forEach((n2, ind) => {
-                m.containers.forEach(m2 => {
-                  if (n2.name === m2.name) {
-                    // 设置单个container资源使用量
-                    node.status.containerStatuses[ind]['metrics'] = m2 
-                  }
-                })
-              })
-              // node['metrics'] = m
-            }
-          })
-          // console.log('nodesssss', node)
-          this.list.push(node)
-          // 删除label后刷新数据
-          // 删除annotations后刷新数据
-          if (this.jsonData !== '') {
-            if (node.metadata.name === this.jsonData.metadata.name) {
-              this.jsonData = node
-              // this.openit(node)
-              this.parseLabels(node.metadata)
-            }
-          }
-        })
+        //     if (node.metadata.name === m.metadata.name) {
+        //       // console.log('mmmmmmm', m, node)
+        //       // 计算pod 资源总量
+        //       let cpus = 0;
+        //       let mems = 0;
+        //       m.containers.forEach(xd => {
+        //         console.log('mmmmmmmcpus', xd, mems, xd.usage.cpu, xd.usage.memory)
+        //         cpus += parseInt(xd.usage.cpu.replace('n',''), 10)
+        //         mems += parseInt(xd.usage.memory.replace('Ki',''), 10)
+        //         console.log('cpus', cpus, mems)
+        //       })
+        //       node['cpus'] = cpus
+        //       node['mems'] = mems 
+        //       node.status.containerStatuses.forEach((n2, ind) => {
+        //         m.containers.forEach(m2 => {
+        //           if (n2.name === m2.name) {
+        //             // 设置单个container资源使用量
+        //             node.status.containerStatuses[ind]['metrics'] = m2 
+        //           }
+        //         })
+        //       })
+        //       // node['metrics'] = m
+        //     }
+        //   })
+        //   // console.log('nodesssss', node)
+        //   this.list.push(node)
+        //   // 删除label后刷新数据
+        //   // 删除annotations后刷新数据
+        //   if (this.jsonData !== '') {
+        //     if (node.metadata.name === this.jsonData.metadata.name) {
+        //       this.jsonData = node
+        //       // this.openit(node)
+        //       this.parseLabels(node.metadata)
+        //     }
+        //   }
+        // })
       })
 
       let ee = {
