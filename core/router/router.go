@@ -7,6 +7,7 @@ import (
 	"github.com/lflxp/lflxp-k8s/core/middlewares"
 	"github.com/lflxp/lflxp-k8s/core/pages"
 	"github.com/lflxp/lflxp-k8s/pkg/apiserver"
+	"github.com/lflxp/lflxp-k8s/pkg/csm"
 	"github.com/lflxp/lflxp-k8s/pkg/monitor"
 	"github.com/lflxp/lflxp-k8s/pkg/vela/appshop"
 
@@ -68,4 +69,5 @@ func PreGinServe(r *gin.Engine, port string) {
 	apiserver.RegisterApiserverWS(r)
 	appshop.RegisterShop(r)
 	monitor.RegisterMonitor(r)
+	csm.RegisterCSM(r)
 }

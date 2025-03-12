@@ -1,0 +1,29 @@
+---
+kind: Config
+agent:
+  - name: demo
+    commands:
+      - name: cmddemo 
+        command: wmic.exe process get Commandline
+        regex: ".*-jar agent.jar.*"
+    http:
+      - name: httpdemo
+        url: http://localhost:8002/alive/api/serverdemo
+        jsonpath: "data.store.book.1.category"
+        regex: "fiction"
+        method: GET
+    tcp:
+      - name: tcpdemo
+        host: localhost
+        port: 8080
+        protocol: tcp
+        timeout: 1000
+webhook: http://localhost:8002/alive/api/webhooktest
+thirdparty:
+  - name: sonarqube
+    tcp:
+      - name: servercheck
+        host: www.baidu.com
+        port: 32385
+        protocol: tcp
+        timeout: 1000

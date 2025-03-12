@@ -1,4 +1,122 @@
 definitions:
+  model.CpuResource:
+    properties:
+      idle:
+        type: integer
+      iowait:
+        type: integer
+      logical:
+        type: integer
+      percent:
+        type: number
+      physical:
+        type: integer
+      total:
+        type: integer
+      used:
+        type: integer
+    type: object
+  model.DiskResource:
+    properties:
+      free:
+        type: integer
+      fstype:
+        type: string
+      path:
+        type: string
+      percent:
+        type: number
+      total:
+        type: integer
+      used:
+        type: integer
+    type: object
+  model.Heartbeat:
+    properties:
+      cpu:
+        $ref: '#/definitions/model.CpuResource'
+      disk:
+        items:
+          $ref: '#/definitions/model.DiskResource'
+        type: array
+      diskFreeDrives:
+        items:
+          type: string
+        type: array
+      history:
+        $ref: '#/definitions/model.History'
+      host:
+        type: string
+      last:
+        type: string
+      memory:
+        $ref: '#/definitions/model.Resource'
+      message:
+        type: string
+      port:
+        type: string
+      status:
+        type: boolean
+      time:
+        type: string
+    type: object
+  model.History:
+    properties:
+      error:
+        type: string
+      success:
+        type: string
+    type: object
+  model.Record:
+    properties:
+      checklist:
+        items:
+          $ref: '#/definitions/model.RecordList'
+        type: array
+      history:
+        $ref: '#/definitions/model.History'
+      host:
+        type: string
+      kind:
+        type: string
+      name:
+        type: string
+      status:
+        type: boolean
+      time:
+        type: string
+    type: object
+  model.RecordList:
+    properties:
+      config: {}
+      error:
+        type: string
+      history:
+        $ref: '#/definitions/model.History'
+      kind:
+        type: string
+      message:
+        type: string
+      name:
+        type: string
+      result:
+        type: string
+      status:
+        type: boolean
+      time:
+        type: string
+    type: object
+  model.Resource:
+    properties:
+      free:
+        type: integer
+      percent:
+        type: number
+      total:
+        type: integer
+      used:
+        type: integer
+    type: object
   model.Resp:
     properties:
       baseType:
@@ -12,9 +130,264 @@ definitions:
       type:
         type: string
     type: object
+  model.SSE:
+    properties:
+      heartbeat:
+        type: boolean
+      ip:
+        type: string
+      t:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
+  /alive/api/agent:
+    get:
+      description: 查询记录状态
+      parameters:
+      - description: 是否快速查询 默认 false || true || quick
+        in: query
+        name: fast
+        type: string
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 查询记录状态
+      tags:
+      - Agent
+    post:
+      description: 记录上报接口
+      parameters:
+      - description: 探活类型
+        in: path
+        name: type
+        required: true
+        type: string
+      - description: 新增配置
+        in: body
+        name: request
+        required: true
+        schema:
+          additionalProperties:
+            $ref: '#/definitions/model.Record'
+          type: object
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 记录上报接口
+      tags:
+      - Agent
+  /alive/api/agent/{name}:
+    get:
+      description: 查询记录状态
+      parameters:
+      - description: 探活类型
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: 是否快速查询 默认 false || true
+        in: query
+        name: fast
+        type: string
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 查询记录状态
+      tags:
+      - Agent
+  /alive/api/agent/type/{name}:
+    get:
+      description: 根据工具查看记录
+      parameters:
+      - description: 被探活工具
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 根据工具查看记录
+      tags:
+      - Agent
+  /alive/api/config:
+    get:
+      description: 获取配置
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 获取配置
+      tags:
+      - Config
+  /alive/api/config/raw:
+    get:
+      description: 获取原始配置
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 获取原始配置
+      tags:
+      - Config
+    put:
+      description: 修改配置
+      parameters:
+      - description: 修改配置
+        in: body
+        name: request
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 修改配置
+      tags:
+      - Config
+  /alive/api/hbcheck:
+    get:
+      description: 心跳检查结果
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 心跳检查结果
+      tags:
+      - Heartbeat
+  /alive/api/hbcheck/{name}:
+    get:
+      description: 心跳检查结果
+      parameters:
+      - description: 主机名
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 心跳检查结果
+      tags:
+      - Heartbeat
+  /alive/api/heartbeat:
+    post:
+      description: 上报Agent心跳
+      parameters:
+      - description: 新增配置
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Heartbeat'
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 上报Agent心跳
+      tags:
+      - Heartbeat
+  /alive/api/sse:
+    get:
+      description: Agent数据下发
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Agent数据下发
+      tags:
+      - Sse
+    post:
+      description: Agent数据下发
+      parameters:
+      - description: 新增配置
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.SSE'
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Agent数据下发
+      tags:
+      - Sse
+  /alive/api/thirdparty:
+    get:
+      description: 服务端探活查询接口
+      parameters:
+      - description: 是否快速查询 默认 false || true
+        in: query
+        name: fast
+        type: string
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 服务端探活查询接口
+      tags:
+      - ThirdParty
+  /api/login:
+    post:
+      description: 后端服务登录接口
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Resp'
+      security:
+      - ApiKeyAuth: []
+      summary: 本地登录接口
+      tags:
+      - Auth
   /api/v1/admin/get:
     get:
       description: 获取value，逐级数据查询
@@ -38,19 +411,6 @@ paths:
       summary: 查询指定key的值
       tags:
       - admin
-  /apis/auth/login/local:
-    post:
-      description: 后端服务登录接口
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Resp'
-      security:
-      - ApiKeyAuth: []
-      summary: 本地登录接口
-      tags:
-      - Auth
   /apis/auth/logout:
     post:
       description: 后端服务注销接口

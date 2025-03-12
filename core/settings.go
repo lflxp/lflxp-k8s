@@ -12,7 +12,6 @@ import (
 
 	ctls "github.com/lflxp/lflxp-k8s/tls"
 
-	"github.com/lflxp/lflxp-k8s/pkg/tty"
 	"github.com/lflxp/lflxp-k8s/utils"
 
 	"github.com/lflxp/lflxp-k8s/core/router"
@@ -22,21 +21,18 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Run(ishttps bool) {
-	go tty.RegisterTTY()
+func Run(ishttps bool, port string) {
 	// gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
 	// 注册路由
 
 	ip := viper.GetString("host")
-	port := viper.GetString("port")
 	slog.Info("ip %s port %s", ip, port)
 
 	if ip == "" || port == "" {
 		// instance.Fatal("Check Host or Port config already!!!")
 		ip = "0.0.0.0"
-		port = "8002"
 	}
 
 	router.PreGinServe(r, port)
@@ -93,8 +89,7 @@ func Run(ishttps bool) {
 		}
 
 		if index == 0 {
-			// openUrl = fmt.Sprintf("%s:%s", ip, port)
-			openUrl = fmt.Sprintf("localhost:%s", port)
+			openUrl = fmt.Sprintf("%s:%s", ip, port)
 		}
 	}
 	if ishttps {

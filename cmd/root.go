@@ -16,12 +16,14 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/lflxp/lflxp-k8s/core/middlewares/jwt/framework"
+	"github.com/lflxp/lflxp-k8s/pkg/csm/model"
 	"github.com/lflxp/lflxp-k8s/utils"
 
 	"github.com/lflxp/lflxp-k8s/core"
@@ -48,9 +50,10 @@ var (
 	isDebug        bool
 	username       string
 	password       string
-	port           string
+	ttyport        string
 	host           string
 	lvl            slog.LevelVar
+	port           string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -87,7 +90,7 @@ to quickly create a Cobra application.`,
 				IsDebug:        isDebug,
 				Username:       username,
 				Password:       password,
-				Port:           port,
+				Port:           ttyport,
 				Host:           host,
 				Cmds:           args,
 			}
@@ -97,7 +100,7 @@ to quickly create a Cobra application.`,
 			}
 		}()
 
-		core.Run(isHttps)
+		core.Run(isHttps, port)
 	},
 }
 
@@ -138,7 +141,8 @@ func init() {
 	rootCmd.Flags().StringVarP(&username, "username", "u", "", "BasicAuth 用户名")
 	rootCmd.Flags().StringVarP(&password, "password", "p", "", "BasicAuth 密码")
 	rootCmd.Flags().StringVarP(&host, "host", "H", "0.0.0.0", "http bind host")
-	rootCmd.Flags().StringVarP(&port, "port", "P", "8001", "http bind port")
+	rootCmd.Flags().StringVarP(&ttyport, "ttyport", "P", "19999", "tty http bind port")
+	rootCmd.Flags().StringVarP(&port, "port", "G", "8002", "server http bind port")
 	rootCmd.Flags().BoolVarP(&isDebug, "debug", "d", false, "debug log mode")
 	rootCmd.Flags().BoolVarP(&isReconnect, "reconnect", "R", false, "是否自动重连")
 	rootCmd.Flags().BoolVarP(&isPermitWrite, "write", "w", false, "是否开启写入模式")
@@ -149,6 +153,15 @@ func init() {
 	rootCmd.Flags().StringVarP(&crtPath, "crt", "c", "./server.crt", "*.crt文件路径")
 	rootCmd.Flags().StringVarP(&keyPath, "key", "k", "./server.key", "*.key文件路径")
 	rootCmd.Flags().Int64VarP(&MaxConnections, "maxconnect", "m", 0, "最大连接数")
+	rootCmd.Flags().IntVarP(&model.ConfigSync, "configSync", "X", 10, "配置同步时间 单位秒")
+	rootCmd.Flags().IntVarP(&model.CmdSync, "cmdSync", "Y", 30, "命令同步 单位秒")
+	rootCmd.Flags().IntVarP(&model.HeartSync, "heartSync", "Z", 60, "心跳同步 单位秒")
+	rootCmd.Flags().IntVarP(&model.ServerSync, "serverSync", "V", 60, "服务端服务探活，单位秒")
+	rootCmd.Flags().StringVarP(&model.Path, "path", "W", "config.yaml", "配置文件路径 单位秒")
+
+	model.Host = fmt.Sprintf("localhost:%s", port)
+	model.Https = isHttps
+	model.IsServer = true
 }
 
 // initConfig reads in config file and ENV variables if set.

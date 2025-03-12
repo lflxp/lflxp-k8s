@@ -93,7 +93,7 @@ func GetRandomString(len int) string {
 	return string(result)
 }
 
-func ExecCommand(cmd string) ([]byte, error) {
+func ExecCommandSH(cmd string) ([]byte, error) {
 	pipeline := exec.Command("/bin/sh", "-c", cmd)
 	var out bytes.Buffer
 	var stderr bytes.Buffer
@@ -268,4 +268,104 @@ func In(target string, source []string) bool {
 		return true
 	}
 	return false
+}
+
+func ExecCommand(cmd string) ([]byte, error) {
+	pipeline := exec.Command("powershell.exe", "-c", cmd)
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	pipeline.Stdout = &out
+	pipeline.Stderr = &stderr
+	err := pipeline.Run()
+	if err != nil {
+		fmt.Printf("执行命令错误: %s %s\n", cmd, err.Error())
+		return stderr.Bytes(), err
+	}
+	// fmt.Println(stderr.String())
+	return out.Bytes(), nil
+}
+
+func ExecCommandLinux(cmd string) ([]byte, error) {
+	pipeline := exec.Command("sh", "-c", cmd)
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	pipeline.Stdout = &out
+	pipeline.Stderr = &stderr
+	err := pipeline.Run()
+	if err != nil {
+		fmt.Printf("执行命令错误: %s %s\n", cmd, err.Error())
+		return stderr.Bytes(), err
+	}
+	// fmt.Println(stderr.String())
+	return out.Bytes(), nil
+}
+
+func ExecCommandWindows(cmd string) ([]byte, error) {
+	pipeline := exec.Command("powershell.exe", "-c", cmd)
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	pipeline.Stdout = &out
+	pipeline.Stderr = &stderr
+	err := pipeline.Run()
+	if err != nil {
+		fmt.Printf("执行命令错误: %s %s => %s\n", cmd, err.Error(), stderr.String())
+		return stderr.Bytes(), err
+	}
+	// fmt.Printf("windows命令 %s 执行正常：%s ", cmd, out.String())
+	return out.Bytes(), nil
+}
+
+func ExecCommandEnv(env, cmd string) ([]byte, error) {
+	pipeline := exec.Command(env, cmd)
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	pipeline.Stdout = &out
+	pipeline.Stderr = &stderr
+	err := pipeline.Run()
+	if err != nil {
+		fmt.Printf("执行命令错误: %s %s %s\n", env, cmd, err.Error())
+		return stderr.Bytes(), err
+	}
+	// fmt.Println(stderr.String())
+	return out.Bytes(), nil
+}
+
+func Decimal(num float64) float64 {
+	num, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", num), 64)
+	return num
+}
+
+// 生成32位MD5
+func MD5Upper(text string) string {
+	ctx := md5.New()
+	ctx.Write([]byte(strings.TrimSpace(text)))
+	return strings.ToUpper(hex.EncodeToString(ctx.Sum(nil)))
+}
+
+// GetHostIP 获取宿主机的真实 IP 地址
+func GetHostIP() (string, error) {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return "", err
+	}
+
+	for _, addr := range addrs {
+		// 检查地址类型并跳过回环地址
+		if ipNet, ok := addr.(*net.IPNet); ok && !ipNet.IP.IsLoopback() {
+			if ipNet.IP.To4() != nil {
+				return ipNet.IP.String(), nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("no valid IP address found")
+}
+
+func ProbePort(network, host string, port int, timeout time.Duration) (bool, error) {
+	conn, err := net.DialTimeout(network, fmt.Sprintf("%s:%d", host, port), timeout)
+	if err != nil {
+		return false, err
+	}
+	defer conn.Close()
+	return true, nil
 }
