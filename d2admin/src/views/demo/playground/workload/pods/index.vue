@@ -923,45 +923,45 @@ export default {
         this.total = resp.data.items.length
         this.listLoading = false
         // 判断节点状态
-        // resp.data.items.forEach((node, index) => {
-        //   this.metrics.forEach(m => {
+        resp.data.items.forEach((node, index) => {
+          this.metrics.forEach(m => {
             
-        //     if (node.metadata.name === m.metadata.name) {
-        //       // console.log('mmmmmmm', m, node)
-        //       // 计算pod 资源总量
-        //       let cpus = 0;
-        //       let mems = 0;
-        //       m.containers.forEach(xd => {
-        //         console.log('mmmmmmmcpus', xd, mems, xd.usage.cpu, xd.usage.memory)
-        //         cpus += parseInt(xd.usage.cpu.replace('n',''), 10)
-        //         mems += parseInt(xd.usage.memory.replace('Ki',''), 10)
-        //         console.log('cpus', cpus, mems)
-        //       })
-        //       node['cpus'] = cpus
-        //       node['mems'] = mems 
-        //       node.status.containerStatuses.forEach((n2, ind) => {
-        //         m.containers.forEach(m2 => {
-        //           if (n2.name === m2.name) {
-        //             // 设置单个container资源使用量
-        //             node.status.containerStatuses[ind]['metrics'] = m2 
-        //           }
-        //         })
-        //       })
-        //       // node['metrics'] = m
-        //     }
-        //   })
-        //   // console.log('nodesssss', node)
-        //   this.list.push(node)
-        //   // 删除label后刷新数据
-        //   // 删除annotations后刷新数据
-        //   if (this.jsonData !== '') {
-        //     if (node.metadata.name === this.jsonData.metadata.name) {
-        //       this.jsonData = node
-        //       // this.openit(node)
-        //       this.parseLabels(node.metadata)
-        //     }
-        //   }
-        // })
+            if (node.metadata.name === m.metadata.name) {
+              // console.log('mmmmmmm', m, node)
+              // 计算pod 资源总量
+              let cpus = 0;
+              let mems = 0;
+              m.containers.forEach(xd => {
+                console.log('mmmmmmmcpus', xd, mems, xd.usage.cpu, xd.usage.memory)
+                cpus += parseInt(xd.usage.cpu.replace('n',''), 10)
+                mems += parseInt(xd.usage.memory.replace('Ki',''), 10)
+                console.log('cpus', cpus, mems)
+              })
+              node['cpus'] = cpus
+              node['mems'] = mems 
+              // node.status.containerStatuses.forEach((n2, ind) => {
+              //   m.containers.forEach(m2 => {
+              //     if (n2.name === m2.name) {
+              //       // 设置单个container资源使用量
+              //       node.status.containerStatuses[ind]['metrics'] = m2 
+              //     }
+              //   })
+              // })
+              // node['metrics'] = m
+            }
+          })
+          // console.log('nodesssss', node)
+          this.list.push(node)
+          // 删除label后刷新数据
+          // 删除annotations后刷新数据
+          if (this.jsonData !== '') {
+            if (node.metadata.name === this.jsonData.metadata.name) {
+              this.jsonData = node
+              // this.openit(node)
+              this.parseLabels(node.metadata)
+            }
+          }
+        })
       })
 
       let ee = {

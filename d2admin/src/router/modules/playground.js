@@ -63,5 +63,6 @@ export default {
     { path: 'cluster/node', name: 'demo-playground-cluster-node', component: _import('demo/playground/cluster/node'), meta: { ...meta, title: 'Nodes' } },
     { path: 'cluster/events', name: 'demo-playground-cluster-events', component: _import('demo/playground/cluster/events'), meta: { ...meta, title: 'Events' } },
     { path: 'shop/helm', name: 'demo-playground-shop-helm', component: _import('demo/playground/shop/helm'), meta: { ...meta, title: 'Helm' } },
+    { path: 'csm/csm', name: 'demo-playground-csm-csm', component: _import('demo/playground/csm/csm'), meta: { ...meta, title: '探活工具' } },
   ]
 }

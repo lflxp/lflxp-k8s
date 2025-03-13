@@ -53,6 +53,7 @@ export default {
         { path: '/demo/playground/shop/helm', title: '应用商店', iconSvg: 'd2-admin' },
       ]
     },
+    { path: '/demo/playground/csm/csm', title: '探活工具', icon: 'exclamation-circle' },
     {
       title: 'svg 菜单图标',
       iconSvg: 'd2-admin',
