@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/alive/api/agent": {
+        "/api/alive/agent": {
             "get": {
                 "security": [
                     {
@@ -86,7 +86,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/alive/api/agent/type/{name}": {
+        "/api/alive/agent/type/{name}": {
             "get": {
                 "security": [
                     {
@@ -117,7 +117,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/alive/api/agent/{name}": {
+        "/api/alive/agent/{name}": {
             "get": {
                 "security": [
                     {
@@ -154,7 +154,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/alive/api/config": {
+        "/api/alive/config": {
             "get": {
                 "security": [
                     {
@@ -176,7 +176,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/alive/api/config/raw": {
+        "/api/alive/config/raw": {
             "get": {
                 "security": [
                     {
@@ -229,7 +229,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/alive/api/hbcheck": {
+        "/api/alive/hbcheck": {
             "get": {
                 "security": [
                     {
@@ -251,7 +251,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/alive/api/hbcheck/{name}": {
+        "/api/alive/hbcheck/{name}": {
             "get": {
                 "security": [
                     {
@@ -282,7 +282,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/alive/api/heartbeat": {
+        "/api/alive/heartbeat": {
             "post": {
                 "security": [
                     {
@@ -315,7 +315,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/alive/api/sse": {
+        "/api/alive/sse": {
             "get": {
                 "security": [
                     {
@@ -368,7 +368,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/alive/api/thirdparty": {
+        "/api/alive/thirdparty": {
             "get": {
                 "security": [
                     {

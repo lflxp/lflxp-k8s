@@ -142,7 +142,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /alive/api/agent:
+  /api/alive/agent:
     get:
       description: 查询记录状态
       parameters:
@@ -186,7 +186,7 @@ paths:
       summary: 记录上报接口
       tags:
       - Agent
-  /alive/api/agent/{name}:
+  /api/alive/agent/{name}:
     get:
       description: 查询记录状态
       parameters:
@@ -209,7 +209,7 @@ paths:
       summary: 查询记录状态
       tags:
       - Agent
-  /alive/api/agent/type/{name}:
+  /api/alive/agent/type/{name}:
     get:
       description: 根据工具查看记录
       parameters:
@@ -228,7 +228,7 @@ paths:
       summary: 根据工具查看记录
       tags:
       - Agent
-  /alive/api/config:
+  /api/alive/config:
     get:
       description: 获取配置
       responses:
@@ -241,7 +241,7 @@ paths:
       summary: 获取配置
       tags:
       - Config
-  /alive/api/config/raw:
+  /api/alive/config/raw:
     get:
       description: 获取原始配置
       responses:
@@ -273,7 +273,7 @@ paths:
       summary: 修改配置
       tags:
       - Config
-  /alive/api/hbcheck:
+  /api/alive/hbcheck:
     get:
       description: 心跳检查结果
       responses:
@@ -286,7 +286,7 @@ paths:
       summary: 心跳检查结果
       tags:
       - Heartbeat
-  /alive/api/hbcheck/{name}:
+  /api/alive/hbcheck/{name}:
     get:
       description: 心跳检查结果
       parameters:
@@ -305,7 +305,7 @@ paths:
       summary: 心跳检查结果
       tags:
       - Heartbeat
-  /alive/api/heartbeat:
+  /api/alive/heartbeat:
     post:
       description: 上报Agent心跳
       parameters:
@@ -325,7 +325,7 @@ paths:
       summary: 上报Agent心跳
       tags:
       - Heartbeat
-  /alive/api/sse:
+  /api/alive/sse:
     get:
       description: Agent数据下发
       responses:
@@ -357,7 +357,7 @@ paths:
       summary: Agent数据下发
       tags:
       - Sse
-  /alive/api/thirdparty:
+  /api/alive/thirdparty:
     get:
       description: 服务端探活查询接口
       parameters:

@@ -4,7 +4,7 @@
         "contact": {}
     },
     "paths": {
-        "/alive/api/agent": {
+        "/api/alive/agent": {
             "get": {
                 "security": [
                     {
@@ -75,7 +75,7 @@
                 }
             }
         },
-        "/alive/api/agent/type/{name}": {
+        "/api/alive/agent/type/{name}": {
             "get": {
                 "security": [
                     {
@@ -106,7 +106,7 @@
                 }
             }
         },
-        "/alive/api/agent/{name}": {
+        "/api/alive/agent/{name}": {
             "get": {
                 "security": [
                     {
@@ -143,7 +143,7 @@
                 }
             }
         },
-        "/alive/api/config": {
+        "/api/alive/config": {
             "get": {
                 "security": [
                     {
@@ -165,7 +165,7 @@
                 }
             }
         },
-        "/alive/api/config/raw": {
+        "/api/alive/config/raw": {
             "get": {
                 "security": [
                     {
@@ -218,7 +218,7 @@
                 }
             }
         },
-        "/alive/api/hbcheck": {
+        "/api/alive/hbcheck": {
             "get": {
                 "security": [
                     {
@@ -240,7 +240,7 @@
                 }
             }
         },
-        "/alive/api/hbcheck/{name}": {
+        "/api/alive/hbcheck/{name}": {
             "get": {
                 "security": [
                     {
@@ -271,7 +271,7 @@
                 }
             }
         },
-        "/alive/api/heartbeat": {
+        "/api/alive/heartbeat": {
             "post": {
                 "security": [
                     {
@@ -304,7 +304,7 @@
                 }
             }
         },
-        "/alive/api/sse": {
+        "/api/alive/sse": {
             "get": {
                 "security": [
                     {
@@ -357,7 +357,7 @@
                 }
             }
         },
-        "/alive/api/thirdparty": {
+        "/api/alive/thirdparty": {
             "get": {
                 "security": [
                     {

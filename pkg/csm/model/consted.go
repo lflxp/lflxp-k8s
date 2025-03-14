@@ -13,9 +13,9 @@ var (
 )
 
 const (
-	ConfigUrl    = "/alive/api/config"
-	HeartbeatUrl = "/alive/api/heartbeat"
-	SseUrl       = "/alive/api/sse"
+	ConfigUrl    = "/api/alive/config"
+	HeartbeatUrl = "/api/alive/heartbeat"
+	SseUrl       = "/api/alive/sse"
 	RunTimes     = 10 // 并发执行次数
 	Demo         = `---
 kind: Config
@@ -27,7 +27,7 @@ agent:
         regex: ".*-jar agent.jar.*"
     http:
       - name: httpdemo
-        url: http://localhost:8002/alive/api/serverdemo
+        url: http://localhost:8002/api/alive/serverdemo
         jsonpath: "data.store.book.1.category"
         regex: "fiction"
         method: GET
@@ -37,7 +37,7 @@ agent:
         port: 8080
         protocol: tcp
         timeout: 1000
-webhook: http://localhost:8002/alive/api/webhooktest
+webhook: http://localhost:8002/api/alive/webhooktest
 thirdparty:
   - name: sonarqube
     tcp:
@@ -46,7 +46,7 @@ thirdparty:
         port: 32385
         protocol: tcp
         timeout: 1000`
-	ServerDemo = "/alive/api/serverdemo"
-	AgentPost  = "/alive/api/agent"
+	ServerDemo = "/api/alive/serverdemo"
+	AgentPost  = "/api/alive/agent"
 	TimeLayout = "2006-01-02 15:04:05"
 )

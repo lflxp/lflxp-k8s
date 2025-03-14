@@ -33,7 +33,7 @@ func RegisterCSM(router *gin.Engine) {
 		}
 	}()
 
-	group := router.Group("/alive/api")
+	group := router.Group("/api/alive")
 	{
 		group.GET("/sse", Sse)
 		group.POST("/sse", SseSend)
@@ -114,7 +114,7 @@ var RecordList map[string]map[string]model.Record
 // @Tags Sse
 // @Success 200 {string} string "success"
 // @Security ApiKeyAuth
-// @Router /alive/api/sse [get]
+// @Router /api/alive/sse [get]
 func Sse(c *gin.Context) {
 	// 创建一个新的SSE通道
 
@@ -163,7 +163,7 @@ func Sse(c *gin.Context) {
 // @Param request body model.SSE true "新增配置"
 // @Success 200 {string} string "success"
 // @Security ApiKeyAuth
-// @Router /alive/api/sse [post]
+// @Router /api/alive/sse [post]
 func SseSend(c *gin.Context) {
 	var data model.SSE
 	if err := c.ShouldBindJSON(&data); err != nil {
@@ -196,7 +196,7 @@ func SseSend(c *gin.Context) {
 // @Param request body map[string]model.Record true "新增配置"
 // @Success 200 {string} string "success"
 // @Security ApiKeyAuth
-// @Router /alive/api/agent [post]
+// @Router /api/alive/agent [post]
 func Record(c *gin.Context) {
 	if AgentRecord == nil {
 		AgentRecord = make(map[string]map[string]model.Record)
@@ -224,7 +224,7 @@ func Record(c *gin.Context) {
 // @Param fast query string false "是否快速查询 默认 false || true || quick"
 // @Success 200 {string} string "success"
 // @Security ApiKeyAuth
-// @Router /alive/api/agent [get]
+// @Router /api/alive/agent [get]
 func Agent(c *gin.Context) {
 	fast := c.Query("fast")
 	if fast == "quick" {
@@ -292,7 +292,7 @@ func Agent(c *gin.Context) {
 // @Param fast query string false "是否快速查询 默认 false || true"
 // @Success 200 {string} string "success"
 // @Security ApiKeyAuth
-// @Router /alive/api/agent/{name} [get]
+// @Router /api/alive/agent/{name} [get]
 func AgentByName(c *gin.Context) {
 	name := c.Param("name")
 	if name == "" {
@@ -327,7 +327,7 @@ func AgentByName(c *gin.Context) {
 // @Param name path string true "被探活工具"
 // @Success 200 {string} string "success"
 // @Security ApiKeyAuth
-// @Router /alive/api/agent/type/{name} [get]
+// @Router /api/alive/agent/type/{name} [get]
 func AgentByType(c *gin.Context) {
 	name := c.Param("name")
 	if name == "" {
@@ -375,7 +375,7 @@ var HeartbeatList map[string]model.Heartbeat
 // @Param request body model.Heartbeat true "新增配置"
 // @Success 200 {string} string "success"
 // @Security ApiKeyAuth
-// @Router /alive/api/heartbeat [post]
+// @Router /api/alive/heartbeat [post]
 func Heartbeat(c *gin.Context) {
 	if HeartbeatList == nil {
 		HeartbeatList = make(map[string]model.Heartbeat)
@@ -400,7 +400,7 @@ func Heartbeat(c *gin.Context) {
 // @Param fast query string false "是否快速查询 默认 false || true"
 // @Success 200 {string} string "success"
 // @Security ApiKeyAuth
-// @Router /alive/api/thirdparty [get]
+// @Router /api/alive/thirdparty [get]
 func ThirdParty(c *gin.Context) {
 	fast := c.Query("fast")
 	if fast == "true" {
@@ -419,7 +419,7 @@ func ThirdParty(c *gin.Context) {
 // @Tags Heartbeat
 // @Success 200 {string} string "success"
 // @Security ApiKeyAuth
-// @Router /alive/api/hbcheck [get]
+// @Router /api/alive/hbcheck [get]
 func HeartbeatCheck(c *gin.Context) {
 	if HeartbeatList == nil {
 		HeartbeatList = make(map[string]model.Heartbeat)
@@ -457,7 +457,7 @@ func HeartbeatCheck(c *gin.Context) {
 // @Param name path string true "主机名"
 // @Success 200 {string} string "success"
 // @Security ApiKeyAuth
-// @Router /alive/api/hbcheck/{name} [get]
+// @Router /api/alive/hbcheck/{name} [get]
 func HeartbeatByName(c *gin.Context) {
 	if HeartbeatList == nil {
 		HeartbeatList = make(map[string]model.Heartbeat)

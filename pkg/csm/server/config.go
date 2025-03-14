@@ -15,7 +15,7 @@ import (
 // @Tags Config
 // @Success 200 {string} string "success"
 // @Security ApiKeyAuth
-// @Router /alive/api/config [get]
+// @Router /api/alive/config [get]
 func Data(c *gin.Context) {
 	utils.SendSuccessMessage(c, 200, model.GetConfig())
 }
@@ -25,7 +25,7 @@ func Data(c *gin.Context) {
 // @Tags Config
 // @Success 200 {string} string "success"
 // @Security ApiKeyAuth
-// @Router /alive/api/config/raw [get]
+// @Router /api/alive/config/raw [get]
 func ConfigRaw(c *gin.Context) {
 	rs, err := yaml.Marshal(model.GetConfig())
 	if err != nil {
@@ -42,7 +42,7 @@ func ConfigRaw(c *gin.Context) {
 // @Param request body string true "修改配置"
 // @Success 200 {string} string "success"
 // @Security ApiKeyAuth
-// @Router /alive/api/config/raw [put]
+// @Router /api/alive/config/raw [put]
 func ConfigPut(c *gin.Context) {
 	// 读取request body上传的string文本
 	body, err := c.GetRawData()
