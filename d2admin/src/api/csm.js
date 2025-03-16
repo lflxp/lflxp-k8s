@@ -6,3 +6,10 @@ export function agentlist() {
         method: 'get'
     })
 }
+
+export function hbcheck() {
+    return request({
+        url: '/alive/hbcheck',
+        method: 'get'
+    })
+}

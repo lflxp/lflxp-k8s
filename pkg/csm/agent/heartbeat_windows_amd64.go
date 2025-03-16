@@ -266,15 +266,19 @@ func AgentResource() model.Heartbeat {
 
 	data.DiskFreeDrives = freeDrives
 
-	if getJavaAgent() {
-		data.Status = true
-		data.Message = "success"
-		model.HistoryParse(heartHistory, true)
-	} else {
-		data.Status = false
-		data.Message = "Java Agent.jar not found"
-		model.HistoryParse(heartHistory, false)
-	}
+	// if getJavaAgent() {
+	// 	data.Status = true
+	// 	data.Message = "success"
+	// 	model.HistoryParse(heartHistory, true)
+	// } else {
+	// 	data.Status = false
+	// 	data.Message = "Java Agent.jar not found"
+	// 	model.HistoryParse(heartHistory, false)
+	// }
+
+	data.Status = true
+	data.Message = "success"
+	model.HistoryParse(heartHistory, true)
 
 	data.History = *heartHistory
 

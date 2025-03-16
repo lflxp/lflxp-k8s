@@ -12,21 +12,44 @@
               <SplitPane split="horizontal">
                 <template slot="paneL"><div style="margin: 10px;">
                   <el-table
-                    :data="tableData"
+                    :data="nodelist"
                     style="width: 100%">
                     <el-table-column
-                      prop="date"
-                      label="日期"
-                      width="180">
-                    </el-table-column>
-                    <el-table-column
                       prop="name"
-                      label="姓名"
+                      label="名称"
                       width="180">
                     </el-table-column>
                     <el-table-column
-                      prop="address"
-                      label="地址">
+                      prop="ip"
+                      label="IP地址"
+                      width="180">
+                    </el-table-column>
+                    <el-table-column
+                      prop="host"
+                      label="服务端口"
+                      width="180">
+                    </el-table-column>
+                    <el-table-column
+                      prop="last"
+                      label="最近一次探活时间">
+                    </el-table-column>
+                    <el-table-column
+                      prop="history.error"
+                      label="最近一次中断时间">
+                    </el-table-column>
+                    <el-table-column
+                      prop="history.success"
+                      label="最近一次成功时间">
+                    </el-table-column>
+                    <el-table-column
+                      prop="status"
+                      label="状态"
+                      width="180">
+                      <template slot-scope="scope">
+                        <span :style="{ color: scope.row.status ? 'green' : 'red' }">
+                          {{ scope.row.status ? '正常' : '中断' }}
+                        </span>
+                      </template>
                     </el-table-column>
                   </el-table>
                 </div></template>
@@ -38,34 +61,33 @@
       </el-tab-pane>
       <el-tab-pane label="节点管理" name="second">
         <el-table
-          :data="nodelist"
+          :data="hblist"
           style="width: 100%">
           <el-table-column
-            prop="name"
-            label="名称"
-            width="180">
-          </el-table-column>
-          <el-table-column
-            prop="ip"
+            prop="host"
             label="IP地址"
             width="180">
           </el-table-column>
           <el-table-column
-            prop="host"
-            label="服务端口"
+            prop="port"
+            label="端口"
             width="180">
           </el-table-column>
           <el-table-column
+            prop="memory.percent"
+            label="内存使用率">
+          </el-table-column>
+          <el-table-column
+            prop="cpu.percent"
+            label="CPU使用率">
+          </el-table-column>
+          <el-table-column
+            prop="disk[0].percent"
+            label="磁盘使用率">
+          </el-table-column>
+          <el-table-column
             prop="last"
-            label="最近一次探活时间">
-          </el-table-column>
-          <el-table-column
-            prop="history.error"
-            label="最近一次中断时间">
-          </el-table-column>
-          <el-table-column
-            prop="history.success"
-            label="最近一次成功时间">
+            label="注册日期">
           </el-table-column>
           <el-table-column
             prop="status"
@@ -88,7 +110,7 @@
 <script>
 import Vue from 'vue'
 import SplitPane from 'vue-splitpane'
-import { agentlist } from '@/api/csm.js'
+import { agentlist, hbcheck } from '@/api/csm.js'
 Vue.component('SplitPane', SplitPane)
 export default {
   mounted () {
@@ -154,7 +176,8 @@ export default {
           name: '王小虎',
           address: '上海市普陀区金沙江路 1516 弄'
         }],
-      nodelist: []
+      nodelist: [],
+      hblist: []
     };
   },
   created() {
@@ -176,8 +199,12 @@ export default {
     },
     fetchData() {
       agentlist().then(res => {
-        console.log(res)
+        // console.log(res)
         this.nodelist = res.data
+      })
+      hbcheck().then(res => {
+        console.log('hbcheck',res)
+        this.hblist = res.data
       })
     }
   }
