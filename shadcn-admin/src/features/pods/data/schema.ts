@@ -9,7 +9,9 @@ export const podSchema = z.object({
     name: z.string(),
     namespace: z.string().optional(),
     labels: z.record(z.string(), z.string()).optional(),
-    annotations: z.record(z.string(), z.string()).optional()
+    annotations: z.record(z.string(), z.string()).optional(),
+    uid: z.string(),
+    creationTimestamp: z.string().optional(),
   }),
   spec: z.object({
     containers: z.array(z.object({
@@ -18,16 +20,62 @@ export const podSchema = z.object({
       ports: z.array(z.object({
         containerPort: z.number()
       })).optional(),
-      env: z.array(z.object({
-        name: z.string(),
-        value: z.string()
-      })).optional()
     })),
     restartPolicy: z.enum(['Always', 'OnFailure', 'Never']).optional(),
     terminationGracePeriodSeconds: z.number().optional()
   }),
   status: z.object({
-    phase: z.enum(['Pending', 'Running', 'Succeeded', 'Failed', 'Unknown']).optional()
+    phase: z.enum(['Pending', 'Running', 'Succeeded', 'Failed', 'Unknown']).optional(),
+    conditions: z.array(z.object({
+      type: z.string(),
+      status: z.string(),
+      lastProbeTime: z.string().nullable().optional(),
+      lastTransitionTime: z.string().optional(),
+      reason: z.string().optional(),
+    })).optional(),
+    hostIP: z.string().optional(),
+    podIP: z.string().optional(),
+    startTime: z.string().optional(),
+    containerStatuses: z.array(z.object({
+      name: z.string(),
+      state: z.object({
+        running: z.object({
+          startedAt: z.string().optional()
+        }).optional(),
+        waiting: z.object({
+          reason: z.string().optional(),
+          message: z.string().optional()
+        }).optional(),
+        terminated: z.object({
+          exitCode: z.number(),
+          reason: z.string().optional(),
+          message: z.string().optional(),
+          startedAt: z.string().optional(),
+          finishedAt: z.string().optional()
+        }).optional()
+      }).optional(),
+      lastState: z.object({
+        running: z.object({
+          startedAt: z.string().optional()
+        }).optional(),
+        waiting: z.object({
+          reason: z.string().optional(),
+          message: z.string().optional()
+        }).optional(),
+        terminated: z.object({
+          exitCode: z.number(),
+          reason: z.string().optional(),
+          message: z.string().optional(),
+          startedAt: z.string().optional(),
+          finishedAt: z.string().optional()
+        }).optional()
+      }).optional(),
+      ready: z.boolean(),
+      restartCount: z.number(),
+      image: z.string(),
+      imageID: z.string(),
+      containerID: z.string().optional()
+    })).optional()
   }).optional()
 });
 

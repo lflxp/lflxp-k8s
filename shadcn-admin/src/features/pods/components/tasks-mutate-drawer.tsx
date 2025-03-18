@@ -23,36 +23,75 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { Task } from '../data/schema'
+import { Pod } from '../data/schema'
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  currentRow?: Task
+  currentRow?: Pod
 }
 
-const formSchema = z.object({
-  title: z.string().min(1, 'Title is required.'),
-  status: z.string().min(1, 'Please select a status.'),
-  label: z.string().min(1, 'Please select a label.'),
-  priority: z.string().min(1, 'Please choose a priority.'),
+const podSchema = z.object({
+  apiVersion: z.string(),
+  kind: z.string().regex(/^Pod$/),
+  metadata: z.object({
+    name: z.string(),
+    namespace: z.string().optional(),
+    labels: z.record(z.string(), z.string()).optional(),
+    annotations: z.record(z.string(), z.string()).optional(),
+    uid: z.string(),
+    creationTimestamp: z.string().optional(),
+  }),
+  spec: z.object({
+    containers: z.array(
+      z.object({
+        name: z.string(),
+        image: z.string(),
+        ports: z.array(
+          z.object({
+            containerPort: z.number(),
+          }),
+        ).optional(),
+      }),
+    ),
+    restartPolicy: z.enum(['Always', 'OnFailure', 'Never']).optional(),
+    terminationGracePeriodSeconds: z.number().optional(),
+  }),
+  status: z.object({
+    phase: z.enum(['Pending', 'Running', 'Succeeded', 'Failed', 'Unknown']).optional(),
+  }).optional(),
 })
-type TasksForm = z.infer<typeof formSchema>
+
+type PodsForm = z.infer<typeof podSchema>
 
 export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
   const isUpdate = !!currentRow
 
-  const form = useForm<TasksForm>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<PodsForm>({
+    resolver: zodResolver(podSchema),
     defaultValues: currentRow ?? {
-      title: '',
-      status: '',
-      label: '',
-      priority: '',
+      apiVersion: '',
+      kind: '',
+      metadata: {
+        name: '',
+        namespace: '',
+        labels: {},
+        annotations: {},
+        uid: '',
+        creationTimestamp: '',
+      },
+      spec: {
+        containers: [],
+        restartPolicy: undefined,
+        terminationGracePeriodSeconds: undefined,
+      },
+      status: {
+        phase: undefined,
+      },
     },
   })
 
-  const onSubmit = (data: TasksForm) => {
+  const onSubmit = (data: PodsForm) => {
     // do something with the form data
     onOpenChange(false)
     form.reset()
@@ -92,7 +131,7 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
           >
             <FormField
               control={form.control}
-              name='title'
+              name='metadata.name'
               render={({ field }) => (
                 <FormItem className='space-y-1'>
                   <FormLabel>Title</FormLabel>
@@ -105,7 +144,7 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
             />
             <FormField
               control={form.control}
-              name='status'
+              name='status.phase'
               render={({ field }) => (
                 <FormItem className='space-y-1'>
                   <FormLabel>Status</FormLabel>
@@ -114,11 +153,10 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
                     onValueChange={field.onChange}
                     placeholder='Select dropdown'
                     items={[
-                      { label: 'In Progress', value: 'in progress' },
-                      { label: 'Backlog', value: 'backlog' },
-                      { label: 'Todo', value: 'todo' },
-                      { label: 'Canceled', value: 'canceled' },
-                      { label: 'Done', value: 'done' },
+                      { label: 'Running', value: 'Running' },
+                      { label: 'Succeeded', value: 'Succeeded' },
+                      { label: 'Unknown', value: 'Unknown' },
+                      { label: 'Failed', value: 'Failed' },
                     ]}
                   />
                   <FormMessage />
@@ -127,7 +165,7 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
             />
             <FormField
               control={form.control}
-              name='label'
+              name='metadata.namespace'
               render={({ field }) => (
                 <FormItem className='relative space-y-3'>
                   <FormLabel>Label</FormLabel>
@@ -165,7 +203,7 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
             />
             <FormField
               control={form.control}
-              name='priority'
+              name='metadata.uid'
               render={({ field }) => (
                 <FormItem className='relative space-y-3'>
                   <FormLabel>Priority</FormLabel>

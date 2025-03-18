@@ -11,44 +11,52 @@ import {
 
 export const labels = [
   {
-    value: 'bug',
-    label: 'Bug',
+    value: 'Running',
+    label: 'Running',
   },
   {
-    value: 'feature',
-    label: 'Feature',
+    value: 'Succeeded',
+    label: 'Succeeded',
   },
   {
-    value: 'documentation',
-    label: 'Documentation',
+    value: 'Unknown',
+    label: 'Unknown',
+  },
+  {
+    value: 'Failed',
+    label: 'Failed',
+  },
+  {
+    value: 'Pending',
+    label: 'Pending',
   },
 ]
 
 export const statuses = [
   {
-    value: 'backlog',
-    label: 'Backlog',
+    value: 'Running',
+    label: 'Running',
     icon: IconExclamationCircle,
   },
   {
-    value: 'todo',
-    label: 'Todo',
+    value: 'Succeeded',
+    label: 'Succeeded',
     icon: IconCircle,
   },
   {
-    value: 'in progress',
-    label: 'In Progress',
-    icon: IconStopwatch,
+    value: 'Unknown',
+    label: 'Unknown',
+    icon: IconCircleX,
   },
   {
-    value: 'done',
-    label: 'Done',
+    value: 'Failed',
+    label: 'Failed',
     icon: IconCircleCheck,
   },
   {
-    value: 'canceled',
-    label: 'Canceled',
-    icon: IconCircleX,
+    value: 'Pending',
+    label: 'Pending',
+    icon: IconStopwatch,
   },
 ]
 

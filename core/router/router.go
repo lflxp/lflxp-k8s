@@ -22,7 +22,7 @@ import (
 func PreGinServe(r *gin.Engine, port string) {
 	slog.Info("注册Gin路由")
 
-	r.Use(middlewares.TokenFilter())
+	// r.Use(middlewares.TokenFilter())
 	r.Use(gin.Logger())
 	// TODO: 自定义Panic 处理
 	// r.Use(middlewares.PanicAdviceMiddleware())

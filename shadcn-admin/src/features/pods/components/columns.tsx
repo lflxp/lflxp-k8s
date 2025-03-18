@@ -32,12 +32,67 @@ export const columns: ColumnDef<Pod>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'metadata.name',
+    accessorKey: 'id',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Task' />
+      <DataTableColumnHeader column={column} title='UUID' />
     ),
-    cell: ({row}) => <div className='w-[80px]'>{row.original.metadata.name}</div>,
+    cell: ({ row }) => <div className='w-fit'>{row.original.metadata.uid}</div>,
     enableSorting: false,
     enableHiding: false,
-  }
+  },
+  {
+    accessorKey: 'name',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Name' />
+    ),
+    cell: ({ row }) => <div className='w-fit'>{row.original.metadata.name}</div>,
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: 'namespace',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Namespace' />
+    ),
+    cell: ({ row }) => <div className='w-fit'>{row.original.metadata.namespace}</div>,
+  },
+  {
+    accessorKey: 'restart',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='重启次数' />
+    ),
+    cell: ({ row }) => <div className='w-fit'>{row.original.status?.containerStatuses?.[0]?.restartCount}</div>,
+  },
+  {
+    accessorKey: 'status',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Status' />
+    ),
+    cell: ({ row }) => {
+      const status = statuses.find(
+        (status) => status.value === row.original.status?.phase
+      )
+
+      if (!status) {
+        return null
+      }
+
+      return (
+        <div className='flex w-[100px] items-center'>
+          {status.icon && (
+            <status.icon className='mr-2 h-4 w-4 text-muted-foreground' />
+          )}
+          <span>{status.label}</span>
+        </div>
+      )
+    },
+    filterFn: (row, id, value) => {
+      console.log('row', row.original, id, value)
+      return row.original.status?.phase ? value.includes(row.original.status.phase) : false
+    },
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => <DataTableRowActions row={row} />,
+  },
 ]
