@@ -22,11 +22,12 @@ export default function Pods() {
         const response = await request.post('/api/gvr/list', {
           group: "",
           version: "v1",
-          resource: "pods"
+          resource: "pods",
+          fast: true
         });
         console.log('接口返回结果:', response.data);
         // 更新状态
-        setPodsData(response.data.items);
+        setPodsData(response.data);
       } catch (error) {
         console.error('请求接口出错:', error);
       }

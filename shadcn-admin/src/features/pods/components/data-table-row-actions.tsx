@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useTasks } from '../context/tasks-context'
 import { labels } from '../data/data'
-import { podSchema } from '../data/schema'
+import { newSchema } from '../data/schema'
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -26,7 +26,7 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const task = podSchema.parse(row.original)
+  const task = newSchema.parse(row.original)
 
   const { setOpen, setCurrentRow } = useTasks()
 

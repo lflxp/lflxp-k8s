@@ -77,3 +77,21 @@ export const priorities = [
     icon: IconArrowUp,
   },
 ]
+
+export const namespaces = [
+  {
+    label: 'KUBE-SYSTEM',
+    value: 'kube-system',
+    icon: IconArrowDown,
+  },
+  {
+    label: 'ECLIPSE-CHE',
+    value: 'eclipse-che',
+    icon: IconArrowRight,
+  },
+  {
+    label: 'DEFAULT',
+    value: 'default',
+    icon: IconArrowUp,
+  }, 
+]

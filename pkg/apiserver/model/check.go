@@ -23,6 +23,7 @@ type GetGVR struct {
 	Data            *unstructured.Unstructured `json:"data"`
 	PatchData       string                     `json:"patchdata"`
 	PatchDataStrate map[string]interface{}     `json:"patchdatastrate"`
+	Fast            bool                       `json:"fast"` // 快速模式
 }
 
 func (g *GetGVR) GetStruct() schema.GroupVersionResource {

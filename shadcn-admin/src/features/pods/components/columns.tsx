@@ -34,18 +34,18 @@ export const columns: ColumnDef<Pod>[] = [
   {
     accessorKey: 'id',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='UUID' />
+      <DataTableColumnHeader column={column} title='Id' />
     ),
-    cell: ({ row }) => <div className='w-fit'>{row.original.metadata.uid}</div>,
-    enableSorting: false,
-    enableHiding: false,
+    cell: ({ row }) => <div className='w-fit'>{row.getValue('id')}</div>,
+    enableSorting: true,
+    enableHiding: true,
   },
   {
     accessorKey: 'name',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Name' />
     ),
-    cell: ({ row }) => <div className='w-fit'>{row.original.metadata.name}</div>,
+    cell: ({ row }) => <div className='w-48 overflow-hidden text-ellipsis whitespace-nowrap hover:overflow-visible'>{row.getValue("name")}</div>,
     enableSorting: false,
     enableHiding: false,
   },
@@ -54,14 +54,93 @@ export const columns: ColumnDef<Pod>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Namespace' />
     ),
-    cell: ({ row }) => <div className='w-fit'>{row.original.metadata.namespace}</div>,
+    cell: ({ row }) => <div className='w-fit'>{row.getValue("namespace")}</div>,
+  },
+  {
+    accessorKey: 'ready',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Ready' />
+    ),
+    cell: ({ row }) => {
+      const lengths = row.original.containerStatuses?.length
+      const ready = row.original.containerStatuses?.filter((status) => status.ready).length
+      return (
+        <div className='w-fit'>{ready}/{lengths}</div>
+      )
+    }
   },
   {
     accessorKey: 'restart',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='重启次数' />
     ),
-    cell: ({ row }) => <div className='w-fit'>{row.original.status?.containerStatuses?.[0]?.restartCount}</div>,
+    cell: ({ row }) => <div className='w-fit'>{row.getValue("restart")}</div>,
+  },
+  {
+    accessorKey: 'podip',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='容器IP' />
+    ),
+    cell: ({ row }) => <div className='w-fit'>{row.getValue("podip")}</div>,
+  },
+  {
+    accessorKey: 'hostip',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='主机IP' />
+    ),
+    cell: ({ row }) => <div className='w-fit'>{row.getValue("hostip")}</div>,
+  },
+  {
+    accessorKey: 'createtime',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='运行时间' />
+    ),
+    cell: ({ row }) => {
+      // 提取计算时间差的逻辑到一个函数中
+      const calculateTimeDifference = (startTime: number) => {
+        const endTime = Date.now();
+        const diff = endTime - startTime;
+      
+        const DAY_IN_MS = 24 * 3600 * 1000;
+        const HOUR_IN_MS = 3600 * 1000;
+        const MINUTE_IN_MS = 60 * 1000;
+      
+        const days = Math.floor(diff / DAY_IN_MS);
+        const remainingAfterDays = diff % DAY_IN_MS;
+        const hours = Math.floor(remainingAfterDays / HOUR_IN_MS);
+        const remainingAfterHours = remainingAfterDays % HOUR_IN_MS;
+        const minutes = Math.floor(remainingAfterHours / MINUTE_IN_MS);
+        const remainingAfterMinutes = remainingAfterHours % MINUTE_IN_MS;
+        const seconds = Math.round(remainingAfterMinutes / 1000);
+      
+        return { days, hours, minutes, seconds };
+      };
+      
+      const createTimeString = (days: number, hours: number, minutes: number, seconds: number) => {
+        let timeString = '';
+        if (days > 0) {
+          timeString += `${days} 天 `;
+        }
+        if (hours > 0) {
+          timeString += `${hours} 小时 `;
+        }
+        if (minutes > 0) {
+          timeString += `${minutes} 分钟 `;
+        }
+        if (seconds > 0) {
+          timeString += `${seconds} 秒`;
+        }
+        return timeString;
+      };
+      
+      const startTime = new Date(row.getValue("createtime")).getTime();
+      const { days, hours, minutes, seconds } = calculateTimeDifference(startTime);
+      const timeFn = createTimeString(days, hours, minutes, seconds);
+      
+      return (
+        <div className='w-fit'>{timeFn}</div>
+      );
+    },
   },
   {
     accessorKey: 'status',
@@ -70,7 +149,7 @@ export const columns: ColumnDef<Pod>[] = [
     ),
     cell: ({ row }) => {
       const status = statuses.find(
-        (status) => status.value === row.original.status?.phase
+        (status) => status.value === row.getValue("status")
       )
 
       if (!status) {
@@ -87,8 +166,7 @@ export const columns: ColumnDef<Pod>[] = [
       )
     },
     filterFn: (row, id, value) => {
-      console.log('row', row.original, id, value)
-      return row.original.status?.phase ? value.includes(row.original.status.phase) : false
+      return value.includes(row.getValue(id))
     },
   },
   {

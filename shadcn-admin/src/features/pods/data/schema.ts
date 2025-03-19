@@ -79,4 +79,55 @@ export const podSchema = z.object({
   }).optional()
 });
 
-export type Pod = z.infer<typeof podSchema>;
+export const newSchema = z.object({
+  id: z.number(),
+  hostip: z.string(),
+  name: z.string(),
+  namespace: z.string(),
+  podip: z.string(),
+  restart: z.number(),
+  status: z.string(),
+  createtime: z.string(),
+  containerStatuses: z.array(z.object({
+    name: z.string(),
+    state: z.object({
+      running: z.object({
+        startedAt: z.string().optional()
+      }).optional(),
+      waiting: z.object({
+        reason: z.string().optional(),
+        message: z.string().optional()
+      }).optional(),
+      terminated: z.object({
+        exitCode: z.number(),
+        reason: z.string().optional(),
+        message: z.string().optional(),
+        startedAt: z.string().optional(),
+        finishedAt: z.string().optional()
+      }).optional()
+    }).optional(),
+    lastState: z.object({
+      running: z.object({
+        startedAt: z.string().optional()
+      }).optional(),
+      waiting: z.object({
+        reason: z.string().optional(),
+        message: z.string().optional()
+      }).optional(),
+      terminated: z.object({
+        exitCode: z.number(),
+        reason: z.string().optional(),
+        message: z.string().optional(),
+        startedAt: z.string().optional(),
+        finishedAt: z.string().optional()
+      }).optional()
+    }).optional(),
+    ready: z.boolean(),
+    restartCount: z.number(),
+    image: z.string(),
+    imageID: z.string(),
+    containerID: z.string().optional()
+  })).optional()
+})
+
+export type Pod = z.infer<typeof newSchema>;

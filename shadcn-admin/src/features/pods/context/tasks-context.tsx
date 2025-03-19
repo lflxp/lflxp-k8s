@@ -2,37 +2,37 @@ import React, { useState } from 'react'
 import useDialogState from '@/hooks/use-dialog-state'
 import { Pod } from '../data/schema'
 
-type TasksDialogType = 'create' | 'update' | 'delete' | 'import'
+type PodsDialogType = 'create' | 'update' | 'delete' | 'import'
 
-interface TasksContextType {
-  open: TasksDialogType | null
-  setOpen: (str: TasksDialogType | null) => void
+interface PodsContextType {
+  open: PodsDialogType | null
+  setOpen: (str: PodsDialogType | null) => void
   currentRow: Pod | null
   setCurrentRow: React.Dispatch<React.SetStateAction<Pod | null>>
 }
 
-const TasksContext = React.createContext<TasksContextType | null>(null)
+const PodsContext = React.createContext<PodsContextType | null>(null)
 
 interface Props {
   children: React.ReactNode
 }
 
 export default function TasksProvider({ children }: Props) {
-  const [open, setOpen] = useDialogState<TasksDialogType>(null)
+  const [open, setOpen] = useDialogState<PodsDialogType>(null)
   const [currentRow, setCurrentRow] = useState<Pod | null>(null)
   return (
-    <TasksContext value={{ open, setOpen, currentRow, setCurrentRow }}>
+    <PodsContext value={{ open, setOpen, currentRow, setCurrentRow }}>
       {children}
-    </TasksContext>
+    </PodsContext>
   )
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useTasks = () => {
-  const tasksContext = React.useContext(TasksContext)
+  const tasksContext = React.useContext(PodsContext)
 
   if (!tasksContext) {
-    throw new Error('useTasks has to be used within <TasksContext>')
+    throw new Error('useTasks has to be used within <PodsContext>')
   }
 
   return tasksContext

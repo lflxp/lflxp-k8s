@@ -1,14 +1,17 @@
 package apiserver
 
 import (
+	"encoding/json"
 	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lflxp/lflxp-k8s/asset"
 	"github.com/lflxp/lflxp-k8s/pkg/apiserver/model"
-	"github.com/lflxp/tools/httpclient"
+	"github.com/lflxp/lflxp-k8s/utils"
 	"github.com/lflxp/tools/sdk/clientgo"
+	v1 "k8s.io/api/apps/v1"
+	v1c "k8s.io/api/core/v1"
 )
 
 const (
@@ -40,25 +43,25 @@ func RegisterApiserver(router *gin.Engine) {
 func install_monitor(c *gin.Context) {
 	err := asset.RunYaml("yaml/monitor/manifests/setup")
 	if err != nil {
-		httpclient.SendErrorMessage(c, http.StatusInternalServerError, "install yaml/monitor/manifests/setup error", err.Error())
+		utils.SendErrorMessage(c, http.StatusInternalServerError, "install yaml/monitor/manifests/setup error", err.Error())
 		return
 	}
 	err = asset.RunYaml("yaml/monitor/manifests")
 	if err != nil {
-		httpclient.SendErrorMessage(c, http.StatusInternalServerError, "install yaml/monitor/manifests error", err.Error())
+		utils.SendErrorMessage(c, http.StatusInternalServerError, "install yaml/monitor/manifests error", err.Error())
 		return
 	}
-	httpclient.SendSuccessMessage(c, 200, "install monitor success")
+	utils.SendSuccessMessage(c, 200, "install monitor success")
 }
 
 func get_namespaces(c *gin.Context) {
 	var data model.CoreV1
 	namespacelist, err := data.Namespaces()
 	if err != nil {
-		httpclient.SendErrorMessage(c, http.StatusBadRequest, "get namespace error", err.Error())
+		utils.SendErrorMessage(c, http.StatusBadRequest, "get namespace error", err.Error())
 		return
 	}
-	httpclient.SendSuccessMessage(c, 200, namespacelist)
+	utils.SendSuccessMessage(c, 200, namespacelist)
 }
 
 // https://blog.csdn.net/boling_cavalry/article/details/113800054
@@ -66,13 +69,13 @@ func gvr_all(c *gin.Context) {
 	cli := clientgo.InitClientDiscovery()
 	apigroup, apiresourceListSlice, err := cli.ServerGroupsAndResources()
 	if err != nil {
-		httpclient.SendSuccessMessage(c, 200, gin.H{
+		utils.SendSuccessMessage(c, 200, gin.H{
 			"apigroup":             apigroup,
 			"apiresourceListSlice": apiresourceListSlice,
 			"error":                err.Error(),
 		})
 	} else {
-		httpclient.SendSuccessMessage(c, 200, gin.H{
+		utils.SendSuccessMessage(c, 200, gin.H{
 			"apigroup":             apigroup,
 			"apiresourceListSlice": apiresourceListSlice,
 			"error":                nil,
@@ -90,118 +93,196 @@ func gvr_all(c *gin.Context) {
 func gvr_get_list(c *gin.Context) {
 	var data model.GetGVR
 	if err := c.BindJSON(&data); err != nil {
-		httpclient.SendErrorMessage(c, http.StatusBadRequest, "not found", err.Error())
+		utils.SendErrorMessage(c, http.StatusBadRequest, "not found", err.Error())
 		return
 	}
 
 	list, err := data.List()
 	if err != nil {
-		slog.Error("list error: %s", err.Error())
-		httpclient.SendErrorMessage(c, 500, "list error", err.Error())
+		slog.With("Error", err.Error()).Error("list error")
+		utils.SendErrorMessage(c, 500, "list error", err.Error())
 		return
 	}
 
-	httpclient.SendSuccessMessage(c, 200, list)
+	if data.Fast {
+		result := make([]map[string]interface{}, 0)
+		// 平铺基础数据
+		for index, item := range list.Items {
+			switch item.GetObjectKind().GroupVersionKind().Kind {
+			case "Pod":
+				var data v1c.Pod
+
+				toBytes, err := item.MarshalJSON()
+				if err != nil {
+					slog.Error("Error marshalling namespace %s: %v", data.Namespace, err)
+					utils.SendErrorMessage(c, 500, "error marshalling namespace", err.Error())
+					return
+				}
+
+				if err := json.Unmarshal(toBytes, &data); err != nil {
+					slog.Error("Error unmarshalling namespace %s: %v")
+					utils.SendErrorMessage(c, 500, "error Unmarshal", err.Error())
+					return
+				}
+
+				tmp := map[string]interface{}{
+					// "crd":       data,
+					"id":        index,
+					"name":      data.Name,
+					"namespace": data.Namespace,
+					"status":    data.Status.Phase,
+					// "restart":           data.Status.ContainerStatuses[0].RestartCount,
+					"hostip":     data.Status.HostIP,
+					"podip":      data.Status.PodIP,
+					"createtime": data.CreationTimestamp.Format("2006-01-02 15:04:05"),
+				}
+
+				if data.Status.ContainerStatuses != nil {
+					for _, item := range data.Status.ContainerStatuses {
+						tmp["image"] = item.Image
+						tmp["ready"] = item.Ready
+						tmp["restart"] = item.RestartCount
+						// tmp["status"] = item.State
+						break
+					}
+					tmp["containerStatuses"] = data.Status.ContainerStatuses
+				} else {
+					tmp["containerStatuses"] = []v1c.ContainerStatus{}
+					tmp["image"] = ""
+					tmp["ready"] = false
+					tmp["restart"] = 0
+				}
+				result = append(result, tmp)
+			case "Deployment":
+				var data v1.Deployment
+				toBytes, err := item.MarshalJSON()
+				if err != nil {
+					slog.Error("Error marshalling namespace %s: %v", data.Namespace, err)
+					utils.SendErrorMessage(c, 500, "error marshalling namespace", err.Error())
+					return
+				}
+
+				if err := json.Unmarshal(toBytes, &data); err != nil {
+					slog.Error("Error unmarshalling namespace %s: %v")
+					utils.SendErrorMessage(c, 500, "error Unmarshal", err.Error())
+					return
+				}
+
+				tmp := map[string]interface{}{
+					"crd":       data,
+					"name":      data.Name,
+					"namespace": data.Namespace,
+					"status":    data.Status,
+				}
+
+				result = append(result, tmp)
+			}
+		}
+		utils.SendSuccessMessage(c, 200, result)
+		return
+	}
+
+	utils.SendSuccessMessage(c, 200, list)
 }
 
 func gvr_get_get(c *gin.Context) {
 	var data model.GetGVR
 	if err := c.BindJSON(&data); err != nil {
-		httpclient.SendErrorMessage(c, http.StatusBadRequest, "not found", err.Error())
+		utils.SendErrorMessage(c, http.StatusBadRequest, "not found", err.Error())
 		return
 	}
 
 	list, err := data.Get()
 	if err != nil {
 		slog.Error("get error: %s", err.Error())
-		httpclient.SendErrorMessage(c, 500, "get error", err.Error())
+		utils.SendErrorMessage(c, 500, "get error", err.Error())
 		return
 	}
 
-	httpclient.SendSuccessMessage(c, 200, list)
+	utils.SendSuccessMessage(c, 200, list)
 }
 
 func gvr_post_add(c *gin.Context) {
 	var data model.GetGVR
 	if err := c.BindJSON(&data); err != nil {
-		httpclient.SendErrorMessage(c, http.StatusBadRequest, "not found", err.Error())
+		utils.SendErrorMessage(c, http.StatusBadRequest, "not found", err.Error())
 		return
 	}
 
 	list, err := data.Post()
 	if err != nil {
 		slog.Error("post error: %s", err.Error())
-		httpclient.SendErrorMessage(c, 500, "post error", err.Error())
+		utils.SendErrorMessage(c, 500, "post error", err.Error())
 		return
 	}
 
-	httpclient.SendSuccessMessage(c, 200, list)
+	utils.SendSuccessMessage(c, 200, list)
 }
 
 func gvr_patch_edit(c *gin.Context) {
 	var data model.GetGVR
 	if err := c.BindJSON(&data); err != nil {
-		httpclient.SendErrorMessage(c, http.StatusBadRequest, "not found", err.Error())
+		utils.SendErrorMessage(c, http.StatusBadRequest, "not found", err.Error())
 		return
 	}
 
 	list, err := data.Patch()
 	if err != nil {
 		slog.Error("patch error: %s", err.Error())
-		httpclient.SendErrorMessage(c, 500, "patcg error", err.Error())
+		utils.SendErrorMessage(c, 500, "patcg error", err.Error())
 		return
 	}
 
-	httpclient.SendSuccessMessage(c, 200, list)
+	utils.SendSuccessMessage(c, 200, list)
 }
 
 func gvr_patch_strate(c *gin.Context) {
 	var data model.GetGVR
 	if err := c.BindJSON(&data); err != nil {
-		httpclient.SendErrorMessage(c, http.StatusBadRequest, "not found", err.Error())
+		utils.SendErrorMessage(c, http.StatusBadRequest, "not found", err.Error())
 		return
 	}
 
 	list, err := data.PatchStrate()
 	if err != nil {
 		slog.Error("patch error: %s", err.Error())
-		httpclient.SendErrorMessage(c, 500, "patcg error", err.Error())
+		utils.SendErrorMessage(c, 500, "patcg error", err.Error())
 		return
 	}
 
-	httpclient.SendSuccessMessage(c, 200, list)
+	utils.SendSuccessMessage(c, 200, list)
 }
 
 func gvr_put_update(c *gin.Context) {
 	var data model.GetGVR
 	if err := c.BindJSON(&data); err != nil {
-		httpclient.SendErrorMessage(c, http.StatusBadRequest, "not found", err.Error())
+		utils.SendErrorMessage(c, http.StatusBadRequest, "not found", err.Error())
 		return
 	}
 
 	list, err := data.Put()
 	if err != nil {
 		slog.Error("put error: %s", err.Error())
-		httpclient.SendErrorMessage(c, 500, "put error", err.Error())
+		utils.SendErrorMessage(c, 500, "put error", err.Error())
 		return
 	}
 
-	httpclient.SendSuccessMessage(c, 200, list)
+	utils.SendSuccessMessage(c, 200, list)
 }
 
 func gvr_delete_del(c *gin.Context) {
 	var data model.GetGVR
 	if err := c.BindJSON(&data); err != nil {
-		httpclient.SendErrorMessage(c, http.StatusBadRequest, "not found", err.Error())
+		utils.SendErrorMessage(c, http.StatusBadRequest, "not found", err.Error())
 		return
 	}
 
 	err := data.Delete()
 	if err != nil {
 		slog.Error("delete error: %s", err.Error())
-		httpclient.SendErrorMessage(c, 500, "delete error", err.Error())
+		utils.SendErrorMessage(c, 500, "delete error", err.Error())
 		return
 	}
 
-	httpclient.SendSuccessMessage(c, 200, "deleted successfully")
+	utils.SendSuccessMessage(c, 200, "deleted successfully")
 }

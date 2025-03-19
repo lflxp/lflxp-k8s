@@ -3,18 +3,39 @@ import { Table } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableViewOptions } from './data-table-view-options'
-import { priorities, statuses } from '../data/data'
+import { statuses } from '../data/data'
 import { DataTableFacetedFilter } from './data-table-faceted-filter'
+import {
+  IconArrowRight,
+} from '@tabler/icons-react'
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
+  originalData: TData[]
 }
 
 export function DataTableToolbar<TData>({
   table,
+  originalData,
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0
-  console.log('table status', table.getColumn('status'))
+  const isFiltered = table.getState().columnFilters.length > 0;
+  // console.log('table status', table.getColumn('status'))
+  const namespaces: { value: string; label: string; icon: typeof IconArrowRight }[] = [];
+  const exist = [];
+
+  console.log('所有数据:', originalData); 
+  
+  originalData.forEach((row) => {
+    if (!exist.includes(row.namespace)) {
+      console.log(row.namespace);
+      const tmp = {
+        value: row.namespace,
+        label: row.namespace,
+      };
+      exist.push(row.namespace);
+      namespaces.push(tmp);
+    }
+  });
 
   return (
     <div className='flex items-center justify-between'>
@@ -35,13 +56,20 @@ export function DataTableToolbar<TData>({
               options={statuses}
             />
             )}
-          {table.getColumn('priority') && (
+            {table.getColumn('namespace') && (
+            <DataTableFacetedFilter
+              column={table.getColumn('namespace')}
+              title='Namespace'
+              options={namespaces}
+            />
+            )}
+          {/* {table.getColumn('priority') && (
             <DataTableFacetedFilter
               column={table.getColumn('priority')}
               title='Priority'
               options={priorities}
             />
-          )}
+          )} */}
         </div>
         {isFiltered && (
           <Button
