@@ -41,7 +41,8 @@ func PreGinServe(r *gin.Engine, port string) {
 	r.GET("/", func(c *gin.Context) {
 		// c.Redirect(301, "/login")
 		// c.Redirect(301, "/dashboard")
-		c.Redirect(301, "/d2admin")
+		// c.Redirect(301, "/d2admin")
+		c.Redirect(301, "/shadcn")
 		// c.Redirect(301, "/swaggers/index.html")
 	})
 

@@ -18,6 +18,7 @@ import {
 import { useTasks } from '../context/tasks-context'
 import { labels } from '../data/data'
 import { newSchema } from '../data/schema'
+// components/pods/data-table-row-actions.tsx
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -50,13 +51,22 @@ export function DataTableRowActions<TData>({
         >
           Edit
         </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            setCurrentRow(task)
+            setOpen('terminal')
+          }}
+        >
+          {/* <Terminal className="mr-2 h-4 w-4" /> */}
+          打开终端
+        </DropdownMenuItem>
         <DropdownMenuItem disabled>Make a copy</DropdownMenuItem>
         <DropdownMenuItem disabled>Favorite</DropdownMenuItem>
         <DropdownMenuSeparator />
-        {/* <DropdownMenuSub>
+        <DropdownMenuSub>
           <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup value={task.metadata.name}>
+            <DropdownMenuRadioGroup value={task.name}>
               {labels.map((label) => (
                 <DropdownMenuRadioItem key={label.value} value={label.value}>
                   {label.label}
@@ -64,7 +74,7 @@ export function DataTableRowActions<TData>({
               ))}
             </DropdownMenuRadioGroup>
           </DropdownMenuSubContent>
-        </DropdownMenuSub> */}
+        </DropdownMenuSub>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {

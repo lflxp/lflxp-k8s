@@ -58,6 +58,10 @@ Start the server
   pnpm run dev
 ```
 
+```bash
+  pnpm dlx shadcn@latest add drawer
+```
+
 ## Author
 
 Crafted with 🤍 by [@satnaing](https://github.com/satnaing)

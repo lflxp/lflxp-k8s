@@ -2,7 +2,7 @@ import { toast } from '@/hooks/use-toast'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { useTasks } from '../context/tasks-context'
 import { TasksImportDialog } from './tasks-import-dialog'
-import { TasksMutateDrawer } from './tasks-mutate-drawer'
+import { TasksMutateDrawer, PodTerminalDrawer } from './tasks-mutate-drawer'
 
 export function TasksDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useTasks()
@@ -32,6 +32,20 @@ export function TasksDialogs() {
               }, 500)
             }}
             currentRow={currentRow}
+          />
+
+          <PodTerminalDrawer
+            key={`pod-terminal-${currentRow.name}`}
+            open={open === 'terminal'}
+            onOpenChange={() => {
+              setOpen(null)
+              setTimeout(() => {
+                setCurrentRow(null)
+              }, 500)
+            }}
+            podName={currentRow.name}
+            namespace={currentRow.namespace}
+            containerName={currentRow.containerStatuses?.[0]?.name}
           />
 
           <ConfirmDialog

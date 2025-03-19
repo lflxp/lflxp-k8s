@@ -89,7 +89,7 @@ func Run(ishttps bool, port string) {
 		}
 
 		if index == 0 {
-			openUrl = fmt.Sprintf("%s:%s", ip, port)
+			openUrl = fmt.Sprintf("localhost:%s", port)
 		}
 	}
 	if ishttps {

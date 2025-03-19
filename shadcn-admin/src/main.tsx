@@ -78,6 +78,7 @@ const queryClient = new QueryClient({
 
 // Create a new router instance
 const router = createRouter({
+  basepath: '/shadcn',
   routeTree,
   context: { queryClient },
   defaultPreload: 'intent',

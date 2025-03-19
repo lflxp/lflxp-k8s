@@ -5,37 +5,25 @@ import { Input } from '@/components/ui/input'
 import { DataTableViewOptions } from './data-table-view-options'
 import { statuses } from '../data/data'
 import { DataTableFacetedFilter } from './data-table-faceted-filter'
-import {
-  IconArrowRight,
-} from '@tabler/icons-react'
 
-interface DataTableToolbarProps<TData> {
+interface DataTableToolbarProps<TData extends { namespace: string }> {
   table: Table<TData>
   originalData: TData[]
 }
 
-export function DataTableToolbar<TData>({
+export function DataTableToolbar<TData extends { namespace: string }>({
   table,
   originalData,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
   // console.log('table status', table.getColumn('status'))
-  const namespaces: { value: string; label: string; icon: typeof IconArrowRight }[] = [];
-  const exist = [];
+  // const namespaces: { value: string; label: string; icon: typeof IconArrowRight }[] = [];
+  const namespaces = [...new Set(originalData.map(row => row.namespace))]
+  .map(namespace => ({
+    value: namespace,
+    label: namespace
+  }));
 
-  console.log('所有数据:', originalData); 
-  
-  originalData.forEach((row) => {
-    if (!exist.includes(row.namespace)) {
-      console.log(row.namespace);
-      const tmp = {
-        value: row.namespace,
-        label: row.namespace,
-      };
-      exist.push(row.namespace);
-      namespaces.push(tmp);
-    }
-  });
 
   return (
     <div className='flex items-center justify-between'>

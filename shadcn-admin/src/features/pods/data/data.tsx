@@ -95,3 +95,14 @@ export const namespaces = [
     icon: IconArrowUp,
   }, 
 ]
+
+export const callTypes = new Map<string, string>([
+  ['Running', 'bg-teal-100/30 text-teal-900 dark:text-teal-200 border-teal-200'],
+  ['Failed', 'bg-neutral-300/40 border-neutral-300'],
+  ['Unknown', 'bg-sky-200/40 text-sky-900 dark:text-sky-100 border-sky-300'],
+  [
+    'Successed',
+    'bg-destructive/10 dark:bg-destructive/50 text-destructive dark:text-primary border-destructive/10',
+  ],
+  ['Pending', 'bg-purple-200/40 text-purple-900 dark:text-purple-100 border-purple-300'],
+])

@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/sheet'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { Pod } from '../data/schema'
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 
 interface Props {
   open: boolean
@@ -32,80 +33,37 @@ interface Props {
 }
 
 const podSchema = z.object({
-  apiVersion: z.string(),
-  kind: z.string().regex(/^Pod$/),
-  metadata: z.object({
+  id: z.number(),
+  hostip: z.string(),
+  name: z.string(),
+  namespace: z.string(),
+  podip: z.string(),
+  restart: z.number(),
+  status: z.string(),
+  createtime: z.string(),
+  containerStatuses: z.array(z.object({
     name: z.string(),
-    namespace: z.string().optional(),
-    labels: z.record(z.string(), z.string()).optional(),
-    annotations: z.record(z.string(), z.string()).optional(),
-    uid: z.string(),
-    creationTimestamp: z.string().optional(),
-  }),
-  spec: z.object({
-    containers: z.array(z.object({
-      name: z.string(),
-      image: z.string(),
-      ports: z.array(z.object({
-        containerPort: z.number()
-      })).optional(),
-    })),
-    restartPolicy: z.enum(['Always', 'OnFailure', 'Never']).optional(),
-    terminationGracePeriodSeconds: z.number().optional()
-  }),
-  status: z.object({
-    phase: z.enum(['Pending', 'Running', 'Succeeded', 'Failed', 'Unknown']).optional(),
-    conditions: z.array(z.object({
-      type: z.string(),
-      status: z.string(),
-      lastProbeTime: z.string().nullable().optional(),
-      lastTransitionTime: z.string().optional(),
-      reason: z.string().optional(),
-    })).optional(),
-    hostIP: z.string().optional(),
-    podIP: z.string().optional(),
-    startTime: z.string().optional(),
-    containerStatuses: z.array(z.object({
-      name: z.string(),
-      state: z.object({
-        running: z.object({
-          startedAt: z.string().optional()
-        }).optional(),
-        waiting: z.object({
-          reason: z.string().optional(),
-          message: z.string().optional()
-        }).optional(),
-        terminated: z.object({
-          exitCode: z.number(),
-          reason: z.string().optional(),
-          message: z.string().optional(),
-          startedAt: z.string().optional(),
-          finishedAt: z.string().optional()
-        }).optional()
+    state: z.object({
+      running: z.object({
+        startedAt: z.string().optional()
       }).optional(),
-      lastState: z.object({
-        running: z.object({
-          startedAt: z.string().optional()
-        }).optional(),
-        waiting: z.object({
-          reason: z.string().optional(),
-          message: z.string().optional()
-        }).optional(),
-        terminated: z.object({
-          exitCode: z.number(),
-          reason: z.string().optional(),
-          message: z.string().optional(),
-          startedAt: z.string().optional(),
-          finishedAt: z.string().optional()
-        }).optional()
+      waiting: z.object({
+        reason: z.string().optional(),
+        message: z.string().optional()
       }).optional(),
-      ready: z.boolean(),
-      restartCount: z.number(),
-      image: z.string(),
-      imageID: z.string(),
-      containerID: z.string().optional()
-    })).optional()
-  }).optional()
+      terminated: z.object({
+        exitCode: z.number(),
+        reason: z.string().optional(),
+        message: z.string().optional(),
+        finishedAt: z.string().optional()
+      }).optional()
+    }).optional(),
+    ready: z.boolean(),
+    restartCount: z.number(),
+    image: z.string(),
+    imageID: z.string(),
+    containerID: z.string().optional()
+  })).optional()
 });
 
 type PodsForm = z.infer<typeof podSchema>
@@ -116,24 +74,15 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
   const form = useForm<PodsForm>({
     resolver: zodResolver(podSchema),
     defaultValues: currentRow ?? {
-      apiVersion: '',
-      kind: '',
-      metadata: {
-        name: '',
-        namespace: '',
-        labels: {},
-        annotations: {},
-        uid: '',
-        creationTimestamp: '',
-      },
-      spec: {
-        containers: [],
-        restartPolicy: undefined,
-        terminationGracePeriodSeconds: undefined,
-      },
-      status: {
-        phase: undefined,
-      },
+      id: 0,
+      hostip: '',
+      name: '',
+      namespace: '',
+      podip: '',
+      restart: 0,
+      status: '',
+      createtime: '',
+      containerStatuses: []
     },
   })
 
@@ -177,7 +126,7 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
           >
             <FormField
               control={form.control}
-              name='metadata.name'
+              name='name'
               render={({ field }) => (
                 <FormItem className='space-y-1'>
                   <FormLabel>Title</FormLabel>
@@ -190,7 +139,7 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
             />
             <FormField
               control={form.control}
-              name='status.phase'
+              name='status'
               render={({ field }) => (
                 <FormItem className='space-y-1'>
                   <FormLabel>Status</FormLabel>
@@ -211,7 +160,7 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
             />
             <FormField
               control={form.control}
-              name='metadata.namespace'
+              name='namespace'
               render={({ field }) => (
                 <FormItem className='relative space-y-3'>
                   <FormLabel>Label</FormLabel>
@@ -249,7 +198,7 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
             />
             <FormField
               control={form.control}
-              name='metadata.uid'
+              name='namespace'
               render={({ field }) => (
                 <FormItem className='relative space-y-3'>
                   <FormLabel>Priority</FormLabel>
@@ -295,5 +244,40 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
         </SheetFooter>
       </SheetContent>
     </Sheet>
+  )
+}
+
+interface PodTerminalDrawerProps {
+  open: boolean
+  onOpenChange: () => void
+  podName?: string
+  namespace?: string
+  containerName?: string
+}
+
+export function PodTerminalDrawer({ 
+  open, 
+  onOpenChange, 
+  podName,
+  namespace,
+  containerName,
+}: PodTerminalDrawerProps) {
+  const terminalUrl = `/ws/logs/html/${namespace}/${podName}/${containerName}`
+
+  return (
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="h-[80vh]">
+        <DrawerHeader>
+          <DrawerTitle>Terminal: {podName} Url: {terminalUrl}</DrawerTitle>
+        </DrawerHeader>
+        <div className="p-4 h-full">
+          <iframe 
+            src={terminalUrl}
+            className="w-full h-full rounded-md border"
+            style={{ minHeight: "500px" }}
+          />
+        </div>
+      </DrawerContent>
+    </Drawer>
   )
 }
