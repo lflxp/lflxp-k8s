@@ -267,9 +267,36 @@ export function PodTerminalDrawer({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="h-[80vh]">
-        <DrawerHeader>
-          <DrawerTitle>Terminal: {podName} Url: {terminalUrl}</DrawerTitle>
-        </DrawerHeader>
+        {/* <DrawerHeader>
+          <DrawerTitle>Terminal: {namespace}/{podName}:{containerName}</DrawerTitle>
+        </DrawerHeader> */}
+        <div className="p-4 h-full">
+          <iframe 
+            src={terminalUrl}
+            className="w-full h-full rounded-md border"
+            style={{ minHeight: "500px" }}
+          />
+        </div>
+      </DrawerContent>
+    </Drawer>
+  )
+}
+
+export function PodSSHDrawer({ 
+  open, 
+  onOpenChange, 
+  podName,
+  namespace,
+  containerName,
+}: PodTerminalDrawerProps) {
+  const terminalUrl = `/ws/ssh/html/${namespace}/${podName}/${containerName}`
+
+  return (
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="h-[80vh]">
+        {/* <DrawerHeader>
+          <DrawerTitle>Terminal: {namespace}/{podName}:{containerName}</DrawerTitle>
+        </DrawerHeader> */}
         <div className="p-4 h-full">
           <iframe 
             src={terminalUrl}

@@ -2,10 +2,10 @@ import { toast } from '@/hooks/use-toast'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { useTasks } from '../context/tasks-context'
 import { TasksImportDialog } from './tasks-import-dialog'
-import { TasksMutateDrawer, PodTerminalDrawer } from './tasks-mutate-drawer'
+import { TasksMutateDrawer, PodTerminalDrawer, PodSSHDrawer } from './tasks-mutate-drawer'
 
 export function TasksDialogs() {
-  const { open, setOpen, currentRow, setCurrentRow } = useTasks()
+  const { open, setOpen, currentRow, setCurrentRow, containerName, setContainerName } = useTasks()
   return (
     <>
       <TasksMutateDrawer
@@ -39,13 +39,29 @@ export function TasksDialogs() {
             open={open === 'terminal'}
             onOpenChange={() => {
               setOpen(null)
+              setContainerName(undefined)
               setTimeout(() => {
                 setCurrentRow(null)
               }, 500)
             }}
             podName={currentRow.name}
             namespace={currentRow.namespace}
-            containerName={currentRow.containerStatuses?.[0]?.name}
+            containerName={containerName}
+          />
+
+          <PodSSHDrawer
+            key={`pod-ssh-${currentRow.name}`}
+            open={open === 'ssh'}
+            onOpenChange={() => {
+              setOpen(null)
+              setContainerName(undefined)
+              setTimeout(() => {
+                setCurrentRow(null)
+              }, 500)
+            }}
+            podName={currentRow.name}
+            namespace={currentRow.namespace}
+            containerName={containerName}
           />
 
           <ConfirmDialog

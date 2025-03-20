@@ -3,7 +3,6 @@ import { Table } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableViewOptions } from './data-table-view-options'
-import { statuses } from '../data/data'
 import { DataTableFacetedFilter } from './data-table-faceted-filter'
 
 interface DataTableToolbarProps<TData extends { namespace: string }> {
@@ -24,6 +23,18 @@ export function DataTableToolbar<TData extends { namespace: string }>({
     label: namespace
   }));
 
+  const hostips = [...new Set(originalData.map(row => row.hostip))]
+  .map(hostip => ({
+    value: hostip,
+    label: hostip
+  }));
+
+  const statuss = [...new Set(originalData.map(row => row.status))]
+  .map(status => ({
+    value: status,
+    label: status
+  }));
+
 
   return (
     <div className='flex items-center justify-between'>
@@ -40,15 +51,22 @@ export function DataTableToolbar<TData extends { namespace: string }>({
             {table.getColumn('status') && (
             <DataTableFacetedFilter
               column={table.getColumn('status')}
-              title='Status'
-              options={statuses}
+              title='状态筛选'
+              options={statuss}
             />
             )}
             {table.getColumn('namespace') && (
             <DataTableFacetedFilter
               column={table.getColumn('namespace')}
-              title='Namespace'
+              title='命名空间筛选'
               options={namespaces}
+            />
+            )}
+            {table.getColumn('hostip') && (
+            <DataTableFacetedFilter
+              column={table.getColumn('hostip')}
+              title='主机IP筛选'
+              options={hostips}
             />
             )}
           {/* {table.getColumn('priority') && (

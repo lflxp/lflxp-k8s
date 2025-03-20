@@ -26,6 +26,14 @@ export default defineConfig({
       '/ws': {
         target: 'http://localhost:8002',
         changeOrigin: true,
+      },
+      '/adminfs2': {
+        target: 'http://localhost:8002',
+        changeOrigin: true,
+      },
+      '/node_modules': {
+        target: 'http://localhost:8002',
+        changeOrigin: true,
       }
     }
   }

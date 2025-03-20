@@ -102,38 +102,6 @@ export const newSchema = z.object({
     qosClass: z.string().optional(),
     containerStatuses: z.array(z.object({
       name: z.string(),
-      state: z.object({
-        running: z.object({
-          startedAt: z.string().optional()
-        }).optional(),
-        waiting: z.object({
-          reason: z.string().optional(),
-          message: z.string().optional()
-        }).optional(),
-        terminated: z.object({
-          exitCode: z.number(),
-          reason: z.string().optional(),
-          message: z.string().optional(),
-          startedAt: z.string().optional(),
-          finishedAt: z.string().optional()
-        }).optional()
-      }).optional(),
-      lastState: z.object({
-        running: z.object({
-          startedAt: z.string().optional()
-        }).optional(),
-        waiting: z.object({
-          reason: z.string().optional(),
-          message: z.string().optional()
-        }).optional(),
-        terminated: z.object({
-          exitCode: z.number(),
-          reason: z.string().optional(),
-          message: z.string().optional(),
-          startedAt: z.string().optional(),
-          finishedAt: z.string().optional()
-        }).optional()
-      }).optional(),
       ready: z.boolean(),
       restartCount: z.number(),
       image: z.string(),
@@ -144,21 +112,6 @@ export const newSchema = z.object({
   createtime: z.string(),
   containerStatuses: z.array(z.object({
     name: z.string(),
-    state: z.object({
-      running: z.object({
-        startedAt: z.string().optional()
-      }).optional(),
-      waiting: z.object({
-        reason: z.string().optional(),
-        message: z.string().optional()
-      }).optional(),
-      terminated: z.object({
-        exitCode: z.number(),
-        reason: z.string().optional(),
-        message: z.string().optional(),
-        finishedAt: z.string().optional()
-      }).optional()
-    }).optional(),
     ready: z.boolean(),
     restartCount: z.number(),
     image: z.string(),

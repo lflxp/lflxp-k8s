@@ -29,7 +29,14 @@ export function DataTableRowActions<TData>({
 }: DataTableRowActionsProps<TData>) {
   const task = newSchema.parse(row.original)
 
-  const { setOpen, setCurrentRow } = useTasks()
+  // 筛选出containerName
+  const containers = [...new Set(task.containerStatuses?.map((container) => container.name))]
+  .map((containerName) => ({
+    label: containerName,
+    value: containerName,
+  }));
+
+  const { setOpen, setCurrentRow, setContainerName } = useTasks()
 
   return (
     <DropdownMenu modal={false}>
@@ -51,15 +58,45 @@ export function DataTableRowActions<TData>({
         >
           Edit
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => {
-            setCurrentRow(task)
-            setOpen('terminal')
-          }}
-        >
-          {/* <Terminal className="mr-2 h-4 w-4" /> */}
-          打开终端
-        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>日志</DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <DropdownMenuRadioGroup value={task.name}>
+              {containers.map((label) => (
+                <DropdownMenuRadioItem 
+                  onClick={() => {
+                    setCurrentRow(task)
+                    setContainerName(label.value)
+                    setOpen('terminal')
+                  }}
+                  key={label.value} 
+                  value={label.value}>
+                  {label.label}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>终端</DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <DropdownMenuRadioGroup value={task.name}>
+              {containers.map((label) => (
+                <DropdownMenuRadioItem 
+                  onClick={() => {
+                    setCurrentRow(task)
+                    setContainerName(label.value)
+                    setOpen('ssh')
+                  }}
+                  key={label.value} 
+                  value={label.value}>
+                  {label.label}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
         <DropdownMenuItem disabled>Make a copy</DropdownMenuItem>
         <DropdownMenuItem disabled>Favorite</DropdownMenuItem>
         <DropdownMenuSeparator />
