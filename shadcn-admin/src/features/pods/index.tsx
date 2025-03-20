@@ -26,6 +26,7 @@ export default function Pods() {
           resource: "pods",
           fast: true
         });
+        console.log('请求接口成功:', response.data)
         // 更新状态
         setPodsData(response.data);
       } catch (error) {

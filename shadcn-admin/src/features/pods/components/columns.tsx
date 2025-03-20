@@ -86,7 +86,7 @@ export const columns: ColumnDef<Pod>[] = [
     cell: ({ row }) => <div className='w-fit'>{row.getValue("namespace")}</div>,
   },
   {
-    id: 'images',
+    accessorKey: 'images',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='镜像' />
     ),
@@ -122,6 +122,7 @@ export const columns: ColumnDef<Pod>[] = [
         </div>
       );
     },
+    enableHiding: true
   },   
   {
     accessorKey: 'ready',
@@ -129,11 +130,24 @@ export const columns: ColumnDef<Pod>[] = [
       <DataTableColumnHeader column={column} title='就绪容器' />
     ),
     cell: ({ row }) => {
-      const lengths = row.original.containerStatuses?.length
-      const ready = row.original.containerStatuses?.filter((status) => status.ready).length
+      const lengths = row.original.containerStatuses?.length || 0;
+      const ready = row.original.containerStatuses?.filter((status) => status.ready).length || 0;
+      const renderBoxes = () => {
+        const boxes = [];
+        for (let i = 0; i < ready; i++) {
+          boxes.push(<span key={i} className="bg-green-500 w-3 h-3 inline-block mr-1"></span>);
+        }
+        for (let i = 0; i < lengths - ready; i++) {
+          boxes.push(<span key={i + ready} className="bg-gray-300 w-3 h-3 inline-block mr-1"></span>);
+        }
+        return boxes;
+      };
+  
       return (
-        <div className='w-fit'>{ready}/{lengths}</div>
-      )
+        <div className='w-fit'>
+          {renderBoxes()}
+        </div>
+      );
     }
   },
   {
@@ -142,6 +156,20 @@ export const columns: ColumnDef<Pod>[] = [
       <DataTableColumnHeader column={column} title='重启次数' />
     ),
     cell: ({ row }) => <div className='w-fit'>{row.getValue("restart")}</div>,
+  },
+  {
+    id: 'controller',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='控制器' />
+    ),
+    cell: ({ row }) => <div className='w-fit'>{row.original.controller?.[0]?.kind}</div>,
+  },
+  {
+    id: 'qos',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='QoS' />
+    ),
+    cell: ({ row }) => <div className='w-fit'>{row.original.statuss?.qosClass}</div>,
   },
   {
     accessorKey: 'podip',
@@ -186,16 +214,16 @@ export const columns: ColumnDef<Pod>[] = [
       const createTimeString = (days: number, hours: number, minutes: number, seconds: number) => {
         let timeString = '';
         if (days > 0) {
-          timeString += `${days} 天 `;
+          timeString += `${days}d `;
         }
         if (hours > 0) {
-          timeString += `${hours} 小时 `;
+          timeString += `${hours}h `;
         }
         if (minutes > 0) {
-          timeString += `${minutes} 分钟 `;
+          timeString += `${minutes}m `;
         }
         if (seconds > 0) {
-          timeString += `${seconds} 秒`;
+          timeString += `${seconds}s`;
         }
         return timeString;
       };

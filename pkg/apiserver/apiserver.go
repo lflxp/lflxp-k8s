@@ -12,6 +12,7 @@ import (
 	"github.com/lflxp/tools/sdk/clientgo"
 	v1 "k8s.io/api/apps/v1"
 	v1c "k8s.io/api/core/v1"
+	v1m "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const (
@@ -135,6 +136,14 @@ func gvr_get_list(c *gin.Context) {
 					"hostip":     data.Status.HostIP,
 					"podip":      data.Status.PodIP,
 					"createtime": data.CreationTimestamp.Format("2006-01-02 15:04:05"),
+					"controller": data.OwnerReferences,
+					"statuss":    data.Status,
+				}
+
+				if data.OwnerReferences != nil {
+					tmp["controller"] = data.OwnerReferences
+				} else {
+					tmp["controller"] = []v1m.OwnerReference{}
 				}
 
 				if data.Status.ContainerStatuses != nil {
