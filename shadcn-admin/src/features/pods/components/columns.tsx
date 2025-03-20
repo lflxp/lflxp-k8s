@@ -76,7 +76,7 @@ export const columns: ColumnDef<Pod>[] = [
     ),
     cell: ({ row }) => <div className='w-48 overflow-hidden text-ellipsis whitespace-nowrap hover:overflow-visible '>{row.getValue("name")}</div>,
     enableSorting: false,
-    enableHiding: false,
+    enableHiding: false
   },
   {
     accessorKey: 'namespace',
