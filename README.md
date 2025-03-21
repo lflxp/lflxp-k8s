@@ -69,6 +69,12 @@ or
 
 ## 打包
 
+### wails
+
+wails go 一体化部署
+
+### tarui
+
 `有BUG`：无法访问axum服务，是直接访问的tauri://localhost/admin/userinfo的接口
 
 > cargo tarui build

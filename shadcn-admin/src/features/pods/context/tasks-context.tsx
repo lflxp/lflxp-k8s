@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import useDialogState from '@/hooks/use-dialog-state'
 import { Pod } from '../data/schema'
 
-type PodsDialogType = 'create' | 'update' | 'delete' | 'import' | 'terminal' | 'ssh'
+type PodsDialogType = 'create' | 'update' | 'delete' | 'import' | 'terminal' | 'ssh' | 'detail'
 
 interface PodsContextType {
   open: PodsDialogType | null

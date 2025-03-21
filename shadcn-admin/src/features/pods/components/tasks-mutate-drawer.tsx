@@ -22,9 +22,27 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
+import { 
+  Card,
+} from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
 import { SelectDropdown } from '@/components/select-dropdown'
 import { Pod } from '../data/schema'
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
+import { CCComponent } from '../data/data'
+import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer"
+import { SectionCards } from './cards'
+import { useMemo } from 'react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface Props {
   open: boolean
@@ -270,7 +288,7 @@ export function PodTerminalDrawer({
         {/* <DrawerHeader>
           <DrawerTitle>Terminal: {namespace}/{podName}:{containerName}</DrawerTitle>
         </DrawerHeader> */}
-        <div className="p-4 h-full">
+        <div className="w-full h-full">
           <iframe 
             src={terminalUrl}
             className="w-full h-full rounded-md border"
@@ -297,14 +315,118 @@ export function PodSSHDrawer({
         {/* <DrawerHeader>
           <DrawerTitle>Terminal: {namespace}/{podName}:{containerName}</DrawerTitle>
         </DrawerHeader> */}
-        <div className="p-4 h-full">
+        <div className="w-full h-full">
           <iframe 
             src={terminalUrl}
-            className="w-full h-full rounded-md border"
+            className="w-full h-full rounded-md"
             style={{ minHeight: "500px" }}
           />
         </div>
       </DrawerContent>
     </Drawer>
   )
+}
+
+export function PodDetailDrawer({ 
+  open, 
+  onOpenChange, 
+  currentRow 
+}: Props) {
+  const statusRows = useMemo(() => {
+    if (!currentRow ||!currentRow.raw ||!currentRow.raw.status) return [];
+    return Object.entries(currentRow.raw.status).map(([key, value]) => (
+        <TableRow key={key}>
+            <TableCell className="font-medium">{key}</TableCell>
+            <TableCell>{JSON.stringify(value)}</TableCell>
+        </TableRow>
+    ));
+  }, [currentRow]);
+
+  return (
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerTitle>Pod Detail</DrawerTitle>
+      <DrawerContent>
+        <div className="h-[80vh] grid grid-cols-4 gap-2">
+          <div className="rounded-md">
+            <Card className="h-full border rounded-md overflow-y-auto">
+              <CCComponent />
+            </Card>
+          </div>
+          <div className="rounded-md">
+            <SectionCards/>
+          </div>
+          <div className="rounded-md h-full overflow-y-auto **overflow-x-auto**">
+            <Table>
+              <TableCaption>A list of your recent invoices.</TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[100px]">属性</TableHead>
+                  <TableHead className="w-[auto]">值</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentRow && currentRow.raw.spec.containers.map((container, index) => (
+                  // 遍历 containers 数组
+                  Object.entries(container).map(([key, value]) => (
+                    // 遍历每个 container 对象的键值对
+                    <TableRow key={`${index}-${key}`}>
+                      <TableCell className="font-medium">{key}</TableCell>
+                      <TableCell>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <div className="max-w-[300px] truncate">
+                                {JSON.stringify(value)}
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-[400px] whitespace-pre-wrap">
+                              {JSON.stringify(value)}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ))}
+              </TableBody>
+            </Table> 
+          </div> 
+          <div className="rounded-md h-full overflow-y-auto">
+            <Table>
+              <TableCaption>A list of your recent invoices.</TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[100px]">属性</TableHead>
+                  <TableHead>值</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentRow && Object.entries(currentRow.raw.metadata).map(([key, value]) => (
+                  <TableRow key={key}>
+                    <TableCell className="font-medium">{key}</TableCell>
+                    <TableCell>{JSON.stringify(value)}</TableCell>
+                  </TableRow>
+                ))}
+                {statusRows} 
+                {currentRow && Object.entries(currentRow.raw.spec).map(([key, value]) => (
+                  key !== 'containers' && (
+                    <TableRow key={key}>
+                      <TableCell className="font-medium">{key}</TableCell>
+                      <TableCell>{JSON.stringify(value)}</TableCell>
+                    </TableRow>
+                  )
+                ))}
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell colSpan={3}>Total</TableCell>
+                  <TableCell className="text-right">$2,500.00</TableCell>
+                </TableRow>
+              </TableFooter>
+            </Table>
+          </div>
+        </div>
+      </DrawerContent>
+    </Drawer>
+  );
 }

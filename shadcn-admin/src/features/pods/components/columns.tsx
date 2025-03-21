@@ -7,6 +7,9 @@ import { Pod } from '../data/schema'
 import { DataTableColumnHeader } from './data-table-column-header'
 import { DataTableRowActions } from './data-table-row-actions'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useTasks } from '../context/tasks-context'
+
+
 
 export const columns: ColumnDef<Pod>[] = [
   {
@@ -74,7 +77,19 @@ export const columns: ColumnDef<Pod>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='名称' />
     ),
-    cell: ({ row }) => <div className='w-48 overflow-hidden text-ellipsis whitespace-nowrap hover:overflow-visible '>{row.getValue("name")}</div>,
+    cell: ({ row }) => {
+      const { setOpen, setCurrentRow } = useTasks()
+      const openDrawer = () => {
+        setOpen('detail')
+        setCurrentRow(row.original)
+      };
+
+      return (
+        <div>
+          <div className='w-48 overflow-hidden text-ellipsis whitespace-nowrap hover:overflow-visible hover:text-blue-600 cursor-pointer' onClick={openDrawer}>{row.getValue("name")}</div>
+        </div>
+      );
+    },
     enableSorting: false,
     enableHiding: false,
   },
@@ -162,14 +177,14 @@ export const columns: ColumnDef<Pod>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='控制器' />
     ),
-    cell: ({ row }) => <div className='w-fit'>{row.original.controller?.[0]?.kind}</div>,
+    cell: ({ row }) => <div className='w-fit'>{row.original.raw.metadata.ownerReferences?.[0]?.kind}</div>,
   },
   {
     id: 'qos',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='QoS' />
     ),
-    cell: ({ row }) => <div className='w-fit'>{row.original.statuss?.qosClass}</div>,
+    cell: ({ row }) => <div className='w-fit'>{row.original.raw.status?.qosClass}</div>,
   },
   {
     accessorKey: 'podip',

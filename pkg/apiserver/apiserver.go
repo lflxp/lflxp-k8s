@@ -136,8 +136,8 @@ func gvr_get_list(c *gin.Context) {
 					"hostip":     data.Status.HostIP,
 					"podip":      data.Status.PodIP,
 					"createtime": data.CreationTimestamp.Format("2006-01-02 15:04:05"),
-					"controller": data.OwnerReferences,
 					"statuss":    data.Status,
+					"raw":        data,
 				}
 
 				if data.OwnerReferences != nil {

@@ -12,6 +12,14 @@ export const podSchema = z.object({
     annotations: z.record(z.string(), z.string()).optional(),
     uid: z.string(),
     creationTimestamp: z.string().optional(),
+    ownerReferences: z.array(z.object({
+      apiVersion: z.string(),
+      kind: z.string(),
+      name: z.string(),
+      uid: z.string(),
+      controller: z.boolean().optional(),
+      blockOwnerDeletion: z.boolean().optional()
+    })).optional(),
   }),
   spec: z.object({
     containers: z.array(z.object({
@@ -36,6 +44,7 @@ export const podSchema = z.object({
     hostIP: z.string().optional(),
     podIP: z.string().optional(),
     startTime: z.string().optional(),
+    qosClass: z.string().optional(),
     containerStatuses: z.array(z.object({
       name: z.string(),
       state: z.object({
@@ -125,7 +134,8 @@ export const newSchema = z.object({
     name: z.string(),
     kind: z.string(),
     uid: z.string()
-  })).optional()
+  })).optional(),
+  raw: podSchema,
 })
 
 export type Pod = z.infer<typeof newSchema>;

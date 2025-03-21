@@ -35,9 +35,68 @@
             background-color: #000;
             overflow-y: auto;
         }
+
+        /* Form styling */
+        .terminal-form {
+            background-color: #222;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #444;
+        }
+        
+        .terminal-form input[type="text"] {
+            padding: 6px 10px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: #fff;
+            border-radius: 3px;
+            flex-grow: 1;
+            min-width: 150px;
+        }
+        
+        .terminal-form input[type="button"] {
+            padding: 6px 15px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .terminal-form input[type="button"]:hover {
+            background-color: #0055aa;
+        }
+        
+        .terminal-form label {
+            margin-right: 5px;
+            color: white;
+        }
+        
+        /* Make xterm fill its container */
+        .xterm {
+            height: 100%;
+        }
+        
+        .xterm-viewport {
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
+    <form class="terminal-form">
+        <label for="podNs">namespace:</label>
+        <input type="text" id="podNs" placeholder="{{.Namespace}}">
+        <label for="podName">podName:</label>
+        <input type="text" id="podName" placeholder="{{.Pod}}">
+        <label for="containerName">containerName:</label>
+        <input type="text" id="containerName" placeholder="{{.Container}}">
+        <!-- If you want to keep the button, uncomment this line -->
+        <!-- <input id="ssh" type="button" value="ssh"> -->
+    </form>
     <textarea id="logoutput" placeholder="日志输出"></textarea>
 
     <script>
