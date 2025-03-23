@@ -2,7 +2,11 @@ import { IconDownload, IconPlus } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { useTasks } from '../context/tasks-context'
 
-export function TasksPrimaryButtons() {
+interface TasksPrimaryButtonsProps {
+  fetchData: () => Promise<void>;
+}
+
+export const TasksPrimaryButtons = ({ fetchData }: TasksPrimaryButtonsProps) => {
   const { setOpen } = useTasks()
   return (
     <div className='flex gap-2'>
@@ -16,6 +20,7 @@ export function TasksPrimaryButtons() {
       <Button className='space-x-1' onClick={() => setOpen('create')}>
         <span>Create</span> <IconPlus size={18} />
       </Button>
+      <Button onClick={fetchData}>刷新</Button>
     </div>
   )
 }
