@@ -2,7 +2,8 @@ import { toast } from '@/hooks/use-toast'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { useTasks } from '../context/tasks-context'
 import { TasksImportDialog } from './tasks-import-dialog'
-import { TasksMutateDrawer, PodTerminalDrawer, PodSSHDrawer, PodDetailDrawer } from './tasks-mutate-drawer'
+import { TasksMutateDrawer, PodTerminalDrawer, PodSSHDrawer } from './tasks-mutate-drawer'
+import { PodDetailDrawer } from './pods-detail'
 
 export function TasksDialogs() {
   const { open, setOpen, currentRow, setCurrentRow, containerName, setContainerName } = useTasks()
