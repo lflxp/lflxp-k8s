@@ -1,18 +1,5 @@
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   Sheet,
   SheetClose,
@@ -23,9 +10,12 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 
-import { SelectDropdown } from '@/components/select-dropdown'
 import { Pod } from '../data/schema'
+import { Textarea } from "@/components/ui/textarea"
 import { Drawer, DrawerContent } from "@/components/ui/drawer"
+import { useState, useEffect } from 'react'
+import { poddemo } from '../data/data'
+import JsonView from 'react-json-view'
 
 export interface Props {
   open: boolean
@@ -33,215 +23,202 @@ export interface Props {
   currentRow?: Pod
 }
 
-const podSchema = z.object({
-  id: z.number(),
-  hostip: z.string(),
-  name: z.string(),
-  namespace: z.string(),
-  podip: z.string(),
-  restart: z.number(),
-  status: z.string(),
-  createtime: z.string(),
-  containerStatuses: z.array(z.object({
-    name: z.string(),
-    state: z.object({
-      running: z.object({
-        startedAt: z.string().optional()
-      }).optional(),
-      waiting: z.object({
-        reason: z.string().optional(),
-        message: z.string().optional()
-      }).optional(),
-      terminated: z.object({
-        exitCode: z.number(),
-        reason: z.string().optional(),
-        message: z.string().optional(),
-        finishedAt: z.string().optional()
-      }).optional()
-    }).optional(),
-    ready: z.boolean(),
-    restartCount: z.number(),
-    image: z.string(),
-    imageID: z.string(),
-    containerID: z.string().optional()
-  })).optional()
-});
-
-type PodsForm = z.infer<typeof podSchema>
-
 export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
   const isUpdate = !!currentRow
 
-  const form = useForm<PodsForm>({
-    resolver: zodResolver(podSchema),
-    defaultValues: currentRow ?? {
-      id: 0,
-      hostip: '',
-      name: '',
-      namespace: '',
-      podip: '',
-      restart: 0,
-      status: '',
-      createtime: '',
-      containerStatuses: []
-    },
-  })
+  const [jsonText, setJsonText] = useState('');
+  const [addjsonText, setAddJsonText] = useState('');
+  const [isEditMode, setIsEditMode] = useState(false);
 
-  const onSubmit = (data: PodsForm) => {
-    // do something with the form data
-    onOpenChange(false)
-    form.reset()
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-          <code className='text-white'>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
-  }
+  // 当currentRow变化时更新jsonText
+  useEffect(() => {
+    if (currentRow?.raw) {
+      setJsonText(JSON.stringify(currentRow.raw, null, 2));
+    }
+
+    setAddJsonText(JSON.stringify(poddemo, null, 2));
+  }, [currentRow]);
+
+  const handleUpdate = () => {
+    try {
+      if (!currentRow?.namespace || !currentRow?.name) {
+        toast({
+          title: "更新失败",
+          description: "缺少必要的Pod信息",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const updatedData = {
+        group: "",
+        version: "v1",
+        resource: "pods",
+        namespace: currentRow.namespace,
+        name: currentRow.name,
+        data: JSON.parse(jsonText)
+      };
+      
+      fetch('/api/gvr', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedData)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('更新失败');
+        }
+        return response.json();
+      })
+      .then(_data => {
+        toast({
+          title: "更新成功",
+          description: "Pod配置已更新",
+        });
+        onOpenChange(false);
+      })
+      .catch(_error => {
+        toast({
+          title: "更新失败",
+          description: "请检查网络连接或联系管理员",
+          variant: "destructive",
+        });
+      });
+    } catch (_error) {
+      toast({
+        title: "JSON格式错误",
+        description: "请检查JSON格式是否正确",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAdd = () => {
+    try {
+      const tmp = JSON.parse(addjsonText)
+      if (tmp.metadata.name === '') {
+        toast({
+          title: "缺少必要条件",
+          description: "metdata.name 不能为空",
+        })
+      }
+      const AdddData = {
+        group: "",
+        version: "v1",
+        resource: "pods",
+        namespace: tmp.metadata.namespace === '' ? 'default' : tmp.metadata.namespace,
+        name: tmp.metadata.name,
+        data: tmp
+      };
+      
+      fetch('/api/gvr', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(AdddData)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('新增失败');
+        }
+        return response.json();
+      })
+      .then(_data => {
+        toast({
+          title: "新增成功",
+          description: "Pod配置已新增",
+        });
+        onOpenChange(false);
+      })
+      .catch(_error => {
+        toast({
+          title: "新增失败",
+          description: "请检查网络连接或联系管理员",
+          variant: "destructive",
+        });
+      });
+    } catch (_error) {
+      toast({
+        title: "JSON格式错误",
+        description: "请检查JSON格式是否正确",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <Sheet
       open={open}
       onOpenChange={(v) => {
         onOpenChange(v)
-        form.reset()
       }}
     >
-      <SheetContent className='flex flex-col'>
+      <SheetContent side="right" className="w-[50%] sm:max-w-[90%] flex flex-col overflow-y-auto">
         <SheetHeader className='text-left'>
-          <SheetTitle>{isUpdate ? 'Update' : 'Create'} Task</SheetTitle>
+          <SheetTitle>{isUpdate ? '更新' : '创建'} Pod</SheetTitle>
           <SheetDescription>
             {isUpdate
-              ? 'Update the task by providing necessary info.'
-              : 'Add a new task by providing necessary info.'}
-            Click save when you&apos;re done.
+              ? '更新Pod配置信息'
+              : '创建新的Pod配置'}
           </SheetDescription>
         </SheetHeader>
-        <Form {...form}>
-          <form
-            id='tasks-form'
-            onSubmit={form.handleSubmit(onSubmit)}
-            className='flex-1 space-y-5'
-          >
-            <FormField
-              control={form.control}
-              name='name'
-              render={({ field }) => (
-                <FormItem className='space-y-1'>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder='Enter a title' />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='status'
-              render={({ field }) => (
-                <FormItem className='space-y-1'>
-                  <FormLabel>Status</FormLabel>
-                  <SelectDropdown
-                    defaultValue={field.value}
-                    onValueChange={field.onChange}
-                    placeholder='Select dropdown'
-                    items={[
-                      { label: 'Running', value: 'Running' },
-                      { label: 'Succeeded', value: 'Succeeded' },
-                      { label: 'Unknown', value: 'Unknown' },
-                      { label: 'Failed', value: 'Failed' },
-                    ]}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='namespace'
-              render={({ field }) => (
-                <FormItem className='relative space-y-3'>
-                  <FormLabel>Label</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className='flex flex-col space-y-1'
-                    >
-                      <FormItem className='flex items-center space-x-3 space-y-0'>
-                        <FormControl>
-                          <RadioGroupItem value='documentation' />
-                        </FormControl>
-                        <FormLabel className='font-normal'>
-                          Documentation
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className='flex items-center space-x-3 space-y-0'>
-                        <FormControl>
-                          <RadioGroupItem value='feature' />
-                        </FormControl>
-                        <FormLabel className='font-normal'>Feature</FormLabel>
-                      </FormItem>
-                      <FormItem className='flex items-center space-x-3 space-y-0'>
-                        <FormControl>
-                          <RadioGroupItem value='bug' />
-                        </FormControl>
-                        <FormLabel className='font-normal'>Bug</FormLabel>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='namespace'
-              render={({ field }) => (
-                <FormItem className='relative space-y-3'>
-                  <FormLabel>Priority</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className='flex flex-col space-y-1'
-                    >
-                      <FormItem className='flex items-center space-x-3 space-y-0'>
-                        <FormControl>
-                          <RadioGroupItem value='high' />
-                        </FormControl>
-                        <FormLabel className='font-normal'>High</FormLabel>
-                      </FormItem>
-                      <FormItem className='flex items-center space-x-3 space-y-0'>
-                        <FormControl>
-                          <RadioGroupItem value='medium' />
-                        </FormControl>
-                        <FormLabel className='font-normal'>Medium</FormLabel>
-                      </FormItem>
-                      <FormItem className='flex items-center space-x-3 space-y-0'>
-                        <FormControl>
-                          <RadioGroupItem value='low' />
-                        </FormControl>
-                        <FormLabel className='font-normal'>Low</FormLabel>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
-        <SheetFooter className='gap-2'>
+        { isUpdate ? (
+          <>
+            <div className="flex justify-end mb-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setIsEditMode(!isEditMode)}
+              >
+                {isEditMode ? '切换到视图模式' : '切换到编辑模式'}
+              </Button>
+            </div>
+            { isEditMode ? (
+              <Textarea
+                value={jsonText}
+                onChange={(e) => setJsonText(e.target.value)}
+                className="flex-1 font-mono resize-none"
+                placeholder="请输入JSON数据..."
+              />
+            ) : (
+              <JsonView 
+                src={currentRow?.raw || {}} 
+                enableClipboard={true}
+                displayDataTypes={false}
+                name={false}
+              />
+            )}
+          </>
+        ) : (
+          <Textarea
+            value={addjsonText}
+            onChange={(e) => {
+              setAddJsonText(e.target.value);
+            }}
+            className="flex-1 font-mono resize-none"
+            placeholder="请输入Pod配置..."
+          />
+        )}
+        
+        <SheetFooter className='gap-2 mt-4'>
           <SheetClose asChild>
-            <Button variant='outline'>Close</Button>
+            <Button variant='outline'>关闭</Button>
           </SheetClose>
-          <Button form='tasks-form' type='submit'>
-            Save changes
-          </Button>
+          { isUpdate ? (
+            isEditMode && (
+              <Button form='tasks-form' onClick={handleUpdate}>
+                更新配置
+              </Button>
+            )
+            
+          ) : (
+            <Button form='tasks-form' onClick={handleAdd}>
+              新建
+            </Button>
+          )}
+         
         </SheetFooter>
       </SheetContent>
     </Sheet>

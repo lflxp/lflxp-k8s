@@ -30,13 +30,67 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Props } from './tasks-mutate-drawer'
 import { SectionCards } from './cards'
 import { CCComponent } from '../data/data'
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react'
+import JsonView from 'react-json-view'
+import { toast } from '@/hooks/use-toast'
+import { Textarea } from "@/components/ui/textarea"
 
 export function PodDetailDrawer({
   open, 
   onOpenChange, 
   currentRow 
 }: Props) {
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [jsonText, setJsonText] = useState('');
+
+  // 当currentRow变化时更新jsonText
+  useEffect(() => {
+    if (currentRow?.raw) {
+      setJsonText(JSON.stringify(currentRow.raw, null, 2));
+    }
+  }, [currentRow]);
+
+  const handleUpdate = () => {
+    try {
+      const updatedData = {
+        group: "",
+        version: "v1",
+        resource: "pods",
+        namespace: currentRow?.raw?.metadata?.namespace,
+        name: currentRow?.raw?.metadata?.name,
+        data: isEditMode ? JSON.parse(jsonText) : currentRow?.raw
+      };
+      
+      fetch('/api/gvr', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedData)
+      })
+      .then(response => response.json())
+      .then(_data => {
+        toast({
+          title: "更新成功",
+          description: "Pod配置已更新",
+        });
+      })
+      .catch(_error => {
+        toast({
+          title: "更新失败",
+          description: "请检查网络连接或联系管理员",
+          variant: "destructive",
+        });
+      });
+    } catch (_error) {
+      toast({
+        title: "JSON格式错误",
+        description: "请检查JSON格式是否正确",
+        variant: "destructive",
+      });
+    }
+  };
+
   const statusRows = useMemo(() => {
     if (!currentRow ||!currentRow.raw ||!currentRow.raw.status) return [];
     return Object.entries(currentRow.raw.status).map(([key, value]) => (
@@ -56,8 +110,8 @@ export function PodDetailDrawer({
             <TabsTrigger value="account">Account</TabsTrigger>
             <TabsTrigger value="password">Password</TabsTrigger>
             <TabsTrigger value="monitor">Monitor</TabsTrigger>
-            <TabsTrigger value="rawdata">rawdata</TabsTrigger>
-            <TabsTrigger value="jsondata">jsondata</TabsTrigger>
+            <TabsTrigger value="rawdata">属性</TabsTrigger>
+            <TabsTrigger value="jsondata">原始JSON</TabsTrigger>
           </TabsList>
           <TabsContent value="account" className="h-[80vh] overflow-y-auto">
             <Card>
@@ -130,26 +184,41 @@ export function PodDetailDrawer({
           <TabsContent value="jsondata" className="h-[80vh] overflow-y-auto">
             <Card>
               <CardHeader>
-                <CardTitle>JSONData</CardTitle>
+                <CardTitle>原始JSON查看或编辑</CardTitle>
                 <CardDescription>
-                  Change your password here. After saving, you'll be logged out.
+                  可以查看原始CRD数据结构并进行修改
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                <div className="rounded-md h-full overflow-y-auto overflow-x-auto bg-gray-800 border border-gray-600">
-                  <pre className='text-white whitespace-pre-wrap h-full p-4'>
-                    <code>
-                      {/* 添加调试信息 */}
-                      {currentRow 
-                        ? JSON.stringify(currentRow.raw, null, 2) 
-                        : 'currentRow is undefined or null'}
-                    </code>
-                  </pre>
+                <div className="flex justify-end mb-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsEditMode(!isEditMode)}
+                  >
+                    {isEditMode ? '切换到视图模式' : '切换到编辑模式'}
+                  </Button>
                 </div>
+                {isEditMode ? (
+                  <Textarea
+                    value={jsonText}
+                    onChange={(e) => setJsonText(e.target.value)}
+                    className="min-h-[500px] font-mono"
+                    placeholder="请输入JSON数据..."
+                  />
+                ) : (
+                  <JsonView 
+                    src={currentRow?.raw || {}} 
+                    enableClipboard={true}
+                    displayDataTypes={false}
+                    name={false}
+                  />
+                )}
               </CardContent>
-              <CardFooter>
-                <Button>Save password</Button>
-              </CardFooter>
+              { isEditMode && <CardFooter>
+                <Button onClick={handleUpdate}>
+                  更新
+                </Button>
+              </CardFooter>}
             </Card>
           </TabsContent> 
           <TabsContent value="rawdata" className="h-[80vh] overflow-y-auto">

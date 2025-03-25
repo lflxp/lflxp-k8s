@@ -103,7 +103,34 @@ export const newSchema = z.object({
     kind: z.string(),
     uid: z.string()
   })).optional(),
-  raw: podSchema,
+  raw: z.any(),
 })
+
+export interface ContainerStatus {
+  name: string
+  state?: {
+    running?: { startedAt?: string }
+    waiting?: { reason?: string; message?: string }
+    terminated?: { exitCode: number; reason?: string; message?: string; finishedAt?: string }
+  }
+  ready: boolean
+  restartCount: number
+  image: string
+  imageID: string
+  containerID?: string
+}
+
+// export type Pod = {
+//   id: number
+//   hostip: string
+//   name: string
+//   namespace: string
+//   podip: string
+//   restart: number
+//   status: string
+//   createtime: string
+//   raw: Record<string, unknown>
+//   containerStatuses?: ContainerStatus[]
+// }
 
 export type Pod = z.infer<typeof newSchema>;

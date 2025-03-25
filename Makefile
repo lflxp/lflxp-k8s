@@ -11,7 +11,9 @@ stringer:
 
 npm: clean
 	# cd d2admin && npm install && npm run build && mv dist ../asset/d2admin
-	cd d2admin && npm run build && mv dist ../asset/d2admin
+	# cd d2admin && npm run build && mv dist ../asset/d2admin
+	rm -rf asset/shadcn
+	cd shadcn-admin && pnpm run build && mv dist ../asset/shadcn
 
 npmbuild: clean
 	export NODE_OPTIONS=--openssl-legacy-provider && cd d2admin && npm install && npm run build && mv dist ../asset/d2admin

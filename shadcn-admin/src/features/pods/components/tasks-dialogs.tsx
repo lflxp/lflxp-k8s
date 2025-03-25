@@ -7,6 +7,61 @@ import { PodDetailDrawer } from './pods-detail'
 
 export function TasksDialogs() {
   const { open, setOpen, currentRow, setCurrentRow, containerName, setContainerName } = useTasks()
+
+  const handleUpdate = () => {
+    try {
+      if (!currentRow?.namespace || !currentRow?.name) {
+        toast({
+          title: "更新失败",
+          description: "缺少必要的Pod信息",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const updatedData = {
+        group: "",
+        version: "v1",
+        resource: "pods",
+        namespace: currentRow?.namespace,
+        name: currentRow?.name
+      };
+      
+      fetch('/api/gvr', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedData)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('刪除失败');
+        }
+        return response.json();
+      })
+      .then(_data => {
+        toast({
+          title: "刪除成功",
+          description: "Pod配置已刪除",
+        });
+      })
+      .catch(_error => {
+        toast({
+          title: "刪除失败",
+          description: "请检查网络连接或联系管理员",
+          variant: "destructive",
+        });
+      });
+    } catch (_error) {
+      toast({
+        title: "JSON格式错误",
+        description: "请检查JSON格式是否正确",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <>
       <TasksMutateDrawer
@@ -92,23 +147,16 @@ export function TasksDialogs() {
               setTimeout(() => {
                 setCurrentRow(null)
               }, 500)
-              toast({
-                title: 'The following task has been deleted:',
-                description: (
-                  <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-                    <code className='text-white'>
-                      {JSON.stringify(currentRow, null, 2)}
-                    </code>
-                  </pre>
-                ),
-              })
+              handleUpdate()
             }}
+            name={currentRow.name}
+            namespace={currentRow.namespace}
             className='max-w-md'
-            title={`Delete this task: ${currentRow.id} ?`}
+            title={`Delete Pod: ${currentRow.namespace}/${currentRow.name} ?`}
             desc={
               <>
-                You are about to delete a task with the ID{' '}
-                <strong>{currentRow.id}</strong>. <br />
+                You are about to delete a Pod with the Name{' '}
+                <strong>{currentRow.namespace}/{currentRow.name}</strong>. <br />
                 This action cannot be undone.
               </>
             }

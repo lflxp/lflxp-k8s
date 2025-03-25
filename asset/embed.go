@@ -22,8 +22,8 @@ var cleanscriptDir embed.FS
 //go:embed docs
 var docs embed.FS
 
-//go:embed d2admin
-var d2admin embed.FS
+// //go:embed d2admin
+// var d2admin embed.FS
 
 //go:embed shadcn
 var shadcn embed.FS
@@ -59,12 +59,12 @@ func RunYaml(path string) error {
 }
 
 func RegisterAsset(router *gin.Engine) {
-	router.Any("/d2admin/*any", func(c *gin.Context) {
-		// staticServer := wrapHandler(http.FS(dashboard))
-		staticServer := http.FileServer(http.FS(d2admin))
-		// TODO: 遇到404 就返回前端根路径下index.html的资源 路径不变
-		staticServer.ServeHTTP(c.Writer, c.Request)
-	})
+	// router.Any("/d2admin/*any", func(c *gin.Context) {
+	// 	// staticServer := wrapHandler(http.FS(dashboard))
+	// 	staticServer := http.FileServer(http.FS(d2admin))
+	// 	// TODO: 遇到404 就返回前端根路径下index.html的资源 路径不变
+	// 	staticServer.ServeHTTP(c.Writer, c.Request)
+	// })
 
 	router.Any("/shadcn/*any", func(c *gin.Context) {
 		// staticServer := wrapHandler(http.FS(dashboard))

@@ -468,8 +468,18 @@ export default {
       }
       apiput(tmp).then(resp => {
         console.log('resp', resp)
-        // this.fetchData()
-        // this.dialogVisible = false
+        this.$message({
+          message: '更新成功',
+          type: 'success'
+        })
+        this.fetchData()
+        this.dialogVisible = false
+      }).catch(err => {
+        console.error('更新失败:', err)
+        this.$message({
+          message: '更新失败: ' + err.message,
+          type: 'error'
+        })
       })
     }
   },

@@ -220,7 +220,7 @@ func gvr_post_add(c *gin.Context) {
 
 	list, err := data.Post()
 	if err != nil {
-		slog.Error("post error: %s", err.Error())
+		slog.With("Error", err.Error()).Error("post error")
 		utils.SendErrorMessage(c, 500, "post error", err.Error())
 		return
 	}

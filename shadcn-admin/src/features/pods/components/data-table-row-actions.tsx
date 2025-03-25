@@ -56,7 +56,7 @@ export function DataTableRowActions<TData>({
             setOpen('update')
           }}
         >
-          Edit
+          编辑 
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuSub>
@@ -119,7 +119,7 @@ export function DataTableRowActions<TData>({
             setOpen('delete')
           }}
         >
-          Delete
+          刪除 
           <DropdownMenuShortcut>
             <IconTrash size={16} />
           </DropdownMenuShortcut>

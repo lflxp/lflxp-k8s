@@ -195,3 +195,80 @@ export function CCComponent() {
     </>
   )
 }
+
+export const poddemo = {
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+      "annotations": {
+          "cni.projectcalico.org/containerID": "6952a74e0b1c95f958e0e40eb2c8a8d93430112f2fc1860f2e81aa4d439d48e2",
+          "cni.projectcalico.org/podIP": "10.42.153.106/32",
+          "cni.projectcalico.org/podIPs": "10.42.153.106/32"
+      },
+      "creationTimestamp": "2025-03-25T14:09:59Z",
+      "generateName": "demo-7fdf7d479b-",
+      "labels": {
+          "aa": "bbcd",
+          "app.kubernetes.io/instance": "demo",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "demo",
+          "app.kubernetes.io/version": "1.16.0",
+          "helm.sh/chart": "demo-0.1.0",
+          "pod-template-hash": "7fdf7d479b"
+      },
+      "name": "demo-7fdf7d479b-g52kv",
+      "namespace": "default"
+  },
+  "spec": {
+      "containers": [
+          {
+              "image": "nginx:1.16.0",
+              "imagePullPolicy": "IfNotPresent",
+              "livenessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                      "path": "/",
+                      "port": "http",
+                      "scheme": "HTTP"
+                  },
+                  "periodSeconds": 10,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+              },
+              "name": "demo",
+              "ports": [
+                  {
+                      "containerPort": 80,
+                      "name": "http",
+                      "protocol": "TCP"
+                  }
+              ],
+              "readinessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                      "path": "/",
+                      "port": "http",
+                      "scheme": "HTTP"
+                  },
+                  "periodSeconds": 10,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+              }
+          }
+      ],
+      "tolerations": [
+          {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/not-ready",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+          },
+          {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/unreachable",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+          }
+      ]
+  }
+}

@@ -9,6 +9,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
+import { toast } from '@/hooks/use-toast'
 
 interface ConfirmDialogProps {
   open: boolean
@@ -23,6 +24,8 @@ interface ConfirmDialogProps {
   isLoading?: boolean
   className?: string
   children?: React.ReactNode
+  name: string,
+  namespace: string
 }
 
 export function ConfirmDialog(props: ConfirmDialogProps) {
@@ -37,8 +40,13 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
     isLoading,
     disabled = false,
     handleConfirm,
+    name,
+    namespace,
     ...actions
   } = props
+
+  
+
   return (
     <AlertDialog {...actions}>
       <AlertDialogContent className={cn(className && className)}>
