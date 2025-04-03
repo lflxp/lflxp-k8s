@@ -46,6 +46,9 @@ const AuthenticatedSettingsIndexLazyImport = createFileRoute(
 const AuthenticatedPodsIndexLazyImport = createFileRoute(
   '/_authenticated/pods/',
 )()
+const AuthenticatedK8sIndexLazyImport = createFileRoute(
+  '/_authenticated/k8s/',
+)()
 const AuthenticatedHelpCenterIndexLazyImport = createFileRoute(
   '/_authenticated/help-center/',
 )()
@@ -209,6 +212,14 @@ const AuthenticatedPodsIndexLazyRoute = AuthenticatedPodsIndexLazyImport.update(
   } as any,
 ).lazy(() =>
   import('./routes/_authenticated/pods/index.lazy').then((d) => d.Route),
+)
+
+const AuthenticatedK8sIndexLazyRoute = AuthenticatedK8sIndexLazyImport.update({
+  id: '/k8s/',
+  path: '/k8s/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any).lazy(() =>
+  import('./routes/_authenticated/k8s/index.lazy').then((d) => d.Route),
 )
 
 const AuthenticatedHelpCenterIndexLazyRoute =
@@ -436,6 +447,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHelpCenterIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/k8s/': {
+      id: '/_authenticated/k8s/'
+      path: '/k8s'
+      fullPath: '/k8s'
+      preLoaderRoute: typeof AuthenticatedK8sIndexLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/pods/': {
       id: '/_authenticated/pods/'
       path: '/pods'
@@ -501,6 +519,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppsIndexLazyRoute: typeof AuthenticatedAppsIndexLazyRoute
   AuthenticatedChatsIndexLazyRoute: typeof AuthenticatedChatsIndexLazyRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
+  AuthenticatedK8sIndexLazyRoute: typeof AuthenticatedK8sIndexLazyRoute
   AuthenticatedPodsIndexLazyRoute: typeof AuthenticatedPodsIndexLazyRoute
   AuthenticatedTasksIndexLazyRoute: typeof AuthenticatedTasksIndexLazyRoute
   AuthenticatedUsersIndexLazyRoute: typeof AuthenticatedUsersIndexLazyRoute
@@ -513,6 +532,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppsIndexLazyRoute: AuthenticatedAppsIndexLazyRoute,
   AuthenticatedChatsIndexLazyRoute: AuthenticatedChatsIndexLazyRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
+  AuthenticatedK8sIndexLazyRoute: AuthenticatedK8sIndexLazyRoute,
   AuthenticatedPodsIndexLazyRoute: AuthenticatedPodsIndexLazyRoute,
   AuthenticatedTasksIndexLazyRoute: AuthenticatedTasksIndexLazyRoute,
   AuthenticatedUsersIndexLazyRoute: AuthenticatedUsersIndexLazyRoute,
@@ -542,6 +562,7 @@ export interface FileRoutesByFullPath {
   '/apps': typeof AuthenticatedAppsIndexLazyRoute
   '/chats': typeof AuthenticatedChatsIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
+  '/k8s': typeof AuthenticatedK8sIndexLazyRoute
   '/pods': typeof AuthenticatedPodsIndexLazyRoute
   '/settings/': typeof AuthenticatedSettingsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
@@ -567,6 +588,7 @@ export interface FileRoutesByTo {
   '/apps': typeof AuthenticatedAppsIndexLazyRoute
   '/chats': typeof AuthenticatedChatsIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
+  '/k8s': typeof AuthenticatedK8sIndexLazyRoute
   '/pods': typeof AuthenticatedPodsIndexLazyRoute
   '/settings': typeof AuthenticatedSettingsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
@@ -596,6 +618,7 @@ export interface FileRoutesById {
   '/_authenticated/apps/': typeof AuthenticatedAppsIndexLazyRoute
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexLazyRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexLazyRoute
+  '/_authenticated/k8s/': typeof AuthenticatedK8sIndexLazyRoute
   '/_authenticated/pods/': typeof AuthenticatedPodsIndexLazyRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexLazyRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexLazyRoute
@@ -625,6 +648,7 @@ export interface FileRouteTypes {
     | '/apps'
     | '/chats'
     | '/help-center'
+    | '/k8s'
     | '/pods'
     | '/settings/'
     | '/tasks'
@@ -649,6 +673,7 @@ export interface FileRouteTypes {
     | '/apps'
     | '/chats'
     | '/help-center'
+    | '/k8s'
     | '/pods'
     | '/settings'
     | '/tasks'
@@ -676,6 +701,7 @@ export interface FileRouteTypes {
     | '/_authenticated/apps/'
     | '/_authenticated/chats/'
     | '/_authenticated/help-center/'
+    | '/_authenticated/k8s/'
     | '/_authenticated/pods/'
     | '/_authenticated/settings/'
     | '/_authenticated/tasks/'
@@ -745,6 +771,7 @@ export const routeTree = rootRoute
         "/_authenticated/apps/",
         "/_authenticated/chats/",
         "/_authenticated/help-center/",
+        "/_authenticated/k8s/",
         "/_authenticated/pods/",
         "/_authenticated/tasks/",
         "/_authenticated/users/"
@@ -824,6 +851,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/help-center/": {
       "filePath": "_authenticated/help-center/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/k8s/": {
+      "filePath": "_authenticated/k8s/index.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/pods/": {

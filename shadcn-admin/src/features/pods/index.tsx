@@ -43,12 +43,12 @@ export default function Pods() {
     fetchData();
 
     // 设置定时刷新，这里设置为每 5 分钟（300000 毫秒）刷新一次，你可以根据需求调整
-    const intervalId = setInterval(() => {
-      fetchData();
-    }, 3000);
+    // const intervalId = setInterval(() => {
+    //   fetchData();
+    // }, 3000);
 
-    // 组件卸载时清除定时器，避免内存泄漏
-    return () => clearInterval(intervalId);
+    // // 组件卸载时清除定时器，避免内存泄漏
+    // return () => clearInterval(intervalId);
   }, []);
 
   return (

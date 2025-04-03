@@ -80,6 +80,11 @@ export const sidebarData: SidebarData = {
           url: '/pods',
           icon: IconLockAccess,
         },
+        {
+          title: 'K8s',
+          url: '/k8s',
+          icon: IconLockAccess,
+        },
       ],
     },
     {
