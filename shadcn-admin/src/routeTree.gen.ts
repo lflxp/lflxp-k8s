@@ -231,7 +231,7 @@ const AuthenticatedK8sIndexLazyRoute = AuthenticatedK8sIndexLazyImport.update({
   path: '/k8s/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any).lazy(() =>
-  import('././routes/_authenticated/nodes/index.lazy').then((d) => d.Route),
+  import('./routes/_authenticated/k8s/index.lazy').then((d) => d.Route),
 )
 
 const AuthenticatedHelpCenterIndexLazyRoute =
