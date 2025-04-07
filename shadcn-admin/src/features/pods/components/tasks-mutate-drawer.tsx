@@ -244,10 +244,7 @@ export function PodTerminalDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="h-[80vh]">
-        {/* <DrawerHeader>
-          <DrawerTitle>Terminal: {namespace}/{podName}:{containerName}</DrawerTitle>
-        </DrawerHeader> */}
+      <DrawerContent className="h-[80vh] mt-0">
         <div className="w-full h-full">
           <iframe 
             src={terminalUrl}
@@ -271,10 +268,7 @@ export function PodSSHDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="h-[80vh]">
-        {/* <DrawerHeader>
-          <DrawerTitle>Terminal: {namespace}/{podName}:{containerName}</DrawerTitle>
-        </DrawerHeader> */}
+      <DrawerContent className="h-[80vh] mt-0">
         <div className="w-full h-full">
           <iframe 
             src={terminalUrl}

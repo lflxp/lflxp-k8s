@@ -9,8 +9,6 @@ import { DataTableRowActions } from './data-table-row-actions'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useTasks } from '../context/tasks-context'
 
-
-
 export const columns: ColumnDef<Pod>[] = [
   {
     id: 'select',

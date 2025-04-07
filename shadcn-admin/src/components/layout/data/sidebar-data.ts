@@ -30,7 +30,7 @@ export const sidebarData: SidebarData = {
   },
   teams: [
     {
-      name: 'Shadcn Admin',
+      name: 'Kubernetes Admin',
       logo: Command,
       plan: 'Vite + ShadcnUI',
     },
@@ -70,15 +70,30 @@ export const sidebarData: SidebarData = {
           badge: '3',
           icon: IconMessages,
         },
+      ],
+    },
+    {
+      title: '集群管理',
+      items: [
         {
-          title: 'Users',
-          url: '/users',
+          title: '概览',
+          url: '/k8s',
+          icon: IconLayoutDashboard,
+        },
+        {
+          title: 'Nodes',
+          url: '/nodes',
           icon: IconUsers,
         },
+      ],
+    },
+    {
+      title: '工作负载',
+      items: [
         {
           title: 'Pods',
           url: '/pods',
-          icon: IconLockAccess,
+          icon: IconLayoutDashboard,
         },
         {
           title: 'K8s',
