@@ -1,7 +1,9 @@
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
 } from "@/components/ui/card"
 import {
   Table,
@@ -41,6 +43,12 @@ export default function Status({
 
   return (
     <Card>
+      <CardHeader>
+        <CardTitle>{currentRow?.raw.metadata.name}</CardTitle>
+        <CardDescription>
+          命名空间：{currentRow?.raw.metadata.namespace}
+        </CardDescription>
+      </CardHeader>
       <CardContent className="space-y-2">
         <Table>
           <TableHeader>

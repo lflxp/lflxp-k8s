@@ -24,6 +24,7 @@ type GetGVR struct {
 	PatchData       string                     `json:"patchdata"`
 	PatchDataStrate map[string]interface{}     `json:"patchdatastrate"`
 	Fast            bool                       `json:"fast"` // 快速模式
+	ListOptions     metav1.ListOptions         `json:"listoptions"`
 }
 
 func (g *GetGVR) GetStruct() schema.GroupVersionResource {
@@ -43,12 +44,15 @@ func (g *GetGVR) List() (list *unstructured.UnstructuredList, err error) {
 	ctx := context.Background()
 
 	if g.Namespace != "" {
-		list, err = cli.Resource(g.GetStruct()).Namespace(g.Namespace).List(ctx, metav1.ListOptions{})
+		list, err = cli.Resource(g.GetStruct()).Namespace(g.Namespace).List(ctx, g.ListOptions)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		list, err = cli.Resource(g.GetStruct()).List(ctx, metav1.ListOptions{Limit: 500})
+		if g.ListOptions.Limit == 0 {
+			g.ListOptions.Limit = 500
+		}
+		list, err = cli.Resource(g.GetStruct()).List(ctx, g.ListOptions)
 		if err != nil {
 			return nil, err
 		}

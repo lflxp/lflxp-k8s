@@ -75,7 +75,7 @@ export default function Relative({
       <Card>
         <CardHeader>
           <CardTitle>
-            关联References {currentRow?.raw.metadata.ownerReferences.length}
+            关联References {currentRow?.raw.metadata.ownerReferences?.length}
           </CardTitle>
           <CardDescription>
             OwnerReferences 

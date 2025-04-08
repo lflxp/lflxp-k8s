@@ -38,9 +38,9 @@ export default function RawData({
     <>
       <Card>
         <CardHeader>
-          <CardTitle>原始信息</CardTitle>
+          <CardTitle>{currentRow?.raw.metadata.name}</CardTitle>
           <CardDescription>
-            原生JSON信息展示
+            命名空间：{currentRow?.raw.metadata.namespace}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">

@@ -1,7 +1,9 @@
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
 } from "@/components/ui/card"
 import {
   Table,
@@ -13,7 +15,6 @@ import {
 } from "@/components/ui/table"
 import { Pod } from '../../data/schema'
 import { useMemo } from 'react'
-import { Check, Minus } from "lucide-react"
 
 export interface RawDataProps {
   currentRow?: Pod
@@ -138,6 +139,12 @@ export default function Affinity({
     <>
       { currentRow?.raw.spec.affinity &&
       <Card>
+        <CardHeader>
+          <CardTitle>{currentRow?.raw.metadata.name}</CardTitle>
+          <CardDescription>
+            命名空间：{currentRow?.raw.metadata.namespace}
+          </CardDescription>
+        </CardHeader>
         <CardContent className="space-y-2">
             <div className="mb-2">
               <h3 className="text-lg text-left font-semibold">亲和性配置</h3>
@@ -157,6 +164,12 @@ export default function Affinity({
         </CardContent>
       </Card> }
       <Card className="mt-4">
+      <CardHeader>
+        <CardTitle>{currentRow?.raw.metadata.name}</CardTitle>
+          <CardDescription>
+            命名空间：{currentRow?.raw.metadata.namespace}
+          </CardDescription>
+        </CardHeader>
         <CardContent className="space-y-2">
           { currentRow?.raw.spec.tolerations && 
             <div className="mb-2">

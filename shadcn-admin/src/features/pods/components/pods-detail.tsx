@@ -89,9 +89,9 @@ export function PodDetailDrawer({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
-        <DrawerHeader className="text-center">
+        {/* <DrawerHeader className="text-center">
           <DrawerTitle>Pod 详情 [{currentRow?.raw?.metadata?.namespace } / {currentRow?.raw?.metadata?.name}]</DrawerTitle>
-        </DrawerHeader>
+        </DrawerHeader> */}
         <Tabs defaultValue="container" className="w-full">
         <TabsList className="grid w-full grid-cols-9 gap-2">
           <TabsTrigger value="container">
@@ -119,7 +119,14 @@ export function PodDetailDrawer({
               </AvatarFallback>
             </Avatar>
           </TabsTrigger>
-          <TabsTrigger value="status">状态</TabsTrigger>
+          <TabsTrigger value="status">
+            状态
+            <Avatar className="h-5 w-5 ml-1">
+              <AvatarFallback className="text-xs">
+                {currentRow?.raw?.metadata?.annotations ? Object.keys(currentRow.raw.status?.conditions).length : 0}
+              </AvatarFallback>
+            </Avatar>
+          </TabsTrigger>
           <TabsTrigger value="diaodu">调度</TabsTrigger>
           <TabsTrigger value="event">事件</TabsTrigger>
           <TabsTrigger value="relative">相关资源</TabsTrigger>
@@ -171,12 +178,12 @@ export function PodDetailDrawer({
         </TabsContent>
         <TabsContent value="jsondata" className="h-[80vh] overflow-y-auto">
           <Card>
-            {/* <CardHeader>
-              <CardTitle>原始JSON查看或编辑</CardTitle>
+            <CardHeader>
+              <CardTitle>{currentRow?.raw.metadata.name}</CardTitle>
               <CardDescription>
-                可以查看原始CRD数据结构并进行修改
+                命名空间：{currentRow?.raw.metadata.namespace}
               </CardDescription>
-            </CardHeader> */}
+            </CardHeader>
             <CardContent className="space-y-2">
               <div className="flex justify-end mb-4">
                 { isEditMode && <Button variant="ghost" onClick={handleUpdate}>

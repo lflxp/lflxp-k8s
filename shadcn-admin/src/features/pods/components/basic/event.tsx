@@ -17,6 +17,8 @@ import { Pod } from '../../data/schema'
 import { useState, useEffect } from 'react';
 import request from '@/api/request';
 import { toast } from '@/hooks/use-toast'
+import { Button } from "@/components/ui/button"
+import { RefreshCw } from "lucide-react"
 
 export interface RawDataProps {
   currentRow?: Pod
@@ -34,13 +36,13 @@ export default function Event({
         version: "v1",
         resource: "events",
         listoptions: {
-          fieldSelector: `involvedObject.name=${currentRow?.raw?.metadata?.name},involvedObject.namespace=${currentRow?.raw?.metadata?.namespace},involvedObject.uid=${currentRow?.raw?.metadata?.uid},involvedObject.kind=Pod`,
+          fieldSelector: `involvedObject.name=${currentRow?.raw?.metadata?.name},involvedObject.namespace=${currentRow?.raw?.metadata?.namespace}`,
           limit: 1000,
           sortBy: 'lastTimestamp',
           sortOrder: 'desc',
         }
       });
-      console.log('请求接口成功:', response.data.items)
+      // console.log('请求接口成功:', response.data.items)
       setEventsData(response.data.items);
     } catch (error) {
       toast({
@@ -106,10 +108,22 @@ export default function Event({
     <Card>
       { eventsData.length > 0 && 
         <CardHeader>
-          <CardTitle>{eventsData[0].involvedObject.name}</CardTitle>
-          <CardDescription>
-            命名空间：{eventsData[0].involvedObject.namespace}
-          </CardDescription>
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle>{eventsData[0].involvedObject.name}</CardTitle>
+              <CardDescription>
+                命名空间：{eventsData[0].involvedObject.namespace}
+              </CardDescription>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={fetchData}
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              刷新
+            </Button>
+          </div>
         </CardHeader>
       }
       <CardContent className="space-y-2">
