@@ -119,9 +119,9 @@ export default function Container({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>RAWDATA</CardTitle>
+        <CardTitle>{currentRow?.raw.metadata.name}</CardTitle>
         <CardDescription>
-          Change your password here. After saving, you'll be logged out.
+          命名空间：{currentRow?.raw.metadata.namespace}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">

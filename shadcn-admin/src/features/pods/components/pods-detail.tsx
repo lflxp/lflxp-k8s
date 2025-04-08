@@ -27,6 +27,7 @@ import { Labels, Annotations } from "./basic/labels"
 import Status from "./basic/status"
 import Relative from "./basic/relative"
 import Affinity from "./basic/affinity"
+import Event from "./basic/event"
 
 
 export function PodDetailDrawer({
@@ -92,7 +93,7 @@ export function PodDetailDrawer({
           <DrawerTitle>Pod 详情 [{currentRow?.raw?.metadata?.namespace } / {currentRow?.raw?.metadata?.name}]</DrawerTitle>
         </DrawerHeader>
         <Tabs defaultValue="container" className="w-full">
-        <TabsList className="grid w-full grid-cols-8 gap-2">
+        <TabsList className="grid w-full grid-cols-9 gap-2">
           <TabsTrigger value="container">
             容器
             <Avatar className="h-5 w-5 ml-1">
@@ -120,6 +121,7 @@ export function PodDetailDrawer({
           </TabsTrigger>
           <TabsTrigger value="status">状态</TabsTrigger>
           <TabsTrigger value="diaodu">调度</TabsTrigger>
+          <TabsTrigger value="event">事件</TabsTrigger>
           <TabsTrigger value="relative">相关资源</TabsTrigger>
           <TabsTrigger value="monitor">监控</TabsTrigger>
           <TabsTrigger value="jsondata">查看或编辑</TabsTrigger>
@@ -141,6 +143,9 @@ export function PodDetailDrawer({
         </TabsContent>
         <TabsContent value="diaodu" className="h-[80vh] overflow-y-auto">
           <Affinity currentRow={currentRow} />
+        </TabsContent>
+        <TabsContent value="event" className="h-[80vh] overflow-y-auto">
+          <Event currentRow={currentRow} />
         </TabsContent>
         <TabsContent value="monitor" className="h-[80vh] overflow-y-auto">
           <div className="h-[80vh] grid grid-cols-2 gap-2">
