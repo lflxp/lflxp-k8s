@@ -44,22 +44,6 @@ export const nodeSchema = z.object({
       message: z.string().optional(),
       reason: z.string().optional(),
     })).optional(),
-    allocatable: z.object({
-      cpu: z.string(),
-      memory: z.string(),
-      pods: z.string(),
-      ephemeral-storage: z.string(),
-      hugepages-1Gi: z.string().optional(),
-      hugepages-2Mi: z.string().optional(),
-    }).optional(),
-    capacity: z.object({
-      cpu: z.string(),
-      memory: z.string(),
-      pods: z.string(),
-      ephemeral-storage: z.string(),
-      hugepages-1Gi: z.string().optional(),
-      hugepages-2Mi: z.string().optional(),
-    }).optional(),
     images: z.array(z.object({
       names: z.array(z.string()),
       sizeBytes: z.number().optional(),
@@ -75,7 +59,23 @@ export const nodeSchema = z.object({
       operatingSystem: z.string().optional(),
       osImage: z.string().optional(),
       systemUUID: z.string().optional(),
-    })
+    }),
+    allocatable: z.object({
+      cpu: z.string(),
+      memory: z.string(),
+      pods: z.string(),
+      ephemeral-storage: z.string(),
+      hugepages-1Gi: z.string().optional(),
+      hugepages-2Mi: z.string().optional(),
+    }).optional(),
+    capacity: z.object({
+      cpu: z.string(),
+      memory: z.string(),
+      pods: z.string(),
+      ephemeral-storage: z.string(),
+      hugepages-1Gi: z.string().optional(),
+      hugepages-2Mi: z.string().optional(),
+    }).optional()
   }).optional(),
   metrics: z.object({
     metadata: z.object({

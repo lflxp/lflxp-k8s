@@ -56,7 +56,7 @@ export const columns: ColumnDef<Node>[] = [
     id: 'OS',
     header: 'OS',
     cell: ({ row }) => {
-      const osImage = row.original.status?.nodeInfo?.osImage;
+      const osImage = row.original?.status?.nodeInfo?.osImage;
       return osImage || 'N/A';
     },
   },

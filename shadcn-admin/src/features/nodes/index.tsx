@@ -26,7 +26,7 @@ export default function Nodes() {
         namespace: "",
       });
       // console.log('请求接口成功:', response.data.items)
-      // setNodesData(response.data.items);
+      setNodesData(response.data.items);
       const response2 = await request.get('/api/monitor/metrics/node');
       // console.log('请求接口成功 metrics:', response2.data.items)
       const result = response.data.items.map(item => ({
