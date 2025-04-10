@@ -1,9 +1,15 @@
 import React, { createContext, useContext, ReactNode } from 'react'
-import { Metrics } from '../data/metrics'
+import { Node } from '../data/schema'
+
+type NodesDiaglogType = 'create' | 'update' | 'delete' | 'import' | 'terminal' |'ssh' | 'detail'
 
 interface NodeContextType {
-  metrics: Metrics | null
-  setMetrics: React.Dispatch<React.SetStateAction<Metrics | null>>
+  open: NodesDiaglogType | null,
+  setOpen: (str: NodesDiaglogType | null) => void
+  currentRow: Node | null
+  setCurrentRow: React.Dispatch<React.SetStateAction<Node | null>>
+  nodeName: string | undefined
+  setNodeName: React.Dispatch<React.SetStateAction<string | undefined>>
 }
 
 // interface NodesContextType {
@@ -15,14 +21,12 @@ interface NodeContextType {
 const NodesContext = createContext<NodeContextType | null>(null)
 
 export default function NodesProvider({ children }: { children: ReactNode }) {
-  // TODO: 从API获取节点数据
-  // const nodes: Metrics[] = []
-  // const loading = false
-  // const error = null
-  const [metrics, setMetrics] = React.useState<Metrics | null>(null)
+  const [open, setOpen] = React.useState<NodesDiaglogType | null>(null)
+  const [currentRow, setCurrentRow] = React.useState<Node | null>(null)
+  const [nodeName, setNodeName] = React.useState<string | undefined>(undefined)
 
   return (
-    <NodesContext.Provider value={{ metrics, setMetrics }}>
+    <NodesContext.Provider value={{ open, setOpen, currentRow, setCurrentRow, nodeName, setNodeName }}>
       {children}
     </NodesContext.Provider>
   )

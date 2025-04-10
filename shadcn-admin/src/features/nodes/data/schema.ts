@@ -25,6 +25,11 @@ export const nodeSchema = z.object({
     podCIDR: z.string().optional(),
     podCIDRs: z.array(z.string()).optional(),
     providerID: z.string().optional(),
+    taints: z.array(z.object({
+      key: z.string(),
+      value: z.string(),
+      effect: z.string().optional(),
+    })).optional(),
   }),
   status: z.object({
     addresses: z.array(z.object({
@@ -39,7 +44,22 @@ export const nodeSchema = z.object({
       message: z.string().optional(),
       reason: z.string().optional(),
     })).optional(),
-    allocatable: z.record(z.string(), z.string()).optional(),
+    allocatable: z.object({
+      cpu: z.string(),
+      memory: z.string(),
+      pods: z.string(),
+      ephemeral-storage: z.string(),
+      hugepages-1Gi: z.string().optional(),
+      hugepages-2Mi: z.string().optional(),
+    }).optional(),
+    capacity: z.object({
+      cpu: z.string(),
+      memory: z.string(),
+      pods: z.string(),
+      ephemeral-storage: z.string(),
+      hugepages-1Gi: z.string().optional(),
+      hugepages-2Mi: z.string().optional(),
+    }).optional(),
     images: z.array(z.object({
       names: z.array(z.string()),
       sizeBytes: z.number().optional(),

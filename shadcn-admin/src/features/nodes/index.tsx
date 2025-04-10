@@ -3,8 +3,8 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-
-import { NodesTable, columns } from './components/nodes-table'
+import { columns } from './components/columns'
+import { NodesTable } from './components/nodes-table'
 import { NodesPrimaryButtons } from './components/nodes-primary-buttons'
 import NodesProvider from './context/nodes-context'
 import { useState, useEffect } from 'react';
@@ -12,6 +12,7 @@ import request from '@/api/request';
 import { toast } from '@/hooks/use-toast'
 import { Button } from "@/components/ui/button"
 import { RefreshCw } from "lucide-react"
+import { NodesDialogs } from './components/nodes-dialogs'
 
 export default function Nodes() {
   const [nodesData, setNodesData] = useState([]);
@@ -35,7 +36,7 @@ export default function Nodes() {
         )
       }));
       setNodesData(result);
-      // console.log('请求接口成功 metrics:', result)
+      console.log('请求接口成功 metrics:', result)
     } catch (error) {
       toast({
         title: '请求接口出错',
@@ -88,6 +89,7 @@ export default function Nodes() {
           <NodesTable data={nodesData} columns={columns} />
         </div>
       </Main>
+      <NodesDialogs/>
     </NodesProvider>
   )
 }
