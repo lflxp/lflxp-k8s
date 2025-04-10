@@ -10,7 +10,8 @@ import NodesProvider from './context/nodes-context'
 import { useState, useEffect } from 'react';
 import request from '@/api/request'; 
 import { toast } from '@/hooks/use-toast'
-import { useNodes } from './context/nodes-context';
+import { Button } from "@/components/ui/button"
+import { RefreshCw } from "lucide-react"
 
 export default function Nodes() {
   const [nodesData, setNodesData] = useState([]);
@@ -23,8 +24,18 @@ export default function Nodes() {
         resource: "nodes",
         namespace: "",
       });
-      console.log('请求接口成功:', response.data.items)
-      setNodesData(response.data.items);
+      // console.log('请求接口成功:', response.data.items)
+      // setNodesData(response.data.items);
+      const response2 = await request.get('/api/monitor/metrics/node');
+      // console.log('请求接口成功 metrics:', response2.data.items)
+      const result = response.data.items.map(item => ({
+        ...item,
+        metrics: response2.data.items.find(node => 
+          node.metadata.name === item.metadata.name
+        )
+      }));
+      setNodesData(result);
+      // console.log('请求接口成功 metrics:', result)
     } catch (error) {
       toast({
         title: '请求接口出错',
@@ -61,7 +72,17 @@ export default function Nodes() {
               查看和管理您的Kubernetes集群节点信息
             </p>
           </div>
-          <NodesPrimaryButtons />
+          <div className="flex items-center space-x-2">
+            <NodesPrimaryButtons />
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={fetchData}
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              刷新
+            </Button>
+          </div>
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
           <NodesTable data={nodesData} columns={columns} />

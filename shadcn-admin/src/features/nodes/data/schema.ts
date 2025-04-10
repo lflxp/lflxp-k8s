@@ -56,7 +56,31 @@ export const nodeSchema = z.object({
       osImage: z.string().optional(),
       systemUUID: z.string().optional(),
     })
-  }).optional()
+  }).optional(),
+  metrics: z.object({
+    metadata: z.object({
+      name: z.string(),
+      namespace: z.string().optional(),
+      labels: z.record(z.string(), z.string()).optional(),
+      annotations: z.record(z.string(), z.string()).optional(),
+      uid: z.string(),
+      creationTimestamp: z.string().optional(),
+      ownerReferences: z.array(z.object({
+        apiVersion: z.string(),
+        kind: z.string(),
+        name: z.string(),
+        uid: z.string(),
+        controller: z.boolean().optional(),
+        blockOwnerDeletion: z.boolean().optional()
+      })).optional(),
+    }),
+    timestamp: z.string(),
+    window: z.string(),
+    usage: z.object({
+      cpu: z.string(),
+      memory: z.string(),
+    })
+  })
 });
 
 export type Node = z.infer<typeof nodeSchema>;

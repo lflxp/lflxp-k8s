@@ -1,7 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { DataTable, DataTableProps } from './data-table'
 import { Node } from '../data/schema'
-import request from '@/api/request'; 
 import { toast } from '@/hooks/use-toast'
 
 export const columns: ColumnDef<Node>[] = [
@@ -43,44 +42,6 @@ export const columns: ColumnDef<Node>[] = [
       return osImage || 'N/A';
     },
   },
-  { // 找到CPU使用率列
-    accessorKey: 'cpuUsage',
-    header: 'CPU使用率',
-    cell: ({ row }) => {
-      // try {
-      //   const response2 = request.get('/api/monitor/metrics/node');
-      //   console.log('请求接口成功 metrics:', response2.data.items)
-      //   const metrics = response2.data.items;
-      //   const allocatableCPU = row.original.status?.allocatable?.cpu;
-      //   const nodeName = row.original.metadata.name;
-      //   const nodeMetrics = metrics.find(metricdata => metricdata.metadata.name === nodeName);
-      //   const usedCPU = nodeMetrics?.usage?.cpu;
-      //   const cpuUsage = allocatableCPU && usedCPU ? (usedCPU / allocatableCPU) * 100 : null;
-      //   return cpuUsage ? (
-      //     <div>
-      //       <progress value={cpuUsage} max="100"></progress>
-      //       <span>{cpuUsage.toFixed(2)}%</span>
-      //     </div>
-      //   ) : 'N/A'
-      // } catch (error) {
-      //   toast({
-      //     title: '请求接口出错',
-      //     description: (
-      //       <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-      //         <code className='text-white'>
-      //           {JSON.stringify(error, null, 2)}
-      //         </code>
-      //       </pre>
-      //     ),
-      //   })
-      // }
-      return 'N/A';
-    }
-  }, // 更新CPU使用率列的计算逻辑
-  {
-    accessorKey: 'memoryUsage',
-    header: '内存使用率',
-  },
   {
     id: 'kernelVersion',
     header: '内核版本',
@@ -98,11 +59,128 @@ export const columns: ColumnDef<Node>[] = [
     }
   },
   {
-    accessorKey: '操作系统',
-    header: 'operatingSystem',
+    accessorKey: 'operatingSystem',
+    header: '操作系统',
     cell: ({ row }) => {
       const operatingSystem = row.original.status?.nodeInfo?.operatingSystem;
       return operatingSystem || 'N/A';
+    }
+  },
+  { // 找到CPU使用率列
+    accessorKey: 'cpuUsage',
+    header: 'CPU使用率',
+    cell: ({ row }) => {
+      try {
+        const allocatableCPU = row.original.status?.allocatable?.cpu;
+        const nodeMetrics = row.original.metrics;
+        const usedCPU = nodeMetrics?.usage?.cpu;
+        
+        // 转换CPU值（如"812m"转0.812）
+        const parseCPU = (cpu: string) => {
+          if (!cpu) return 0;
+          if (cpu.endsWith('m')) return parseFloat(cpu) / 1000;
+          if (cpu.endsWith('n')) return parseFloat(cpu) / 1000000000;
+          return parseFloat(cpu);
+        };
+        
+        const allocatable = parseCPU(allocatableCPU);
+        const used = parseCPU(usedCPU);
+        const cpuUsage = allocatable && used ? (used / allocatable) * 100 : null;
+        // console.log('CPU使用率:', cpuUsage, 'allocatableCPU:', allocatableCPU, 'usedCPU:', usedCPU)
+        return cpuUsage ? (
+          <div className="relative w-full">
+            <div className="w-full h-6 rounded-full border border-gray-200 bg-gray-100 overflow-hidden relative">
+              <div 
+                className={`h-full transition-all duration-300 absolute top-0 left-0 ${
+                  cpuUsage < 30 ? 'bg-green-400' : 
+                  cpuUsage < 60 ? 'bg-yellow-400' : 
+                  cpuUsage < 80 ? 'bg-orange-400' : 
+                  'bg-red-500'
+                }`}
+                style={{ width: `${cpuUsage}%` }}
+              />
+              <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-gray-800 z-10">
+                {cpuUsage.toFixed(2)}%
+              </span>
+            </div>
+          </div>
+        ) : 'N/A'
+      } catch (error) {
+        toast({
+          title: '请求接口出错',
+          description: (
+            <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
+              <code className='text-white'>
+                {JSON.stringify(error, null, 2)}
+              </code>
+            </pre>
+          ),
+        })
+      }
+      // return 'N/A';
+    }
+  }, // 更新CPU使用率列的计算逻辑
+  {
+    accessorKey: 'memoryUsage',
+    header: '内存使用率',
+    cell: ({ row }) => {
+      try {
+        const allocatableMemory = row.original.status?.allocatable?.memory;
+        const nodeMetrics = row.original.metrics;
+        const usedMemory = nodeMetrics?.usage?.memory;
+        
+        // 转换内存值（如"812Ki"转字节数）
+        const parseMemory = (memory: string) => {
+          if (!memory) return 0;
+          if (memory.endsWith('Ki')) return parseFloat(memory) * 1024;
+          if (memory.endsWith('Mi')) return parseFloat(memory) * 1024 * 1024;
+          if (memory.endsWith('Gi')) return parseFloat(memory) * 1024 * 1024 * 1024;
+          return parseFloat(memory);
+        };
+        
+        const allocatable = parseMemory(allocatableMemory);
+        const used = parseMemory(usedMemory);
+        const memoryUsage = allocatable && used ? (used / allocatable) * 100 : null;
+        // console.log('内存使用率:', memoryUsage, 'allocatableMemory:', allocatableMemory, 'usedMemory:', usedMemory)
+        return memoryUsage ? (
+          <div className="relative w-full">
+            <div className="w-full h-6 rounded-full border border-gray-200 bg-gray-100 overflow-hidden relative">
+              <div 
+                className={`h-full transition-all duration-300 absolute top-0 left-0 ${
+                  memoryUsage < 30 ? 'bg-green-400' : 
+                  memoryUsage < 60 ? 'bg-yellow-400' : 
+                  memoryUsage < 80 ? 'bg-orange-400' : 
+                  'bg-red-500'
+                }`}
+                style={{ width: `${memoryUsage}%` }}
+              />
+              <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-gray-800 z-10">
+                {memoryUsage.toFixed(2)}%
+              </span>
+            </div>
+          </div>
+        ) : 'N/A'
+      } catch (error) {
+        toast({
+          title: '请求接口出错',
+          description: (
+            <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
+              <code className='text-white'>
+                {JSON.stringify(error, null, 2)}
+              </code>
+            </pre>
+          ),
+        })
+      }
+      // return 'N/A';
+    }
+  },
+  {
+    accessorKey: '添加时间',
+    header: 'creationTimestamp',
+    cell: ({ row }) => {
+      const creationTimestamp = row.original.metadata?.creationTimestamp;
+      return creationTimestamp ? new Date(creationTimestamp).toLocaleString() : 'N/A';
     }
   },
 ]

@@ -8,7 +8,6 @@ export function NodesPrimaryButtons() {
         <Plus className='mr-2 h-4 w-4' />
         添加节点
       </Button>
-      <Button variant='outline'>刷新</Button>
     </div>
   )
 }
