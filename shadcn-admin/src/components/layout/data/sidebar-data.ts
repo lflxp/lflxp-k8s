@@ -76,11 +76,6 @@ export const sidebarData: SidebarData = {
       title: '集群管理',
       items: [
         {
-          title: '概览',
-          url: '/k8s',
-          icon: IconLayoutDashboard,
-        },
-        {
           title: 'Nodes',
           url: '/nodes',
           icon: IconUsers,
