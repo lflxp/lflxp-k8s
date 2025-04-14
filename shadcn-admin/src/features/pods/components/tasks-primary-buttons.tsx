@@ -17,10 +17,10 @@ export const TasksPrimaryButtons = ({ fetchData }: TasksPrimaryButtonsProps) => 
       >
         <span>Import</span> <IconDownload size={18} />
       </Button>
-      <Button className='space-x-1' onClick={() => setOpen('create')}>
+      <Button className='space-x-1' variant='outline' onClick={() => setOpen('create')}>
         <span>Create</span> <IconPlus size={18} />
       </Button>
-      <Button onClick={fetchData}>刷新</Button>
+      <Button onClick={fetchData} variant='outline'>刷新</Button>
     </div>
   )
 }

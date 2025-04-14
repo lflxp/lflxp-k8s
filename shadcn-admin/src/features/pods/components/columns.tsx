@@ -84,7 +84,7 @@ export const columns: ColumnDef<Pod>[] = [
 
       return (
         <div>
-          <div className='w-48 overflow-hidden text-ellipsis whitespace-nowrap hover:overflow-visible hover:text-blue-600 cursor-pointer' onClick={openDrawer}>{row.getValue("name")}</div>
+          <div className='overflow-hidden text-ellipsis whitespace-nowrap hover:overflow-visible hover:text-blue-600 cursor-pointer' onClick={openDrawer}>{row.getValue("name")}</div>
         </div>
       );
     },

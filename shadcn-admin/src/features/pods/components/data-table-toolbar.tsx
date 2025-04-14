@@ -4,15 +4,18 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableViewOptions } from './data-table-view-options'
 import { DataTableFacetedFilter } from './data-table-faceted-filter'
+import { TasksPrimaryButtons } from './tasks-primary-buttons'
 
 interface DataTableToolbarProps<TData extends { namespace: string }> {
   table: Table<TData>
   originalData: TData[]
+  fetchData: () => Promise<void>;
 }
 
 export function DataTableToolbar<TData extends { namespace: string }>({
   table,
   originalData,
+  fetchData,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
   // console.log('table status', table.getColumn('status'))
@@ -89,6 +92,7 @@ export function DataTableToolbar<TData extends { namespace: string }>({
         )}
       </div>
       <DataTableViewOptions table={table} />
+      <TasksPrimaryButtons fetchData={fetchData} />
     </div>
   )
 }

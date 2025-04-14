@@ -3,7 +3,7 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { Card } from "@/components/ui/card"; // 假设存在这个组件
+import { Card } from "@/components/ui/card"; 
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { Search } from '@/components/search'
@@ -34,34 +34,34 @@ export default function K8S() {
             <p>hhh</p>
           </div>
           <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-          <Card className="h-[calc(100vh)] w-full flex justify-center items-center">
-            <ResizablePanelGroup
-                direction="horizontal"
-                className="w-full h-full max-w-full md:min-w-[450px]"
-            >
-                <ResizablePanel defaultSize={50}>
-                    <div className="flex h-full items-center justify-center p-6">
-                        <span className="font-semibold">One</span>
-                    </div>
-                </ResizablePanel>
-                <ResizableHandle />
-                <ResizablePanel defaultSize={50}>
-                    <ResizablePanelGroup direction="vertical" className="h-full">
-                        <ResizablePanel defaultSize={25}>
-                            <div className="flex h-full items-center justify-center p-6">
-                                <span className="font-semibold">Two</span>
-                            </div>
-                        </ResizablePanel>
-                        <ResizableHandle />
-                        <ResizablePanel defaultSize={75}>
-                            <div className="flex h-full items-center justify-center p-6">
-                                <span className="font-semibold">Three</span>
-                            </div>
-                        </ResizablePanel>
-                    </ResizablePanelGroup>
-                </ResizablePanel>
-            </ResizablePanelGroup>
-        </Card>
+            <Card className="h-[calc(100vh)] w-full flex justify-center items-center">
+              <ResizablePanelGroup
+                  direction="horizontal"
+                  className="w-full h-full max-w-full md:min-w-[450px]"
+              >
+                  <ResizablePanel defaultSize={50}>
+                      <div className="flex h-full items-center justify-center p-6">
+                          <span className="font-semibold">One</span>
+                      </div>
+                  </ResizablePanel>
+                  <ResizableHandle />
+                  <ResizablePanel defaultSize={50}>
+                      <ResizablePanelGroup direction="vertical" className="h-full">
+                          <ResizablePanel defaultSize={25}>
+                              <div className="flex h-full items-center justify-center p-6">
+                                  <span className="font-semibold">Two</span>
+                              </div>
+                          </ResizablePanel>
+                          <ResizableHandle />
+                          <ResizablePanel defaultSize={75}>
+                              <div className="flex h-full items-center justify-center p-6">
+                                  <span className="font-semibold">Three</span>
+                              </div>
+                          </ResizablePanel>
+                      </ResizablePanelGroup>
+                  </ResizablePanel>
+              </ResizablePanelGroup>
+            </Card>
           </div>
         </Main>
         </>

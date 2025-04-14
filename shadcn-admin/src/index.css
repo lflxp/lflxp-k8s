@@ -141,3 +141,28 @@
     @apply min-h-svh w-full bg-background text-foreground;
   }
 }
+
+@tailwind utilities;
+
+.TabsList {
+  overflow-x: auto;
+  scrollbar-width: none; /* For Firefox */
+  white-space: nowrap;
+  min-width: 120px;
+  gap: 0.25rem;
+}
+
+.TabsList::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari and Opera */
+}
+
+.TabsList::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 40px;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1));
+  pointer-events: none;
+}

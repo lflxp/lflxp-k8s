@@ -25,28 +25,28 @@ export function Capacity({
 }: RawDataProps) {
   const formatBytes = (bytes, key) => {
     if (key === 'cpu' || key === 'pods' || key === 'hugepages-1Gi' || key === 'hugepages-2Mi' || key === 'ephemeral-storage') {
-      if (key === 'ephemeral-storage' && typeof bytes === 'string') {
-        const match = bytes.match(/(\d+)([a-zA-Z]+)/);
-        if (match) {
-          const value = parseInt(match[1], 10);
-          const unit = match[2];
-          switch (unit) {
-            case 'Ki':
-              bytes = value * 1024;
-              break;
-            case 'Mi':
-              bytes = value * 1024 * 1024;
-              break;
-            case 'Gi':
-              bytes = value * 1024 * 1024 * 1024;
-              break;
-            default:
-              return 'N/A';
-          }
-        } else {
-          return 'N/A';
-        }
-      }
+      // if (key === 'ephemeral-storage' && typeof bytes === 'string') {
+      //   const match = bytes.match(/(\d+)([a-zA-Z]+)/);
+      //   if (match) {
+      //     const value = parseInt(match[1], 10);
+      //     const unit = match[2];
+      //     switch (unit) {
+      //       case 'Ki':
+      //         bytes = value * 1024;
+      //         break;
+      //       case 'Mi':
+      //         bytes = value * 1024 * 1024;
+      //         break;
+      //       case 'Gi':
+      //         bytes = value * 1024 * 1024 * 1024;
+      //         break;
+      //       default:
+      //         return 'N/A';
+      //     }
+      //   } else {
+      //     return String(bytes);
+      //   }
+      // }
       return String(bytes);
     }
     if (typeof bytes === 'number') {
