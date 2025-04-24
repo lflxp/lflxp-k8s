@@ -17,11 +17,12 @@ import (
 	"github.com/lflxp/lflxp-k8s/core/router"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lflxp/lflxp-tty/pkg"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/spf13/viper"
 )
 
-func Run(ishttps bool, port string) {
+func Run(ishttps bool, port string, tty *pkg.Tty) {
 	// gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
@@ -35,7 +36,7 @@ func Run(ishttps bool, port string) {
 		ip = "0.0.0.0"
 	}
 
-	router.PreGinServe(r, port)
+	router.PreGinServe(r, port, tty)
 	var server *http.Server
 	if ishttps {
 		err := ctls.Refresh()

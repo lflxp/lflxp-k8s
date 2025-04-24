@@ -9,7 +9,9 @@ import (
 	"github.com/lflxp/lflxp-k8s/pkg/apiserver"
 	"github.com/lflxp/lflxp-k8s/pkg/csm"
 	"github.com/lflxp/lflxp-k8s/pkg/monitor"
+	"github.com/lflxp/lflxp-k8s/pkg/tty"
 	"github.com/lflxp/lflxp-k8s/pkg/vela/appshop"
+	"github.com/lflxp/lflxp-tty/pkg"
 
 	"github.com/lflxp/lflxp-k8s/asset"
 	"github.com/lflxp/lflxp-k8s/pkg/auth"
@@ -19,7 +21,7 @@ import (
 )
 
 // 注册插件和路由
-func PreGinServe(r *gin.Engine, port string) {
+func PreGinServe(r *gin.Engine, port string, ttyData *pkg.Tty) {
 	slog.Info("注册Gin路由")
 
 	// r.Use(middlewares.TokenFilter())
@@ -30,7 +32,7 @@ func PreGinServe(r *gin.Engine, port string) {
 	r.Use(middlewares.Cors())
 
 	// 添加prometheus监控
-	middlewares.RegisterPrometheusMiddleware(r, false)
+	// middlewares.RegisterPrometheusMiddleware(r, false)
 
 	// gzip
 	r.Use(gzip.Gzip(gzip.DefaultCompression, gzip.WithExcludedPathsRegexs([]string{".*"})))
@@ -38,13 +40,13 @@ func PreGinServe(r *gin.Engine, port string) {
 	// 404
 	r.NoRoute(middlewares.NoRouteHandler)
 
-	r.GET("/", func(c *gin.Context) {
-		// c.Redirect(301, "/login")
-		// c.Redirect(301, "/dashboard")
-		// c.Redirect(301, "/d2admin")
-		c.Redirect(301, "/shadcn")
-		// c.Redirect(301, "/swaggers/index.html")
-	})
+	// r.GET("/", func(c *gin.Context) {
+	// 	// c.Redirect(301, "/login")
+	// 	// c.Redirect(301, "/dashboard")
+	// 	// c.Redirect(301, "/d2admin")
+	// 	c.Redirect(301, "/shadcn")
+	// 	// c.Redirect(301, "/swaggers/index.html")
+	// })
 
 	// 健康检查
 	r.GET("/health", middlewares.RegisterHealthMiddleware)
@@ -71,4 +73,5 @@ func PreGinServe(r *gin.Engine, port string) {
 	appshop.RegisterShop(r)
 	monitor.RegisterMonitor(r)
 	csm.RegisterCSM(r)
+	tty.RegisterTTY(r, ttyData)
 }

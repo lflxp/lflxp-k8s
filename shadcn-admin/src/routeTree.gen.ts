@@ -37,6 +37,9 @@ const AuthenticatedSettingsRouteLazyImport = createFileRoute(
 const AuthenticatedUsersIndexLazyImport = createFileRoute(
   '/_authenticated/users/',
 )()
+const AuthenticatedTerminalIndexLazyImport = createFileRoute(
+  '/_authenticated/terminal/',
+)()
 const AuthenticatedTasksIndexLazyImport = createFileRoute(
   '/_authenticated/tasks/',
 )()
@@ -189,6 +192,15 @@ const AuthenticatedUsersIndexLazyRoute =
     import('./routes/_authenticated/users/index.lazy').then((d) => d.Route),
   )
 
+const AuthenticatedTerminalIndexLazyRoute =
+  AuthenticatedTerminalIndexLazyImport.update({
+    id: '/terminal/',
+    path: '/terminal/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/terminal/index.lazy').then((d) => d.Route),
+  )
+
 const AuthenticatedTasksIndexLazyRoute =
   AuthenticatedTasksIndexLazyImport.update({
     id: '/tasks/',
@@ -231,7 +243,7 @@ const AuthenticatedK8sIndexLazyRoute = AuthenticatedK8sIndexLazyImport.update({
   path: '/k8s/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any).lazy(() =>
-  import('./routes/_authenticated/k8s/index.lazy').then((d) => d.Route),
+  import('././routes/_authenticated/terminal/index.lazy').then((d) => d.Route),
 )
 
 const AuthenticatedHelpCenterIndexLazyRoute =
@@ -494,6 +506,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTasksIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/terminal/': {
+      id: '/_authenticated/terminal/'
+      path: '/terminal'
+      fullPath: '/terminal'
+      preLoaderRoute: typeof AuthenticatedTerminalIndexLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/users/': {
       id: '/_authenticated/users/'
       path: '/users'
@@ -542,6 +561,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedNodesIndexLazyRoute: typeof AuthenticatedNodesIndexLazyRoute
   AuthenticatedPodsIndexLazyRoute: typeof AuthenticatedPodsIndexLazyRoute
   AuthenticatedTasksIndexLazyRoute: typeof AuthenticatedTasksIndexLazyRoute
+  AuthenticatedTerminalIndexLazyRoute: typeof AuthenticatedTerminalIndexLazyRoute
   AuthenticatedUsersIndexLazyRoute: typeof AuthenticatedUsersIndexLazyRoute
 }
 
@@ -556,6 +576,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedNodesIndexLazyRoute: AuthenticatedNodesIndexLazyRoute,
   AuthenticatedPodsIndexLazyRoute: AuthenticatedPodsIndexLazyRoute,
   AuthenticatedTasksIndexLazyRoute: AuthenticatedTasksIndexLazyRoute,
+  AuthenticatedTerminalIndexLazyRoute: AuthenticatedTerminalIndexLazyRoute,
   AuthenticatedUsersIndexLazyRoute: AuthenticatedUsersIndexLazyRoute,
 }
 
@@ -588,6 +609,7 @@ export interface FileRoutesByFullPath {
   '/pods': typeof AuthenticatedPodsIndexLazyRoute
   '/settings/': typeof AuthenticatedSettingsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
+  '/terminal': typeof AuthenticatedTerminalIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
 }
 
@@ -615,6 +637,7 @@ export interface FileRoutesByTo {
   '/pods': typeof AuthenticatedPodsIndexLazyRoute
   '/settings': typeof AuthenticatedSettingsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
+  '/terminal': typeof AuthenticatedTerminalIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
 }
 
@@ -646,6 +669,7 @@ export interface FileRoutesById {
   '/_authenticated/pods/': typeof AuthenticatedPodsIndexLazyRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexLazyRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexLazyRoute
+  '/_authenticated/terminal/': typeof AuthenticatedTerminalIndexLazyRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexLazyRoute
 }
 
@@ -677,6 +701,7 @@ export interface FileRouteTypes {
     | '/pods'
     | '/settings/'
     | '/tasks'
+    | '/terminal'
     | '/users'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -703,6 +728,7 @@ export interface FileRouteTypes {
     | '/pods'
     | '/settings'
     | '/tasks'
+    | '/terminal'
     | '/users'
   id:
     | '__root__'
@@ -732,6 +758,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pods/'
     | '/_authenticated/settings/'
     | '/_authenticated/tasks/'
+    | '/_authenticated/terminal/'
     | '/_authenticated/users/'
   fileRoutesById: FileRoutesById
 }
@@ -802,6 +829,7 @@ export const routeTree = rootRoute
         "/_authenticated/nodes/",
         "/_authenticated/pods/",
         "/_authenticated/tasks/",
+        "/_authenticated/terminal/",
         "/_authenticated/users/"
       ]
     },
@@ -899,6 +927,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/tasks/": {
       "filePath": "_authenticated/tasks/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/terminal/": {
+      "filePath": "_authenticated/terminal/index.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/users/": {

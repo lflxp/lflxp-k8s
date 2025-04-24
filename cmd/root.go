@@ -27,10 +27,10 @@ import (
 	"github.com/lflxp/lflxp-k8s/utils"
 
 	"github.com/lflxp/lflxp-k8s/core"
+	"github.com/lflxp/lflxp-tty/pkg"
 
 	"github.com/spf13/cobra"
 
-	"github.com/lflxp/lflxp-tty/pkg"
 	"github.com/spf13/viper"
 	"k8s.io/client-go/util/homedir"
 )
@@ -76,31 +76,50 @@ to quickly create a Cobra application.`,
 			args = []string{"bash"}
 			isPermitWrite = true
 		}
-		go func() {
-			tty := pkg.Tty{
-				EnableTLS:      enableTLS,
-				CrtPath:        crtPath,
-				KeyPath:        keyPath,
-				IsProf:         isProf,
-				IsXsrf:         isXsrf,
-				IsAudit:        isAudit,
-				IsPermitWrite:  isPermitWrite,
-				MaxConnections: MaxConnections,
-				IsReconnect:    isReconnect,
-				IsDebug:        isDebug,
-				Username:       username,
-				Password:       password,
-				Port:           ttyport,
-				Host:           host,
-				Cmds:           args,
-			}
-			err := tty.Execute()
-			if err != nil {
-				panic(err)
-			}
-		}()
+		// go func() {
+		// 	tty := pkg.Tty{
+		// 		EnableTLS:      enableTLS,
+		// 		CrtPath:        crtPath,
+		// 		KeyPath:        keyPath,
+		// 		IsProf:         isProf,
+		// 		IsXsrf:         isXsrf,
+		// 		IsAudit:        isAudit,
+		// 		IsPermitWrite:  isPermitWrite,
+		// 		MaxConnections: MaxConnections,
+		// 		IsReconnect:    isReconnect,
+		// 		IsDebug:        isDebug,
+		// 		Username:       username,
+		// 		Password:       password,
+		// 		Port:           ttyport,
+		// 		Host:           host,
+		// 		Cmds:           args,
+		// 	}
+		// 	err := tty.Execute()
+		// 	if err != nil {
+		// 		panic(err)
+		// 	}
+		// }()
 
-		core.Run(isHttps, port)
+		tty := pkg.Tty{
+			EnableTLS:      enableTLS,
+			CrtPath:        crtPath,
+			KeyPath:        keyPath,
+			IsProf:         isProf,
+			IsXsrf:         true,
+			IsAudit:        isAudit,
+			IsPermitWrite:  isPermitWrite,
+			MaxConnections: MaxConnections,
+			IsReconnect:    isReconnect,
+			IsDebug:        isDebug,
+			Username:       username,
+			Password:       password,
+			Port:           ttyport,
+			Host:           host,
+			Cmds:           args,
+			Url:            "/tty",
+		}
+
+		core.Run(isHttps, port, &tty)
 	},
 }
 
@@ -147,7 +166,7 @@ func init() {
 	rootCmd.Flags().BoolVarP(&isReconnect, "reconnect", "R", false, "是否自动重连")
 	rootCmd.Flags().BoolVarP(&isPermitWrite, "write", "w", false, "是否开启写入模式")
 	rootCmd.Flags().BoolVarP(&isAudit, "audit", "a", false, "是否开启审计")
-	rootCmd.Flags().BoolVarP(&isXsrf, "xsrf", "x", false, "是否开启xsrf,默认开启")
+	// rootCmd.Flags().BoolVarP(&isXsrf, "xsrf", "x", true, "是否开启xsrf,默认开启")
 	rootCmd.Flags().BoolVarP(&isProf, "prof", "f", false, "是否开启pprof性能分析")
 	rootCmd.Flags().BoolVarP(&enableTLS, "tls", "t", false, "是否开启https")
 	rootCmd.Flags().StringVarP(&crtPath, "crt", "c", "./server.crt", "*.crt文件路径")

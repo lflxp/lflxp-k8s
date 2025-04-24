@@ -76,6 +76,11 @@ export const sidebarData: SidebarData = {
       title: '集群管理',
       items: [
         {
+          title: '终端',
+          url: '/terminal',
+          icon: IconUsers,
+        },
+        {
           title: 'Nodes',
           url: '/nodes',
           icon: IconUsers,
