@@ -4,13 +4,20 @@ import { toast } from '@/hooks/use-toast'
 import { DataTableColumnHeader } from './data-table-column-header'
 import { useNodes } from '../context/nodes-context'
 import { Label } from "@/components/ui/label"
+import { Badge } from "@/components/ui/badge"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export const columns: ColumnDef<Node>[] = [
   {
     id: 'status',
     header: '状态',
     cell: ({ row }) => {
-      const conditions = row.original.status?.conditions || [];
+      const conditions = row.original?.status?.conditions || [];
       const readyCondition = conditions.find((condition) => condition.type === 'Ready');
       const allFalseExceptReady = conditions.filter((condition) => condition.type !== 'Ready').every((condition) => condition.status === 'False');
       const statusText = (readyCondition && readyCondition.status === 'True') || allFalseExceptReady ? 'Active' : '警告';
@@ -34,11 +41,46 @@ export const columns: ColumnDef<Node>[] = [
           setOpen('detail')
           setCurrentRow(row.original)
         };
+
+        const labels = row.original?.metadata?.labels || {};
+        const roles = Object.keys(labels)
+          .filter((key) => key.startsWith('node-role.kubernetes.io/'))
+          .map((key) => key.replace('node-role.kubernetes.io/', ''))
+          .join(', ')
+          // .map((role) => <Badge key={role} className='ml-1 bg-green-500'>{role}</Badge>);
   
         return (
           <div>
-            <div className='w-48 overflow-hidden text-ellipsis whitespace-nowrap hover:overflow-visible text-blue-500 hover:text-blue-600 cursor-pointer' onClick={openDrawer}>{row.original.metadata.name}</div>
+            <div className='overflow-hidden text-ellipsis whitespace-nowrap hover:overflow-visible text-blue-500 hover:text-blue-600 cursor-pointer' onClick={openDrawer}>{row.original.metadata.name}</div>
+            {/* {roles.length > 0 ? roles : ''} */}
           </div>
+        );
+      },
+      enableSorting: false,
+      enableHiding: false,
+  },
+  {
+    id: 'roles',
+    header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='角色' />
+      ),
+    cell: ({ row }) => {
+        const labels = row.original?.metadata?.labels || {};
+        const roles = Object.keys(labels)
+          .filter((key) => key.startsWith('node-role.kubernetes.io/'))
+          .map((key) => key.replace('node-role.kubernetes.io/', ''))
+          .map((role) => <Badge key={role} className='ml-1 bg-green-600'>{role}</Badge>);
+  
+        return (
+            <div className='overflow-hidden text-ellipsis whitespace-nowrap hover:overflow-visible flex items-center'>
+            {roles.length > 0 ? (
+              <div className="flex flex-wrap gap-1">
+              {roles}
+              </div>
+            ) : (
+              '-'
+            )}
+            </div>
         );
       },
       enableSorting: true,
@@ -48,47 +90,96 @@ export const columns: ColumnDef<Node>[] = [
     id: 'Kubernetes',
     header: 'Kubernetes',
     cell: ({ row }) => {
-      const kubeletVersion = row.original.status?.nodeInfo?.kubeletVersion;
+      const kubeletVersion = row.original?.status?.nodeInfo?.kubeletVersion;
       return kubeletVersion || 'N/A';
     },
   },
   {
-    id: 'OS',
-    header: 'OS',
+    id: 'cpu',
+    header: 'CPU核数',
     cell: ({ row }) => {
-      const osImage = row.original?.status?.nodeInfo?.osImage;
-      return osImage || 'N/A';
-    },
-  },
-  {
-    id: 'kernelVersion',
-    header: '内核版本',
-    cell: ({ row }) => {
-      const kernelVersion = row.original.status?.nodeInfo?.kernelVersion;
-      return kernelVersion || 'N/A';
+      const allocatableCPU = row.original?.status?.allocatable?.cpu;
+      return allocatableCPU || 'N/A';
     }
   },
   {
-    id: 'arch',
-    header: '架构',
+    id: 'memory',
+    header: '内存容量',
     cell: ({ row }) => {
-      const arch = row.original.status?.nodeInfo?.architecture;
-      return arch || 'N/A';
+      const memory = row.original?.status?.capacity?.memory;
+      const parseMemory = (memory: string) => {
+        if (!memory) return '0';
+        if (memory.endsWith('Ki')) {
+          let tmp = parseFloat(memory);
+          if (tmp > 1024) {
+            let tmp2 = tmp / 1024;
+            if (tmp2 > 1024) {
+              return `${(tmp2 / 1024).toFixed(0)} Gi`;
+            } else {
+              return `${tmp2.toFixed(0)} Mi`;
+            }
+          } else {
+            return `${tmp.toFixed(0)} Ki`;
+          }
+        }
+
+        if (memory.endsWith('Mi')) {
+          let tmp = parseFloat(memory);
+          if (tmp > 1024) {
+            let tmp2 = tmp / 1024;
+            return `${tmp2.toFixed(0)} Gi`;
+          } else {
+            return `${tmp.toFixed(0)} Mi`;
+          }
+        }
+        
+        return memory;
+      };
+
+      const memoryunit = parseMemory(memory);
+      return memoryunit || 'N/A';
     }
   },
   {
-    accessorKey: 'operatingSystem',
-    header: '操作系统',
+    accessorKey: 'pods',
+    header: 'Pod数量',
     cell: ({ row }) => {
-      const operatingSystem = row.original.status?.nodeInfo?.operatingSystem;
-      return operatingSystem || 'N/A';
+      const pods = row.original?.status?.allocatable?.pods;
+      return pods || 'N/A'; 
     }
   },
+  {
+    accessorKey: 'creationTimestamp',
+    header: '运行时间',
+    cell: ({ row }) => {
+      const creationTimestamp = row.original.metadata?.creationTimestamp;
+      if (!creationTimestamp) return 'N/A';
+
+      const timeDifference = Date.now() - new Date(creationTimestamp).getTime();
+      const seconds = Math.floor(timeDifference / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+
+      if (days > 0) return `${days}d`;
+      if (hours > 0) return `${hours}h`;
+      if (minutes > 0) return `${minutes}m`;
+      return `${seconds}s`;
+    }
+  },
+  // {
+  //   id: 'OS',
+  //   header: 'OS',
+  //   cell: ({ row }) => {
+  //     const osImage = row.original?.status?.nodeInfo?.osImage;
+  //     return osImage || 'N/A';
+  //   },
+  // },
   {
     id: 'ip',
     header: 'IP地址',
     cell: ({ row }) => {
-      const internalIPs = row.original.status?.addresses?.filter((address) => address.type === 'InternalIP') || [];
+      const internalIPs = row.original?.status?.addresses?.filter((address) => address.type === 'InternalIP') || [];
       return internalIPs.map((address) => (
         <Label key={address.type} className="text-blue-600">
           {address.address}
@@ -101,8 +192,8 @@ export const columns: ColumnDef<Node>[] = [
     header: 'CPU使用率',
     cell: ({ row }) => {
       try {
-        const allocatableCPU = row.original.status?.allocatable?.cpu;
-        const nodeMetrics = row.original.metrics;
+        const allocatableCPU = row.original?.status?.allocatable?.cpu;
+        const nodeMetrics = row.original?.metrics;
         const usedCPU = nodeMetrics?.usage?.cpu;
         
         // 转换CPU值（如"812m"转0.812）
@@ -203,14 +294,6 @@ export const columns: ColumnDef<Node>[] = [
         })
       }
       // return 'N/A';
-    }
-  },
-  {
-    accessorKey: 'creationTimestamp',
-    header: '创建时间',
-    cell: ({ row }) => {
-      const creationTimestamp = row.original.metadata?.creationTimestamp;
-      return creationTimestamp ? new Date(creationTimestamp).toLocaleString() : 'N/A';
     }
   },
 ]
