@@ -109,7 +109,7 @@ to quickly create a Cobra application.`,
 			IsAudit:        isAudit,
 			IsPermitWrite:  isPermitWrite,
 			MaxConnections: MaxConnections,
-			IsReconnect:    isReconnect,
+			IsReconnect:    true,
 			IsDebug:        isDebug,
 			Username:       username,
 			Password:       password,
@@ -163,7 +163,7 @@ func init() {
 	rootCmd.Flags().StringVarP(&ttyport, "ttyport", "P", "19999", "tty http bind port")
 	rootCmd.Flags().StringVarP(&port, "port", "G", "8002", "server http bind port")
 	rootCmd.Flags().BoolVarP(&isDebug, "debug", "d", false, "debug log mode")
-	rootCmd.Flags().BoolVarP(&isReconnect, "reconnect", "R", false, "是否自动重连")
+	// rootCmd.Flags().BoolVarP(&isReconnect, "reconnect", "R", false, "是否自动重连")
 	rootCmd.Flags().BoolVarP(&isPermitWrite, "write", "w", false, "是否开启写入模式")
 	rootCmd.Flags().BoolVarP(&isAudit, "audit", "a", false, "是否开启审计")
 	// rootCmd.Flags().BoolVarP(&isXsrf, "xsrf", "x", true, "是否开启xsrf,默认开启")
