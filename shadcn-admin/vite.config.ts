@@ -27,6 +27,14 @@ export default defineConfig({
         target: 'http://localhost:8002',
         changeOrigin: true,
       },
+      '/tty': {
+        target: 'http://localhost:8002',
+        changeOrigin: true,
+      },
+      '/adminfs': {
+        target: 'http://localhost:8002',
+        changeOrigin: true,
+      },
       '/adminfs2': {
         target: 'http://localhost:8002',
         changeOrigin: true,
