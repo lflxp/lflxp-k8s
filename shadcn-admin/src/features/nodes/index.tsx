@@ -89,7 +89,7 @@ export default function Nodes() {
           <NodesTable data={nodesData} columns={columns} />
         </div>
       </Main>
-      <NodesDialogs/>
+      <NodesDialogs />
     </NodesProvider>
   )
 }

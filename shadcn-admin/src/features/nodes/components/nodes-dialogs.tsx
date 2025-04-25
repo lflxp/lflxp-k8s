@@ -17,7 +17,6 @@ export function NodesDialogs() {
           }, 500)
         }}
         nodeName={currentRow?.metadata.name}
-        currentRow={currentRow}
       />)}
     </>
   )

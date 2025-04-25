@@ -1,5 +1,4 @@
-import { Node } from '../data/schema'
-import { Drawer, DrawerContent } from "@/components/ui/drawer"
+import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer"
 import { DialogTitle } from "@/components/ui/dialog";
 import { Labels, Annotations } from "./basic/labels";
 import { Images } from "./basic/images";
@@ -19,25 +18,33 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card"
+import { Button } from '@/components/ui/button';
+import { useNodes } from '../context/nodes-context'
 
 interface NodeDrawerProps {
   open: boolean
   onOpenChange: () => void
   nodeName?: string
-  currentRow?: Node | null
 }
 
 export function NodeDetail({ 
   open, 
   onOpenChange, 
-  nodeName,
-  currentRow
+  nodeName
 }: NodeDrawerProps) {
-
+  const { currentRow } = useNodes()
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="h-[80vh] mt-0">
-        <DialogTitle className="flex justify-center items-center mb-5">{nodeName} 节点详情</DialogTitle>
+      <DrawerContent className="h-full mt-0">
+        <DialogTitle className="flex justify-center items-center mb-5">
+          {nodeName} 节点详情
+            <DrawerClose className="absolute top-2 right-4">
+                <span className="flex items-center justify-center w-6 h-6 cursor-pointer hover:scale-110 hover:font-bold transition-transform">
+                ✕
+                </span>
+            </DrawerClose>
+        </DialogTitle>
+        
         <div className="w-full h-full">
           <Tabs defaultValue="nodeinfo" className="w-full">
             <TabsList className="grid w-full grid-cols-8 gap-2">
@@ -108,10 +115,14 @@ export function NodeDetail({
               <Capacity currentRow={currentRow} />
             </TabsContent>
             <TabsContent value="labels" className="h-[80vh] overflow-y-auto">
-              <Labels currentRow={currentRow} />
+              <div className="flex-1 max-h-full overflow-y-auto">
+                <Labels />
+              </div>
             </TabsContent>
             <TabsContent value="annotations" className="h-[80vh] overflow-y-auto">
-              <Annotations currentRow={currentRow} />
+              <div className="flex-1 max-h-full overflow-y-auto">
+                <Annotations currentRow={currentRow}/>
+              </div>
             </TabsContent>
             <TabsContent value="images" className="h-[80vh] overflow-y-auto">
               <Images currentRow={currentRow} />
