@@ -5,7 +5,7 @@ import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { columns } from './components/columns'
 import { NodesTable } from './components/nodes-table'
-import { NodesPrimaryButtons } from './components/nodes-primary-buttons'
+// import { NodesPrimaryButtons } from './components/nodes-primary-buttons'
 import NodesProvider from './context/nodes-context'
 import { useState, useEffect } from 'react';
 import request from '@/api/request'; 
@@ -53,6 +53,8 @@ export default function Nodes() {
 
   useEffect(() => {
     fetchData();
+    const interval = setInterval(fetchData, 10000); // 每60秒刷新一次
+    return () => clearInterval(interval); // 清除定时器
   },[]);
 
   return (
@@ -74,7 +76,7 @@ export default function Nodes() {
             </p>
           </div>
           <div className="flex items-center space-x-2">
-            <NodesPrimaryButtons />
+            {/* <NodesPrimaryButtons /> */}
             <Button 
               variant="outline" 
               size="sm"

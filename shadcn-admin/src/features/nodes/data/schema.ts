@@ -25,6 +25,7 @@ export const nodeSchema = z.object({
     podCIDR: z.string().optional(),
     podCIDRs: z.array(z.string()).optional(),
     providerID: z.string().optional(),
+    unschedulable: z.boolean().optional(),
     taints: z.array(z.object({
       key: z.string(),
       value: z.string(),
@@ -64,17 +65,17 @@ export const nodeSchema = z.object({
       cpu: z.string(),
       memory: z.string(),
       pods: z.string(),
-      ephemeral-storage: z.string(),
-      hugepages-1Gi: z.string().optional(),
-      hugepages-2Mi: z.string().optional(),
+      "ephemeral-storage": z.string(),
+      "hugepages-1Gi": z.string().optional(),
+      "hugepages-2Mi": z.string().optional(),
     }).optional(),
     capacity: z.object({
       cpu: z.string(),
       memory: z.string(),
       pods: z.string(),
-      ephemeral-storage: z.string(),
-      hugepages-1Gi: z.string().optional(),
-      hugepages-2Mi: z.string().optional(),
+      "ephemeral-storage": z.string(),
+      "hugepages-1Gi": z.string().optional(),
+      "hugepages-2Mi": z.string().optional(),
     }).optional()
   }).optional(),
   metrics: z.object({

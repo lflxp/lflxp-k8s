@@ -81,8 +81,18 @@ export const sidebarData: SidebarData = {
           icon: IconUsers,
         },
         {
-          title: 'Nodes',
+          title: '节点管理',
           url: '/nodes',
+          icon: IconUsers,
+        },
+        {
+          title: '事件管理',
+          url: '/events',
+          icon: IconUsers,
+        },
+        {
+          title: '自定义资源',
+          url: '/crds',
           icon: IconUsers,
         },
       ],

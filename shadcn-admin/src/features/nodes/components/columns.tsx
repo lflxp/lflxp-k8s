@@ -5,12 +5,7 @@ import { DataTableColumnHeader } from './data-table-column-header'
 import { useNodes } from '../context/nodes-context'
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+import DataTableRowActions from './data-table-row-action'
 
 export const columns: ColumnDef<Node>[] = [
   {
@@ -110,9 +105,9 @@ export const columns: ColumnDef<Node>[] = [
       const parseMemory = (memory: string) => {
         if (!memory) return '0';
         if (memory.endsWith('Ki')) {
-          let tmp = parseFloat(memory);
+          const tmp = parseFloat(memory);
           if (tmp > 1024) {
-            let tmp2 = tmp / 1024;
+            const tmp2 = tmp / 1024;
             if (tmp2 > 1024) {
               return `${(tmp2 / 1024).toFixed(0)} Gi`;
             } else {
@@ -124,9 +119,9 @@ export const columns: ColumnDef<Node>[] = [
         }
 
         if (memory.endsWith('Mi')) {
-          let tmp = parseFloat(memory);
+          const tmp = parseFloat(memory);
           if (tmp > 1024) {
-            let tmp2 = tmp / 1024;
+            const tmp2 = tmp / 1024;
             return `${tmp2.toFixed(0)} Gi`;
           } else {
             return `${tmp.toFixed(0)} Mi`;
@@ -136,7 +131,7 @@ export const columns: ColumnDef<Node>[] = [
         return memory;
       };
 
-      const memoryunit = parseMemory(memory);
+      const memoryunit = parseMemory(memory || '');
       return memoryunit || 'N/A';
     }
   },
@@ -246,8 +241,8 @@ export const columns: ColumnDef<Node>[] = [
     header: '内存使用率',
     cell: ({ row }) => {
       try {
-        const allocatableMemory = row.original.status?.allocatable?.memory;
-        const nodeMetrics = row.original.metrics;
+        const allocatableMemory = row?.original?.status?.allocatable?.memory;
+        const nodeMetrics = row?.original?.metrics;
         const usedMemory = nodeMetrics?.usage?.memory;
         
         // 转换内存值（如"812Ki"转字节数）
@@ -295,5 +290,14 @@ export const columns: ColumnDef<Node>[] = [
       }
       // return 'N/A';
     }
+  },
+  {
+    id: 'actions',
+    header: '操作',
+    cell: ({ row }) => {
+      return (
+        <DataTableRowActions row={row.original} />
+      );
+    },
   },
 ]

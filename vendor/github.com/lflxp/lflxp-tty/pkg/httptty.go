@@ -3,7 +3,6 @@ package pkg
 
 import (
 	"fmt"
-	"html/template"
 	"log/slog"
 	"net/http"
 	"os"
@@ -78,9 +77,9 @@ func RegisterTty(router *gin.Engine, data *Tty) {
 		Cmds:        data.Cmds,
 	}
 
-	router.StaticFS("/adminfs", http.FS(Static))
-	tmp := template.Must(template.New("").ParseFS(Views, "views/*"))
-	router.SetHTMLTemplate(tmp)
+	// router.StaticFS("/adminfs", http.FS(Static))
+	// tmp := template.Must(template.New("").ParseFS(Views, "views/*"))
+	// router.SetHTMLTemplate(tmp)
 
 	rootPath = data.Url
 

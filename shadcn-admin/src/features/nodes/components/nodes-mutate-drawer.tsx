@@ -18,7 +18,6 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card"
-import { Button } from '@/components/ui/button';
 import { useNodes } from '../context/nodes-context'
 
 interface NodeDrawerProps {
@@ -121,7 +120,7 @@ export function NodeDetail({
             </TabsContent>
             <TabsContent value="annotations" className="h-[80vh] overflow-y-auto">
               <div className="flex-1 max-h-full overflow-y-auto">
-                <Annotations currentRow={currentRow}/>
+                <Annotations />
               </div>
             </TabsContent>
             <TabsContent value="images" className="h-[80vh] overflow-y-auto">

@@ -65,7 +65,6 @@ func PreGinServe(r *gin.Engine, port string, ttyData *pkg.Tty) {
 	auth.RegisterAuth(r)
 
 	asset.RegisterAsset(r)
-	pages.RegisterTemplate(r)
 	controller.RegisterAdmin(r)
 	// controller.Registertest(r)
 	apiserver.RegisterApiserver(r)
@@ -74,4 +73,5 @@ func PreGinServe(r *gin.Engine, port string, ttyData *pkg.Tty) {
 	monitor.RegisterMonitor(r)
 	csm.RegisterCSM(r)
 	tty.RegisterTTY(r, ttyData)
+	pages.RegisterTemplate(r)
 }

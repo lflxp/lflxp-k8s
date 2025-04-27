@@ -20,7 +20,7 @@ func RegisterTemplate(router *gin.Engine) {
 	if router == nil {
 		panic("router nil")
 	}
-	router.StaticFS("/adminfs2", http.FS(Static))
+	router.StaticFS("/adminfs", http.FS(Static))
 	// 基于embed注册templates模板
 	t := template.Must(template.New("d2admin").Funcs(t1.FuncMap).ParseFS(Templates, "views/*/*"))
 	router.SetHTMLTemplate(t)
