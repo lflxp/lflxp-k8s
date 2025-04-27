@@ -27,21 +27,12 @@ export default function TTY() {
             </div>
           </div>
           <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-<<<<<<< HEAD
             <Card className="h-[100vh] w-full flex justify-center items-center border-none">
               <iframe
               src="/tty"
               className="w-full h-full"
               frameBorder="0"
               title="K8S Terminal"
-=======
-            <Card className="h-[calc(100vh)] w-full flex justify-center items-center">
-              <iframe
-                src="/tty"
-                className="w-full h-full"
-                frameBorder="0"
-                title="K8S Terminal"
->>>>>>> 6eb0de6b9 (backup)
               />
             </Card>
           </div>
