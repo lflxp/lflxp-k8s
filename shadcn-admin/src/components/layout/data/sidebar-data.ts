@@ -106,6 +106,11 @@ export const sidebarData: SidebarData = {
           icon: IconLayoutDashboard,
         },
         {
+          title: 'Deployments',
+          url: '/deployments',
+          icon: IconLayoutDashboard,
+        },
+        {
           title: 'K8s',
           url: '/k8s',
           icon: IconLockAccess,

@@ -61,6 +61,9 @@ const AuthenticatedHelpCenterIndexLazyImport = createFileRoute(
 const AuthenticatedEventsIndexLazyImport = createFileRoute(
   '/_authenticated/events/',
 )()
+const AuthenticatedDeploymentsIndexLazyImport = createFileRoute(
+  '/_authenticated/deployments/',
+)()
 const AuthenticatedCrdsIndexLazyImport = createFileRoute(
   '/_authenticated/crds/',
 )()
@@ -270,6 +273,17 @@ const AuthenticatedEventsIndexLazyRoute =
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any).lazy(() =>
     import('./routes/_authenticated/events/index.lazy').then((d) => d.Route),
+  )
+
+const AuthenticatedDeploymentsIndexLazyRoute =
+  AuthenticatedDeploymentsIndexLazyImport.update({
+    id: '/deployments/',
+    path: '/deployments/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/deployments/index.lazy').then(
+      (d) => d.Route,
+    ),
   )
 
 const AuthenticatedCrdsIndexLazyRoute = AuthenticatedCrdsIndexLazyImport.update(
@@ -496,6 +510,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrdsIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/deployments/': {
+      id: '/_authenticated/deployments/'
+      path: '/deployments'
+      fullPath: '/deployments'
+      preLoaderRoute: typeof AuthenticatedDeploymentsIndexLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/events/': {
       id: '/_authenticated/events/'
       path: '/events'
@@ -596,6 +617,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppsIndexLazyRoute: typeof AuthenticatedAppsIndexLazyRoute
   AuthenticatedChatsIndexLazyRoute: typeof AuthenticatedChatsIndexLazyRoute
   AuthenticatedCrdsIndexLazyRoute: typeof AuthenticatedCrdsIndexLazyRoute
+  AuthenticatedDeploymentsIndexLazyRoute: typeof AuthenticatedDeploymentsIndexLazyRoute
   AuthenticatedEventsIndexLazyRoute: typeof AuthenticatedEventsIndexLazyRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
   AuthenticatedK8sIndexLazyRoute: typeof AuthenticatedK8sIndexLazyRoute
@@ -613,6 +635,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppsIndexLazyRoute: AuthenticatedAppsIndexLazyRoute,
   AuthenticatedChatsIndexLazyRoute: AuthenticatedChatsIndexLazyRoute,
   AuthenticatedCrdsIndexLazyRoute: AuthenticatedCrdsIndexLazyRoute,
+  AuthenticatedDeploymentsIndexLazyRoute:
+    AuthenticatedDeploymentsIndexLazyRoute,
   AuthenticatedEventsIndexLazyRoute: AuthenticatedEventsIndexLazyRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
   AuthenticatedK8sIndexLazyRoute: AuthenticatedK8sIndexLazyRoute,
@@ -647,6 +671,7 @@ export interface FileRoutesByFullPath {
   '/apps': typeof AuthenticatedAppsIndexLazyRoute
   '/chats': typeof AuthenticatedChatsIndexLazyRoute
   '/crds': typeof AuthenticatedCrdsIndexLazyRoute
+  '/deployments': typeof AuthenticatedDeploymentsIndexLazyRoute
   '/events': typeof AuthenticatedEventsIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/k8s': typeof AuthenticatedK8sIndexLazyRoute
@@ -677,6 +702,7 @@ export interface FileRoutesByTo {
   '/apps': typeof AuthenticatedAppsIndexLazyRoute
   '/chats': typeof AuthenticatedChatsIndexLazyRoute
   '/crds': typeof AuthenticatedCrdsIndexLazyRoute
+  '/deployments': typeof AuthenticatedDeploymentsIndexLazyRoute
   '/events': typeof AuthenticatedEventsIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/k8s': typeof AuthenticatedK8sIndexLazyRoute
@@ -711,6 +737,7 @@ export interface FileRoutesById {
   '/_authenticated/apps/': typeof AuthenticatedAppsIndexLazyRoute
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexLazyRoute
   '/_authenticated/crds/': typeof AuthenticatedCrdsIndexLazyRoute
+  '/_authenticated/deployments/': typeof AuthenticatedDeploymentsIndexLazyRoute
   '/_authenticated/events/': typeof AuthenticatedEventsIndexLazyRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/_authenticated/k8s/': typeof AuthenticatedK8sIndexLazyRoute
@@ -745,6 +772,7 @@ export interface FileRouteTypes {
     | '/apps'
     | '/chats'
     | '/crds'
+    | '/deployments'
     | '/events'
     | '/help-center'
     | '/k8s'
@@ -774,6 +802,7 @@ export interface FileRouteTypes {
     | '/apps'
     | '/chats'
     | '/crds'
+    | '/deployments'
     | '/events'
     | '/help-center'
     | '/k8s'
@@ -806,6 +835,7 @@ export interface FileRouteTypes {
     | '/_authenticated/apps/'
     | '/_authenticated/chats/'
     | '/_authenticated/crds/'
+    | '/_authenticated/deployments/'
     | '/_authenticated/events/'
     | '/_authenticated/help-center/'
     | '/_authenticated/k8s/'
@@ -880,6 +910,7 @@ export const routeTree = rootRoute
         "/_authenticated/apps/",
         "/_authenticated/chats/",
         "/_authenticated/crds/",
+        "/_authenticated/deployments/",
         "/_authenticated/events/",
         "/_authenticated/help-center/",
         "/_authenticated/k8s/",
@@ -964,6 +995,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/crds/": {
       "filePath": "_authenticated/crds/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/deployments/": {
+      "filePath": "_authenticated/deployments/index.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/events/": {

@@ -10,8 +10,6 @@ import EventsProvider from './context/context'
 import { useState, useEffect } from 'react';
 import request from '@/api/request'; 
 import { toast } from '@/hooks/use-toast'
-import { Button } from "@/components/ui/button"
-import { RefreshCw } from "lucide-react"
 import { CRDsDialogs } from './components/nodes-dialogs'
 import { ApiResource, ApiResourceResult, ResourceResult, ApiGroup } from './data/schema'
 
@@ -22,7 +20,7 @@ export default function CRDS() {
     try {
       const response = await request.get('/api/gvr/all');
 
-      console.log('请求接口成功:', response.data)
+      // console.log('请求接口成功:', response.data)
       const apiResourceList: ApiResourceResult[] = [];
       response.data.apiresourceListSlice.forEach((item: ApiResource) => {
         item.resources.forEach((resource: ResourceResult) => {
@@ -108,20 +106,9 @@ export default function CRDS() {
               查看所有自定义资源
             </p>
           </div>
-          <div className="flex items-center space-x-2">
-            {/* <NodesPrimaryButtons /> */}
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={fetchData}
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              刷新
-            </Button>
-          </div>
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-          <NodesTable data={crdData} columns={columns} />
+          <NodesTable data={crdData} columns={columns} fetchData={fetchData} />
         </div>
       </Main>
       <CRDsDialogs />

@@ -5,7 +5,7 @@ import { ApiResourceResult } from '../data/schema'
 
 export const columns: ColumnDef<ApiResourceResult>[] = [
   {
-    id: 'name',
+    accessorKey: 'name',
     header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Name' />
       ),
@@ -33,11 +33,11 @@ export const columns: ColumnDef<ApiResourceResult>[] = [
             </div>
         );
       },
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
   },
   {
-    id: 'shortNames',
+    accessorKey: 'shortNames',
     header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Short Names' />
       ),
@@ -48,7 +48,7 @@ export const columns: ColumnDef<ApiResourceResult>[] = [
       enableHiding: false,
   },
   {
-    id: 'apiversion',
+    accessorKey: 'version',
     header: ({ column }) => (
         <DataTableColumnHeader column={column} title='API Version' />
       ),
@@ -59,7 +59,7 @@ export const columns: ColumnDef<ApiResourceResult>[] = [
       enableHiding: false,
   },
   {
-    id: 'group',
+    accessorKey: 'group',
     header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Group' />
       ),
@@ -70,26 +70,26 @@ export const columns: ColumnDef<ApiResourceResult>[] = [
       enableHiding: false,
   },
   {
-    id: 'namespaces',
+    accessorKey: 'namespaces',
     header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Namespaced' />
       ),
     cell: ({ row }) => {
         return row.original.namespaced ? (
-          <div className='text-xs text-green-500'>
+          <div className='font-bold text-xs text-green-500'>
             {row.original.namespaced ? 'true' : 'false'}
           </div>
         ) : (
-          <div className='text-xs text-red-500'>
+          <div className='font-bold text-xs text-red-500'>
             {row.original.namespaced ? 'true' : 'false'}
           </div>
         );
       },
-      enableSorting: true,
+      enableSorting: false,
       enableHiding: false,
   },
   {
-    id: 'kind',
+    accessorKey: 'kind',
     header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Kind' />
       ),

@@ -11,12 +11,12 @@ import TasksProvider from './context/tasks-context'
 import request from '@/api/request'; 
 import { useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast'
-import TerminalUI from '@/components/terminal/ui';
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable"
+// import TerminalUI from '@/components/terminal/ui';
+// import {
+//   ResizableHandle,
+//   ResizablePanel,
+//   ResizablePanelGroup,
+// } from "@/components/ui/resizable"
 
 export default function Pods() {
   const [podsData, setPodsData] = useState([]);
@@ -68,8 +68,7 @@ export default function Pods() {
           </div>
         </Header>
 
-        <ResizablePanelGroup direction="vertical" className="min-h-[100vh]">
-          {/* Main content - 80% height with scroll */}
+        {/* <ResizablePanelGroup direction="vertical" className="min-h-[100vh]">
           <ResizablePanel defaultSize={78} minSize={30}>
             <Main className="h-full overflow-hidden">
               <div className="h-full flex flex-col">
@@ -91,7 +90,22 @@ export default function Pods() {
           <ResizablePanel defaultSize={22} minSize={10}>
             <TerminalUI className="h-full overflow-auto border-t" />
           </ResizablePanel>
-        </ResizablePanelGroup>
+        </ResizablePanelGroup> */}
+        <Main>
+          <div className="h-full flex flex-col">
+            <div className='mb-2 flex flex-wrap items-center justify-between gap-x-4 space-y-2'>
+              <div>
+                <h2 className='text-2xl font-bold tracking-tight'>Pods</h2>
+                <p className='text-muted-foreground'>
+                  Pods是Kubernetes中最小的可部署单元，它封装了一个或多个容器，提供了网络和存储的抽象。
+                </p>
+              </div>
+            </div>
+            <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0 mr-[1px]'>
+              <DataTable data={podsData} columns={columns} fetchData={fetchData} />
+            </div>
+          </div>
+        </Main>
       <TasksDialogs />
     </TasksProvider>
   )

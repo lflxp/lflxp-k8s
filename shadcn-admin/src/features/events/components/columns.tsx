@@ -10,17 +10,17 @@ export const columns: ColumnDef<Event>[] = [
     header: '级别',
     cell: ({ row }) => {
       return (
-        <Badge
-          className={`${
-        row.original?.type === 'Normal'
-          ? 'bg-green-500 text-white'
-          : row.original?.type === 'Warning'
-          ? 'bg-red-500 text-white'
-          : 'bg-gray-500 text-white'
+        <span
+          className={`font-bold ${
+            row.original?.type === 'Normal'
+              ? 'text-green-500'
+              : row.original?.type === 'Warning'
+              ? 'text-red-500'
+              : 'text-gray-500'
           }`}
         >
           {row.original?.type || 'Unknown'}
-        </Badge>
+        </span>
       );
     }
   },

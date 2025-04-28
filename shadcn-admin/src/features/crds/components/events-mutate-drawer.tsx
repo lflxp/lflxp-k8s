@@ -32,14 +32,14 @@ export function CRDDetail({
 
   const fetchData = async () => {
     try {
-      console.log('请求接口参数:', currentRow);
+      // console.log('请求接口参数:', currentRow);
       const response = await request.post('/api/gvr/list', {
         resource: currentRow?.name,
         group: currentRow?.version === undefined ? "" : currentRow?.group,
         version: currentRow?.version === undefined ? currentRow?.group : currentRow?.version,
         namespace: "",
       });
-      console.log('请求接口成功:', response.data.items);
+      // console.log('请求接口成功:', response.data.items);
       setData(response.data.items || []);
     } catch (error) {
       toast({

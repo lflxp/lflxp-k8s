@@ -43,7 +43,7 @@ export function Labels() {
                   <Add 
                   types="delete" 
                   kind="label" 
-                  name={currentRow.metadata.name} 
+                  name={currentRow?.metadata?.name || ''} 
                   keys={key} 
                   values={typeof value === 'string' ? value : ''} 
                   />
