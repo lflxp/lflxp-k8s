@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table"
 import { Pod } from '../../data/schema'
 import { useMemo } from 'react'
+import { Add } from './add'
 
 export interface crdDataProps {
   currentRow?: Pod
@@ -29,6 +30,26 @@ export function Labels({
         <TableRow key={key}>
             <TableCell className="font-medium">{key}</TableCell>
             <TableCell>{value as React.ReactNode}</TableCell>
+            <TableCell>
+                <div className="flex space-x-2">
+                  <Add 
+                  types="edit" 
+                  kind="label" 
+                  name={currentRow?.crd?.metadata?.name || ''}
+                  namespace={currentRow?.crd?.metadata?.namespace || ''}
+                  keys={key} 
+                  values={typeof value === 'string' ? value : ''} 
+                  />
+                  <Add 
+                  types="delete" 
+                  kind="label" 
+                  name={currentRow?.crd?.metadata?.name || ''} 
+                  namespace={currentRow?.crd?.metadata?.namespace || ''}
+                  keys={key} 
+                  values={typeof value === 'string' ? value : ''} 
+                  />
+                </div>
+            </TableCell>
         </TableRow>
     ));
   }, [currentRow]);
@@ -36,7 +57,17 @@ export function Labels({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{currentRow?.crd.metadata.name}</CardTitle>
+        <CardTitle>
+          {currentRow?.crd.metadata.name}
+          <Add 
+            types="add" 
+            kind="label" 
+            name={currentRow ? currentRow.crd.metadata.name : ''}
+            namespace={currentRow ? currentRow.crd.metadata.namespace : ''}
+            keys="" 
+            values=""
+            />   
+        </CardTitle>
         <CardDescription>
           命名空间：{currentRow?.crd.metadata.namespace}
         </CardDescription>
@@ -68,6 +99,26 @@ export function Annotations({
         <TableRow key={key}>
             <TableCell className="font-medium">{key}</TableCell>
             <TableCell>{value as React.ReactNode}</TableCell>
+            <TableCell>
+                <div className="flex space-x-2">
+                  <Add 
+                  types="edit" 
+                  kind="annotation" 
+                  name={currentRow?.crd?.metadata?.name || ''}
+                  namespace={currentRow?.crd?.metadata?.namespace || ''}
+                  keys={key} 
+                  values={typeof value === 'string' ? value : ''} 
+                  />
+                  <Add 
+                  types="delete" 
+                  kind="annotation" 
+                  name={currentRow?.crd?.metadata?.name || ''} 
+                  namespace={currentRow?.crd?.metadata?.namespace || ''}
+                  keys={key} 
+                  values={typeof value === 'string' ? value : ''} 
+                  />
+                </div>
+            </TableCell>
         </TableRow>
     ));
   }, [currentRow]);
@@ -75,7 +126,17 @@ export function Annotations({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{currentRow?.crd.metadata.name}</CardTitle>
+        <CardTitle>
+          {currentRow?.crd.metadata.name}
+          <Add 
+            types="add" 
+            kind="annotation" 
+            name={currentRow ? currentRow.crd.metadata.name : ''}
+            namespace={currentRow ? currentRow.crd.metadata.namespace : ''}
+            keys="" 
+            values=""
+            />     
+        </CardTitle>
         <CardDescription>
           命名空间：{currentRow?.crd.metadata.namespace}
         </CardDescription>

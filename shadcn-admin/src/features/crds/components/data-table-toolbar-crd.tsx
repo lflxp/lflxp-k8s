@@ -2,8 +2,7 @@ import { Cross2Icon } from '@radix-ui/react-icons'
 import { Table } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { DataTableViewOptions } from './data-table-view-options'
-import { DataTableFacetedFilter } from './data-table-faceted-filter'
+import { DataTableFacetedFilterCRD } from './data-table-faceted-filter-crd'
 import { TasksPrimaryButtons } from './tasks-primary-buttons'
 
 interface DataTableToolbarProps<TData> {
@@ -12,7 +11,7 @@ interface DataTableToolbarProps<TData> {
   fetchData: () => Promise<void>;
 }
 
-export function DataTableToolbar<TData>({
+export function DataTableToolbarCRD<TData>({
   table,
   originalData,
   fetchData,
@@ -20,25 +19,19 @@ export function DataTableToolbar<TData>({
   const isFiltered = table.getState().columnFilters.length > 0;
   // console.log('table status', table.getColumn('status'))
   // const namespaces: { value: string; label: string; icon: typeof IconArrowRight }[] = [];
-  // console.log('originalData', originalData)
-  const namespaces = [...new Set(originalData.map(row => row.crd?.metadata.namespace))]
+  console.log('originalData', originalData, table.getState().columnFilters)
+  const namespaces = [...new Set(originalData.map(row => row.metadata?.namespace))]
   .map(namespace => ({
     value: namespace,
     label: namespace
   }));
 
-  // const hostips = [...new Set(originalData.map(row => row.hostip))]
-  // .map(hostip => ({
-  //   value: hostip,
-  //   label: hostip
+  console.log('namespaces', namespaces)
+  // const groups = [...new Set(originalData.map(row => row.group))]
+  // .map(group => ({
+  //   value: group,
+  //   label: group
   // }));
-
-  // const statuss = [...new Set(originalData.map(row => row.status))]
-  // .map(status => ({
-  //   value: status,
-  //   label: status
-  // }));
-
 
   return (
     <div className='flex items-center justify-between'>
@@ -52,34 +45,20 @@ export function DataTableToolbar<TData>({
           className='h-8 w-[150px] lg:w-[250px]'
         />
         <div className='flex gap-x-2'>
-            {/* {table.getColumn('status') && (
-            <DataTableFacetedFilter
-              column={table.getColumn('status')}
-              title='状态筛选'
-              options={statuss}
-            />
-            )} */}
             {table.getColumn('namespace') && (
-            <DataTableFacetedFilter
+            <DataTableFacetedFilterCRD
               column={table.getColumn('namespace')}
-              title='命名空间筛选'
+              title='Namespace 筛选'
               options={namespaces}
             />
             )}
-            {/* {table.getColumn('hostip') && (
+            {/* {table.getColumn('group') && (
             <DataTableFacetedFilter
-              column={table.getColumn('hostip')}
-              title='主机IP筛选'
-              options={hostips}
+              column={table.getColumn('group')}
+              title='Group 筛选'
+              options={groups}
             />
             )} */}
-          {/* {table.getColumn('priority') && (
-            <DataTableFacetedFilter
-              column={table.getColumn('priority')}
-              title='Priority'
-              options={priorities}
-            />
-          )} */}
         </div>
         {isFiltered && (
           <Button
@@ -92,7 +71,7 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
+      {/* <DataTableViewOptions table={table} /> */}
       <TasksPrimaryButtons fetchData={fetchData} />
     </div>
   )

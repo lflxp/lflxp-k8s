@@ -17,16 +17,16 @@ import { Pod } from '../../data/schema'
 import { useMemo } from 'react'
 import { Check, Minus } from "lucide-react"
 
-export interface RawDataProps {
+export interface crdDataProps {
   currentRow?: Pod
 }
 
 export default function Status({
   currentRow
-}: RawDataProps) {
+}: crdDataProps) {
   const statusRows = useMemo(() => {
-    if (!currentRow ||!currentRow.raw ||!currentRow.raw.status||!currentRow.raw.status.conditions) return [];
-    return Object.entries(currentRow.raw.status.conditions).map((cond, index) => (
+    if (!currentRow ||!currentRow.crd ||!currentRow.crd.status||!currentRow.crd.status.conditions) return [];
+    return Object.entries(currentRow.crd.status.conditions).map((cond, index) => (
         <TableRow key={index}>
             <TableCell className="font-medium">{(cond[1] as {type: string}).type}</TableCell>
             <TableCell>
@@ -41,12 +41,69 @@ export default function Status({
     ));
   }, [currentRow]);
 
+  const aba = useMemo(() => {
+    if (!currentRow ||!currentRow.crd ||!currentRow.crd.status) return [];
+    const result = [];
+    
+    if (currentRow.crd.status.availableReplicas) {
+      result.push(
+        <TableRow key="availableReplicas">
+          <TableCell className="font-medium">availableReplicas</TableCell>
+          <TableCell>{currentRow.crd.status.availableReplicas}</TableCell>
+          <TableCell>-</TableCell>
+        </TableRow>
+      );
+    }
+
+    if (currentRow.crd.status.observedGeneration) {
+      result.push(
+        <TableRow key="observedGeneration">
+          <TableCell className="font-medium">observedGeneration</TableCell>
+          <TableCell>{currentRow.crd.status.observedGeneration}</TableCell>
+          <TableCell>-</TableCell>
+        </TableRow>
+      );
+    }
+
+    if (currentRow.crd.status.readyReplicas) {
+      result.push(
+        <TableRow key="readyReplicas">
+          <TableCell className="font-medium">readyReplicas</TableCell>
+          <TableCell>{currentRow.crd.status.readyReplicas}</TableCell>
+          <TableCell>-</TableCell>
+        </TableRow>
+      );
+    }
+
+    if (currentRow.crd.status.replicas) {
+      result.push(
+        <TableRow key="replicas">
+          <TableCell className="font-medium">replicas</TableCell>
+          <TableCell>{currentRow.crd.status.replicas}</TableCell>
+          <TableCell>-</TableCell>
+        </TableRow>
+      );
+    }
+
+    if (currentRow.crd.status.updatedReplicas) {
+      result.push(
+        <TableRow key="updatedReplicas">
+          <TableCell className="font-medium">updatedReplicas</TableCell>
+          <TableCell>{currentRow.crd.status.updatedReplicas}</TableCell>
+          <TableCell>-</TableCell>
+        </TableRow>
+      );
+    }
+
+    return result;
+  }, [currentRow]);
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{currentRow?.raw.metadata.name}</CardTitle>
+        <CardTitle>{currentRow?.crd.metadata.name}</CardTitle>
         <CardDescription>
-          命名空间：{currentRow?.raw.metadata.namespace}
+          命名空间：{currentRow?.crd.metadata.namespace}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -60,6 +117,7 @@ export default function Status({
           </TableHeader>
           <TableBody>
             {statusRows} 
+            {aba}
           </TableBody>
         </Table>
 

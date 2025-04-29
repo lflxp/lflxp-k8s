@@ -84,3 +84,16 @@ export interface ApiGroup {
   versions: PreVersion[];
   preferredVersion: PreVersion;
 }
+
+export interface Crd {
+  apiVersion: string;
+  kind: string;
+  metadata: {
+    name: string;
+    namespace: string;
+    labels: Record<string, string>;
+    annotations: Record<string, string>;
+    uid: string;
+    creationTimestamp: string;
+  };
+}

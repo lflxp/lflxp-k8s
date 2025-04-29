@@ -13,7 +13,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
+import { Drawer, DrawerContent } from "@/components/ui/drawer"
 import { Props } from './tasks-mutate-drawer'
 import { SectionCards } from './cards'
 import { CCComponent } from '../data/data'
@@ -28,6 +28,7 @@ import Status from "./basic/status"
 import Relative from "./basic/relative"
 import Affinity from "./basic/affinity"
 import Event from "./basic/event"
+import { useTasks } from '../context/tasks-context'
 
 
 export function PodDetailDrawer({
@@ -37,6 +38,7 @@ export function PodDetailDrawer({
 }: Props) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [jsonText, setJsonText] = useState('');
+  const { setCurrentRow } = useTasks();
 
   // 当currentRow变化时更新jsonText
   useEffect(() => {
@@ -48,9 +50,9 @@ export function PodDetailDrawer({
   const handleUpdate = () => {
     try {
       const updatedData = {
-        group: "",
+        group: "apps",
         version: "v1",
-        resource: "pods",
+        resource: "deployments",
         namespace: currentRow?.crd?.metadata?.namespace,
         name: currentRow?.crd?.metadata?.name,
         data: isEditMode ? JSON.parse(jsonText) : currentRow?.crd
@@ -65,9 +67,15 @@ export function PodDetailDrawer({
       })
       .then(response => response.json())
       .then(_data => {
+        // console.log('Updated data:', _data);
+        const newData = {
+          ...currentRow,
+          crd: _data.data
+        };
+        setCurrentRow(newData);
         toast({
           title: "更新成功",
-          description: "Pod配置已更新",
+          description: "Deployments配置已更新",
         });
       })
       .catch(_error => {
@@ -93,13 +101,12 @@ export function PodDetailDrawer({
           <DrawerTitle>Pod 详情 [{currentRow?.raw?.metadata?.namespace } / {currentRow?.raw?.metadata?.name}]</DrawerTitle>
         </DrawerHeader> */}
         <Tabs defaultValue="container" className="w-full">
-        <TabsList className="grid w-full grid-cols-9 gap-2">
+        <TabsList className="grid w-full grid-cols-5 gap-2">
           <TabsTrigger value="container">
             容器
             <Avatar className="h-5 w-5 ml-1">
               <AvatarFallback className="text-xs">
-                {currentRow?.crd?.status?.containerStatuses?.length || 0 + 
-                 currentRow?.crd?.status?.initContainerStatuses?.length || 0}
+                {currentRow.crd.spec.template.spec.containers?.length || 0 }
               </AvatarFallback>
             </Avatar>
           </TabsTrigger>
@@ -127,10 +134,10 @@ export function PodDetailDrawer({
               </AvatarFallback>
             </Avatar>
           </TabsTrigger>
-          <TabsTrigger value="diaodu">调度</TabsTrigger>
+          {/* <TabsTrigger value="diaodu">调度</TabsTrigger>
           <TabsTrigger value="event">事件</TabsTrigger>
           <TabsTrigger value="relative">相关资源</TabsTrigger>
-          <TabsTrigger value="monitor">监控</TabsTrigger>
+          <TabsTrigger value="monitor">监控</TabsTrigger> */}
           <TabsTrigger value="jsondata">查看或编辑</TabsTrigger>
         </TabsList>
         <TabsContent value="container" className="h-[80vh] overflow-y-auto">

@@ -84,8 +84,8 @@ export default function CRDS() {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 10000); // 每60秒刷新一次
-    return () => clearInterval(interval); // 清除定时器
+    // const interval = setInterval(fetchData, 10000); // 每60秒刷新一次
+    // return () => clearInterval(interval); // 清除定时器
   },[]);
 
   return (

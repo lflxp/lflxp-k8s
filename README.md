@@ -47,6 +47,11 @@
     1. 使用useContext管理终端状态
     2. 支持k8s容器
     3. 支持ssh连接
+14. 商城
+    1.  应用商店
+    2.  helm chart应用商店
+    3.  helm chart应用商店的应用可以通过helm chart进行部署
+    4.  应用商店的应用可以通过helm chart进行部署
 
 
 # 功能列表

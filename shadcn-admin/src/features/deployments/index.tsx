@@ -29,7 +29,7 @@ export default function Deployment() {
         resource: "deployments",
         fast: true
       });
-      console.log('请求接口成功:', response.data)
+      // console.log('请求接口成功:', response.data)
       setPodsData(response.data);
     } catch (error) {
       toast({

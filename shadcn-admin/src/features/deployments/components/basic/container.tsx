@@ -15,102 +15,57 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useTasks } from '../../context/tasks-context'
 import { Pod } from '../../data/schema'
 import { useMemo } from 'react'
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
-import { callTypes } from '../../data/data'
-import { Check, Minus } from "lucide-react"
 
 export interface crdDataProps {
   currentRow?: Pod
 }
 
-const getContainerState = (state: any) => {
-  if (state.running) return 'Running';
-  if (state.waiting) return 'Waiting';
-  if (state.terminated) return 'Terminated';
-  if (state.successed) return 'Successed';
-  if (state.failed) return 'Failed';
-  if (state.pending) return 'Pending';
-  return 'Unknown';
-};
-
 export default function Container({
   currentRow
 }: crdDataProps) {
-  const { setOpen, setCurrentRow, setContainerName } = useTasks()
   const containerRows = useMemo(() => {
-    if (!currentRow || !currentRow.crd || !currentRow.crd.status) return [];
+    if (!currentRow || !currentRow.crd || !currentRow.crd.spec) return [];
     
-    // 合并容器状态和初始化容器状态
-    const containerStatuses = currentRow.crd.status.containerStatuses || [];
-    const initContainerStatuses = currentRow.crd.status.initContainerStatuses || [];
-    // 遍历initContainerStatuses 加上initContainer: true
-    initContainerStatuses.forEach((container: any) => {
-      container.initContainer = true;
-    }) 
-    const allContainers = [...containerStatuses, ...initContainerStatuses];
+    const allContainers = currentRow.crd.spec.template.spec.containers
 
     return allContainers.map((container, index) => (
       <TableRow key={`${container.name}-${index}`}>
-        <TableCell>
-          <div className='flex space-x-2'>
-            <Badge variant='outline' className={cn('capitalize', callTypes.get(getContainerState(container.state)))}>
-              {getContainerState(container.state)}
-            </Badge>
-          </div>
-        </TableCell>
         <TableCell className="font-medium">{container.name}</TableCell>
         <TableCell className="font-medium">
-          {container.ready ? (
-            <Check className="h-4 w-4 text-green-500" />
-          ) : (
-            <Minus className="h-4 w-4 text-gray-400" />
-          )}
+          {container.imagePullPolicy}
         </TableCell>
         <TableCell className="font-medium">
-          { container.image }
-        </TableCell>
-        <TableCell className="font-medium">
-          {container.initContainer ? (
-            <Check className="h-4 w-4 text-green-500" />
-          ) : (
-            <Minus className="h-4 w-4 text-gray-400" />
-          )}
-        </TableCell>
-        <TableCell className="font-medium">
-          { container.restartCount }
-        </TableCell>
-        <TableCell className="font-medium">
-          { container.started ? 'True' : 'False'  }
+            <div className="w-48 truncate hover:whitespace-normal">
+            {container.image}
+            </div>
         </TableCell>
         <TableCell>
-          <div className="flex space-x-2">
-            <Button 
-              variant="secondary" 
-              size="sm"
-              onClick={() => {
-                setCurrentRow(currentRow)
-                setContainerName(container.name)
-                setOpen('terminal')
-              }}
-            >
-              日志
-            </Button>
-            <Button 
-              variant="secondary" 
-              size="sm"
-              onClick={() => {
-                setCurrentRow(currentRow)
-                setContainerName(container.name)
-                setOpen('ssh')
-              }}
-            >
-              SSH
-            </Button>
+          <div className="w-48 truncate hover:whitespace-normal">
+            { container.command ? container.command.join(', ') : '-' } 
           </div>
+        </TableCell>
+        <TableCell>
+          <div className="w-48 truncate hover:whitespace-normal">
+            { container.args ? container.args.join(', ') : '-' } 
+          </div>
+        </TableCell>
+        <TableCell className="font-medium">
+          {currentRow.crd.spec.replicas}
+        </TableCell>
+        <TableCell className="font-medium">
+          <div className="w-48 truncate hover:whitespace-normal">
+            { JSON.stringify(currentRow.crd.spec.selector.matchLabels, null, 2) }
+          </div>
+        </TableCell>
+        <TableCell className="font-medium">
+          <div className="w-48 truncate hover:whitespace-normal">
+            { currentRow.crd.spec.template.spec.serviceAccount }
+          </div>
+        </TableCell>
+        <TableCell className="font-medium">
+          { currentRow.crd.spec.template.spec.schedulerName }
         </TableCell>
       </TableRow>
     ));
@@ -129,14 +84,15 @@ export default function Container({
           <TableCaption>容器详情</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">Status</TableHead>
               <TableHead>Name</TableHead>
-              <TableHead>Ready</TableHead>
+              <TableHead>ImagePullPolicy</TableHead>
               <TableHead>Image</TableHead>
-              <TableHead>InitContainer</TableHead>
-              <TableHead>Restart</TableHead>
-              <TableHead>Started</TableHead>
-              <TableHead>操作</TableHead>
+              <TableHead>Command</TableHead>
+              <TableHead>Args</TableHead>
+              <TableHead>Replicas</TableHead>
+              <TableHead>Selector</TableHead>
+              <TableHead>ServiceAccount</TableHead>
+              <TableHead>SchedulerName</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

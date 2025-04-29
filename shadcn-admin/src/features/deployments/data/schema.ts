@@ -10,6 +10,9 @@ export const deploymentSchema = z.object({
     namespace: z.string().optional(),
     labels: z.record(z.string(), z.string()).optional(),
     annotations: z.record(z.string(), z.string()).optional(),
+    creationTimestamp: z.string().optional(),
+    resourceVersion: z.string().optional(),
+    uid: z.string().optional(),
   }).optional(),
   spec: z.object({
     replicas: z.number().optional(),

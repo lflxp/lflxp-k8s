@@ -14,7 +14,12 @@ export function SheetDemo(data: TData[], name: string) {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="link">{name}</Button>
+        <Button
+          variant="link"
+          className="text-blue-400 hover:text-green-600"
+        >
+          {name}
+        </Button>
       </SheetTrigger>
       <SheetContent className="w-[45%] sm:max-w-[425px]">
       <SheetHeader>

@@ -1,11 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table'
-import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { cn } from '@/lib/utils'
-import { callTypes, statuses } from '../data/data'
 import { Pod } from '../data/schema'
 import { DataTableColumnHeader } from './data-table-column-header'
-import { DataTableRowActions } from './data-table-row-actions'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useTasks } from '../context/tasks-context'
 
@@ -43,7 +39,7 @@ export const columns: ColumnDef<Pod>[] = [
       const { setOpen, setCurrentRow } = useTasks()
       const openDrawer = () => {
         setOpen('detail')
-        console.log('row', row.original)
+        // console.log('row', row.original)
         setCurrentRow(row.original)
       };
 
@@ -103,6 +99,33 @@ export const columns: ColumnDef<Pod>[] = [
     enableHiding: true
   },   
   {
+    accessorKey: 'replicas',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='副本数' />
+    ),
+    cell: ({ row }) => {
+      return row.original.crd.spec.replicas || 0;
+    }
+  },
+  {
+    accessorKey: 'uptodate',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='UP TO DATE' />
+    ),
+    cell: ({ row }) => {
+      return row.original.status?.updatedReplicas || 0;
+    }
+  },
+  {
+    accessorKey: 'avaliable',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='AVALIABLE' />
+    ),
+    cell: ({ row }) => {
+      return row.original.status?.availableReplicas || 0;
+    }
+  },
+  {
     accessorKey: 'ready',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='就绪容器' />
@@ -128,7 +151,6 @@ export const columns: ColumnDef<Pod>[] = [
       );
     }
   },
-
   {
     accessorKey: 'createtime',
     header: ({ column }) => (
@@ -172,7 +194,8 @@ export const columns: ColumnDef<Pod>[] = [
         return timeString;
       };
       
-      const startTime = new Date(row.getValue("createtime")).getTime();
+      const startTime = new Date(row.original.crd.metadata?.creationTimestamp || '').getTime();
+      // console.log('startTime', startTime)
       const { days, hours, minutes, seconds } = calculateTimeDifference(startTime);
       const timeFn = createTimeString(days, hours, minutes, seconds);
       
