@@ -197,78 +197,152 @@ export function CCComponent() {
 }
 
 export const poddemo = {
-  "apiVersion": "v1",
-  "kind": "Pod",
+  "apiVersion": "apps/v1",
+  "kind": "Deployment",
   "metadata": {
       "annotations": {
-          "cni.projectcalico.org/containerID": "6952a74e0b1c95f958e0e40eb2c8a8d93430112f2fc1860f2e81aa4d439d48e2",
-          "cni.projectcalico.org/podIP": "10.42.153.106/32",
-          "cni.projectcalico.org/podIPs": "10.42.153.106/32"
+          "deployment.kubernetes.io/revision": "2",
+          "meta.helm.sh/release-name": "qhx",
+          "meta.helm.sh/release-namespace": "default"
       },
-      "creationTimestamp": "2025-03-25T14:09:59Z",
-      "generateName": "demo-7fdf7d479b-",
+      "creationTimestamp": "2025-03-05T06:25:09Z",
+      "generation": 8,
       "labels": {
-          "aa": "bbcd",
-          "app.kubernetes.io/instance": "demo",
+          "app.kubernetes.io/instance": "qhx",
           "app.kubernetes.io/managed-by": "Helm",
-          "app.kubernetes.io/name": "demo",
+          "app.kubernetes.io/name": "qhx",
           "app.kubernetes.io/version": "1.16.0",
-          "helm.sh/chart": "demo-0.1.0",
-          "pod-template-hash": "7fdf7d479b"
+          "helm.sh/chart": "qhx-0.1.0"
       },
-      "name": "demo-7fdf7d479b-g52kv",
+      "name": "demo-hello",
       "namespace": "default"
   },
   "spec": {
-      "containers": [
-          {
-              "image": "nginx:1.16.0",
-              "imagePullPolicy": "IfNotPresent",
-              "livenessProbe": {
-                  "failureThreshold": 3,
-                  "httpGet": {
-                      "path": "/",
-                      "port": "http",
-                      "scheme": "HTTP"
-                  },
-                  "periodSeconds": 10,
-                  "successThreshold": 1,
-                  "timeoutSeconds": 1
+      "progressDeadlineSeconds": 600,
+      "replicas": 3,
+      "revisionHistoryLimit": 10,
+      "selector": {
+          "matchLabels": {
+              "app.kubernetes.io/instance": "qhx",
+              "app.kubernetes.io/name": "qhx"
+          }
+      },
+      "strategy": {
+          "rollingUpdate": {
+              "maxSurge": "25%",
+              "maxUnavailable": "25%"
+          },
+          "type": "RollingUpdate"
+      },
+      "template": {
+          "metadata": {
+              "creationTimestamp": null,
+              "labels": {
+                  "app.kubernetes.io/instance": "qhx",
+                  "app.kubernetes.io/name": "qhx"
+              }
+          },
+          "spec": {
+              "affinity": {
+                  "nodeAffinity": {
+                      "requiredDuringSchedulingIgnoredDuringExecution": {
+                          "nodeSelectorTerms": [
+                              {
+                                  "matchExpressions": [
+                                      {
+                                          "key": "app",
+                                          "operator": "In",
+                                          "values": [
+                                              "soamaster"
+                                          ]
+                                      }
+                                  ]
+                              }
+                          ]
+                      }
+                  }
               },
-              "name": "demo",
-              "ports": [
+              "containers": [
                   {
-                      "containerPort": 80,
-                      "name": "http",
-                      "protocol": "TCP"
+                      "image": "harbor.ks.x/eclipse-che/nginx:1.21.5",
+                      "imagePullPolicy": "IfNotPresent",
+                      "livenessProbe": {
+                          "failureThreshold": 3,
+                          "httpGet": {
+                              "path": "/",
+                              "port": "http",
+                              "scheme": "HTTP"
+                          },
+                          "periodSeconds": 10,
+                          "successThreshold": 1,
+                          "timeoutSeconds": 1
+                      },
+                      "name": "qhx",
+                      "ports": [
+                          {
+                              "containerPort": 80,
+                              "name": "http",
+                              "protocol": "TCP"
+                          }
+                      ],
+                      "readinessProbe": {
+                          "failureThreshold": 3,
+                          "httpGet": {
+                              "path": "/",
+                              "port": "http",
+                              "scheme": "HTTP"
+                          },
+                          "periodSeconds": 10,
+                          "successThreshold": 1,
+                          "timeoutSeconds": 1
+                      },
+                      "resources": {},
+                      "securityContext": {},
+                      "terminationMessagePath": "/dev/termination-log",
+                      "terminationMessagePolicy": "File"
                   }
               ],
-              "readinessProbe": {
-                  "failureThreshold": 3,
-                  "httpGet": {
-                      "path": "/",
-                      "port": "http",
-                      "scheme": "HTTP"
-                  },
-                  "periodSeconds": 10,
-                  "successThreshold": 1,
-                  "timeoutSeconds": 1
-              }
+              "dnsPolicy": "ClusterFirst",
+              "restartPolicy": "Always",
+              "schedulerName": "default-scheduler",
+              "securityContext": {},
+              "serviceAccount": "qhx",
+              "serviceAccountName": "qhx",
+              "terminationGracePeriodSeconds": 30,
+              "tolerations": [
+                  {
+                      "effect": "NoSchedule",
+                      "key": "app",
+                      "operator": "Equal",
+                      "value": "soamaster"
+                  }
+              ]
           }
-      ],
-      "tolerations": [
+      }
+  },
+  "status": {
+      "availableReplicas": 3,
+      "conditions": [
           {
-              "effect": "NoExecute",
-              "key": "node.kubernetes.io/not-ready",
-              "operator": "Exists",
-              "tolerationSeconds": 300
+              "lastTransitionTime": "2025-03-05T06:25:09Z",
+              "lastUpdateTime": "2025-03-05T06:26:30Z",
+              "message": "ReplicaSet \"qhx-748f58787f\" has successfully progressed.",
+              "reason": "NewReplicaSetAvailable",
+              "status": "True",
+              "type": "Progressing"
           },
           {
-              "effect": "NoExecute",
-              "key": "node.kubernetes.io/unreachable",
-              "operator": "Exists",
-              "tolerationSeconds": 300
+              "lastTransitionTime": "2025-03-05T06:31:53Z",
+              "lastUpdateTime": "2025-03-05T06:31:53Z",
+              "message": "Deployment has minimum availability.",
+              "reason": "MinimumReplicasAvailable",
+              "status": "True",
+              "type": "Available"
           }
-      ]
+      ],
+      "observedGeneration": 8,
+      "readyReplicas": 3,
+      "replicas": 3,
+      "updatedReplicas": 3
   }
 }

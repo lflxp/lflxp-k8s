@@ -185,6 +185,88 @@ func gvr_get_list(c *gin.Context) {
 				}
 
 				result = append(result, tmp)
+			case "DaemonSet":
+				var data v1.DaemonSet
+				toBytes, err := item.MarshalJSON()
+				if err != nil {
+					slog.Error("Error marshalling namespace %s: %v", data.Namespace, err)
+					utils.SendErrorMessage(c, 500, "error marshalling namespace", err.Error())
+					return
+				}
+				if err := json.Unmarshal(toBytes, &data); err != nil {
+					slog.Error("Error unmarshalling namespace %s: %v")
+					utils.SendErrorMessage(c, 500, "error Unmarshal", err.Error())
+					return
+				}
+				tmp := map[string]interface{}{
+					"crd":       data,
+					"name":      data.Name,
+					"namespace": data.Namespace,
+					"status":    data.Status,
+				}
+
+				result = append(result, tmp)
+			case "StatefulSet":
+				var data v1.StatefulSet
+				toBytes, err := item.MarshalJSON()
+				if err != nil {
+					slog.Error("Error marshalling namespace %s: %v", data.Namespace, err)
+					utils.SendErrorMessage(c, 500, "error marshalling namespace", err.Error())
+					return
+				}
+				if err := json.Unmarshal(toBytes, &data); err != nil {
+					slog.Error("Error unmarshalling namespace %s: %v", data.Namespace, err)
+					utils.SendErrorMessage(c, 500, "error Unmarshal", err.Error())
+					return
+				}
+				tmp := map[string]interface{}{
+					"crd":       data,
+					"name":      data.Name,
+					"namespace": data.Namespace,
+					"status":    data.Status,
+				}
+
+				result = append(result, tmp)
+			case "ConfigMap":
+				var data v1c.ConfigMap
+				toBytes, err := item.MarshalJSON()
+				if err != nil {
+					slog.Error("Error marshalling namespace %s: %v", data.Namespace, err)
+					utils.SendErrorMessage(c, 500, "error marshalling namespace", err.Error())
+					return
+				}
+				if err := json.Unmarshal(toBytes, &data); err != nil {
+					slog.Error("Error unmarshalling namespace %s: %v", data.Namespace, err)
+					utils.SendErrorMessage(c, 500, "error Unmarshal", err.Error())
+					return
+				}
+				tmp := map[string]interface{}{
+					"crd":       data,
+					"name":      data.Name,
+					"namespace": data.Namespace,
+				}
+
+				result = append(result, tmp)
+			case "Secret":
+				var data v1c.Secret
+				toBytes, err := item.MarshalJSON()
+				if err != nil {
+					slog.Error("Error marshalling namespace %s: %v", data.Namespace, err)
+					utils.SendErrorMessage(c, 500, "error marshalling namespace", err.Error())
+					return
+				}
+				if err := json.Unmarshal(toBytes, &data); err != nil {
+					slog.Error("Error unmarshalling namespace %s: %v", data.Namespace, err)
+					utils.SendErrorMessage(c, 500, "error Unmarshal", err.Error())
+					return
+				}
+				tmp := map[string]interface{}{
+					"crd":       data,
+					"name":      data.Name,
+					"namespace": data.Namespace,
+				}
+
+				result = append(result, tmp)
 			}
 		}
 		utils.SendSuccessMessage(c, 200, result)

@@ -111,9 +111,34 @@ export const sidebarData: SidebarData = {
           icon: IconLayoutDashboard,
         },
         {
+          title: 'DaemonSets',
+          url: '/daemonsets',
+          icon: IconLayoutDashboard,
+        },
+        {
+          title: 'StatefulSets',
+          url: '/statefulsets',
+          icon: IconLayoutDashboard,
+        },
+        {
           title: 'K8s',
           url: '/k8s',
           icon: IconLockAccess,
+        },
+      ],
+    },
+    {
+      title: '配置管理',
+      items: [
+        {
+          title: 'ConfigMaps',
+          url: '/configmaps',
+          icon: IconLayoutDashboard,
+        },
+        {
+          title: 'Secrets',
+          url: '/secrets',
+          icon: IconLayoutDashboard,
         },
       ],
     },

@@ -43,8 +43,14 @@ const AuthenticatedTerminalIndexLazyImport = createFileRoute(
 const AuthenticatedTasksIndexLazyImport = createFileRoute(
   '/_authenticated/tasks/',
 )()
+const AuthenticatedStatefulsetsIndexLazyImport = createFileRoute(
+  '/_authenticated/statefulsets/',
+)()
 const AuthenticatedSettingsIndexLazyImport = createFileRoute(
   '/_authenticated/settings/',
+)()
+const AuthenticatedSecretsIndexLazyImport = createFileRoute(
+  '/_authenticated/secrets/',
 )()
 const AuthenticatedPodsIndexLazyImport = createFileRoute(
   '/_authenticated/pods/',
@@ -64,8 +70,14 @@ const AuthenticatedEventsIndexLazyImport = createFileRoute(
 const AuthenticatedDeploymentsIndexLazyImport = createFileRoute(
   '/_authenticated/deployments/',
 )()
+const AuthenticatedDaemonsetsIndexLazyImport = createFileRoute(
+  '/_authenticated/daemonsets/',
+)()
 const AuthenticatedCrdsIndexLazyImport = createFileRoute(
   '/_authenticated/crds/',
+)()
+const AuthenticatedConfigmapsIndexLazyImport = createFileRoute(
+  '/_authenticated/configmaps/',
 )()
 const AuthenticatedChatsIndexLazyImport = createFileRoute(
   '/_authenticated/chats/',
@@ -219,6 +231,17 @@ const AuthenticatedTasksIndexLazyRoute =
     import('./routes/_authenticated/tasks/index.lazy').then((d) => d.Route),
   )
 
+const AuthenticatedStatefulsetsIndexLazyRoute =
+  AuthenticatedStatefulsetsIndexLazyImport.update({
+    id: '/statefulsets/',
+    path: '/statefulsets/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/statefulsets/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
 const AuthenticatedSettingsIndexLazyRoute =
   AuthenticatedSettingsIndexLazyImport.update({
     id: '/',
@@ -226,6 +249,15 @@ const AuthenticatedSettingsIndexLazyRoute =
     getParentRoute: () => AuthenticatedSettingsRouteLazyRoute,
   } as any).lazy(() =>
     import('./routes/_authenticated/settings/index.lazy').then((d) => d.Route),
+  )
+
+const AuthenticatedSecretsIndexLazyRoute =
+  AuthenticatedSecretsIndexLazyImport.update({
+    id: '/secrets/',
+    path: '/secrets/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/secrets/index.lazy').then((d) => d.Route),
   )
 
 const AuthenticatedPodsIndexLazyRoute = AuthenticatedPodsIndexLazyImport.update(
@@ -286,6 +318,17 @@ const AuthenticatedDeploymentsIndexLazyRoute =
     ),
   )
 
+const AuthenticatedDaemonsetsIndexLazyRoute =
+  AuthenticatedDaemonsetsIndexLazyImport.update({
+    id: '/daemonsets/',
+    path: '/daemonsets/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/daemonsets/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
 const AuthenticatedCrdsIndexLazyRoute = AuthenticatedCrdsIndexLazyImport.update(
   {
     id: '/crds/',
@@ -295,6 +338,17 @@ const AuthenticatedCrdsIndexLazyRoute = AuthenticatedCrdsIndexLazyImport.update(
 ).lazy(() =>
   import('./routes/_authenticated/crds/index.lazy').then((d) => d.Route),
 )
+
+const AuthenticatedConfigmapsIndexLazyRoute =
+  AuthenticatedConfigmapsIndexLazyImport.update({
+    id: '/configmaps/',
+    path: '/configmaps/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/configmaps/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 
 const AuthenticatedChatsIndexLazyRoute =
   AuthenticatedChatsIndexLazyImport.update({
@@ -503,11 +557,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatsIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/configmaps/': {
+      id: '/_authenticated/configmaps/'
+      path: '/configmaps'
+      fullPath: '/configmaps'
+      preLoaderRoute: typeof AuthenticatedConfigmapsIndexLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/crds/': {
       id: '/_authenticated/crds/'
       path: '/crds'
       fullPath: '/crds'
       preLoaderRoute: typeof AuthenticatedCrdsIndexLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/daemonsets/': {
+      id: '/_authenticated/daemonsets/'
+      path: '/daemonsets'
+      fullPath: '/daemonsets'
+      preLoaderRoute: typeof AuthenticatedDaemonsetsIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/deployments/': {
@@ -552,12 +620,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPodsIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/secrets/': {
+      id: '/_authenticated/secrets/'
+      path: '/secrets'
+      fullPath: '/secrets'
+      preLoaderRoute: typeof AuthenticatedSecretsIndexLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/settings/': {
       id: '/_authenticated/settings/'
       path: '/'
       fullPath: '/settings/'
       preLoaderRoute: typeof AuthenticatedSettingsIndexLazyImport
       parentRoute: typeof AuthenticatedSettingsRouteLazyImport
+    }
+    '/_authenticated/statefulsets/': {
+      id: '/_authenticated/statefulsets/'
+      path: '/statefulsets'
+      fullPath: '/statefulsets'
+      preLoaderRoute: typeof AuthenticatedStatefulsetsIndexLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/tasks/': {
       id: '/_authenticated/tasks/'
@@ -616,13 +698,17 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedAppsIndexLazyRoute: typeof AuthenticatedAppsIndexLazyRoute
   AuthenticatedChatsIndexLazyRoute: typeof AuthenticatedChatsIndexLazyRoute
+  AuthenticatedConfigmapsIndexLazyRoute: typeof AuthenticatedConfigmapsIndexLazyRoute
   AuthenticatedCrdsIndexLazyRoute: typeof AuthenticatedCrdsIndexLazyRoute
+  AuthenticatedDaemonsetsIndexLazyRoute: typeof AuthenticatedDaemonsetsIndexLazyRoute
   AuthenticatedDeploymentsIndexLazyRoute: typeof AuthenticatedDeploymentsIndexLazyRoute
   AuthenticatedEventsIndexLazyRoute: typeof AuthenticatedEventsIndexLazyRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
   AuthenticatedK8sIndexLazyRoute: typeof AuthenticatedK8sIndexLazyRoute
   AuthenticatedNodesIndexLazyRoute: typeof AuthenticatedNodesIndexLazyRoute
   AuthenticatedPodsIndexLazyRoute: typeof AuthenticatedPodsIndexLazyRoute
+  AuthenticatedSecretsIndexLazyRoute: typeof AuthenticatedSecretsIndexLazyRoute
+  AuthenticatedStatefulsetsIndexLazyRoute: typeof AuthenticatedStatefulsetsIndexLazyRoute
   AuthenticatedTasksIndexLazyRoute: typeof AuthenticatedTasksIndexLazyRoute
   AuthenticatedTerminalIndexLazyRoute: typeof AuthenticatedTerminalIndexLazyRoute
   AuthenticatedUsersIndexLazyRoute: typeof AuthenticatedUsersIndexLazyRoute
@@ -634,7 +720,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedAppsIndexLazyRoute: AuthenticatedAppsIndexLazyRoute,
   AuthenticatedChatsIndexLazyRoute: AuthenticatedChatsIndexLazyRoute,
+  AuthenticatedConfigmapsIndexLazyRoute: AuthenticatedConfigmapsIndexLazyRoute,
   AuthenticatedCrdsIndexLazyRoute: AuthenticatedCrdsIndexLazyRoute,
+  AuthenticatedDaemonsetsIndexLazyRoute: AuthenticatedDaemonsetsIndexLazyRoute,
   AuthenticatedDeploymentsIndexLazyRoute:
     AuthenticatedDeploymentsIndexLazyRoute,
   AuthenticatedEventsIndexLazyRoute: AuthenticatedEventsIndexLazyRoute,
@@ -642,6 +730,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedK8sIndexLazyRoute: AuthenticatedK8sIndexLazyRoute,
   AuthenticatedNodesIndexLazyRoute: AuthenticatedNodesIndexLazyRoute,
   AuthenticatedPodsIndexLazyRoute: AuthenticatedPodsIndexLazyRoute,
+  AuthenticatedSecretsIndexLazyRoute: AuthenticatedSecretsIndexLazyRoute,
+  AuthenticatedStatefulsetsIndexLazyRoute:
+    AuthenticatedStatefulsetsIndexLazyRoute,
   AuthenticatedTasksIndexLazyRoute: AuthenticatedTasksIndexLazyRoute,
   AuthenticatedTerminalIndexLazyRoute: AuthenticatedTerminalIndexLazyRoute,
   AuthenticatedUsersIndexLazyRoute: AuthenticatedUsersIndexLazyRoute,
@@ -670,14 +761,18 @@ export interface FileRoutesByFullPath {
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/apps': typeof AuthenticatedAppsIndexLazyRoute
   '/chats': typeof AuthenticatedChatsIndexLazyRoute
+  '/configmaps': typeof AuthenticatedConfigmapsIndexLazyRoute
   '/crds': typeof AuthenticatedCrdsIndexLazyRoute
+  '/daemonsets': typeof AuthenticatedDaemonsetsIndexLazyRoute
   '/deployments': typeof AuthenticatedDeploymentsIndexLazyRoute
   '/events': typeof AuthenticatedEventsIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/k8s': typeof AuthenticatedK8sIndexLazyRoute
   '/nodes': typeof AuthenticatedNodesIndexLazyRoute
   '/pods': typeof AuthenticatedPodsIndexLazyRoute
+  '/secrets': typeof AuthenticatedSecretsIndexLazyRoute
   '/settings/': typeof AuthenticatedSettingsIndexLazyRoute
+  '/statefulsets': typeof AuthenticatedStatefulsetsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/terminal': typeof AuthenticatedTerminalIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
@@ -701,14 +796,18 @@ export interface FileRoutesByTo {
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/apps': typeof AuthenticatedAppsIndexLazyRoute
   '/chats': typeof AuthenticatedChatsIndexLazyRoute
+  '/configmaps': typeof AuthenticatedConfigmapsIndexLazyRoute
   '/crds': typeof AuthenticatedCrdsIndexLazyRoute
+  '/daemonsets': typeof AuthenticatedDaemonsetsIndexLazyRoute
   '/deployments': typeof AuthenticatedDeploymentsIndexLazyRoute
   '/events': typeof AuthenticatedEventsIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/k8s': typeof AuthenticatedK8sIndexLazyRoute
   '/nodes': typeof AuthenticatedNodesIndexLazyRoute
   '/pods': typeof AuthenticatedPodsIndexLazyRoute
+  '/secrets': typeof AuthenticatedSecretsIndexLazyRoute
   '/settings': typeof AuthenticatedSettingsIndexLazyRoute
+  '/statefulsets': typeof AuthenticatedStatefulsetsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/terminal': typeof AuthenticatedTerminalIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
@@ -736,14 +835,18 @@ export interface FileRoutesById {
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
   '/_authenticated/apps/': typeof AuthenticatedAppsIndexLazyRoute
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexLazyRoute
+  '/_authenticated/configmaps/': typeof AuthenticatedConfigmapsIndexLazyRoute
   '/_authenticated/crds/': typeof AuthenticatedCrdsIndexLazyRoute
+  '/_authenticated/daemonsets/': typeof AuthenticatedDaemonsetsIndexLazyRoute
   '/_authenticated/deployments/': typeof AuthenticatedDeploymentsIndexLazyRoute
   '/_authenticated/events/': typeof AuthenticatedEventsIndexLazyRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/_authenticated/k8s/': typeof AuthenticatedK8sIndexLazyRoute
   '/_authenticated/nodes/': typeof AuthenticatedNodesIndexLazyRoute
   '/_authenticated/pods/': typeof AuthenticatedPodsIndexLazyRoute
+  '/_authenticated/secrets/': typeof AuthenticatedSecretsIndexLazyRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexLazyRoute
+  '/_authenticated/statefulsets/': typeof AuthenticatedStatefulsetsIndexLazyRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexLazyRoute
   '/_authenticated/terminal/': typeof AuthenticatedTerminalIndexLazyRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexLazyRoute
@@ -771,14 +874,18 @@ export interface FileRouteTypes {
     | '/settings/notifications'
     | '/apps'
     | '/chats'
+    | '/configmaps'
     | '/crds'
+    | '/daemonsets'
     | '/deployments'
     | '/events'
     | '/help-center'
     | '/k8s'
     | '/nodes'
     | '/pods'
+    | '/secrets'
     | '/settings/'
+    | '/statefulsets'
     | '/tasks'
     | '/terminal'
     | '/users'
@@ -801,14 +908,18 @@ export interface FileRouteTypes {
     | '/settings/notifications'
     | '/apps'
     | '/chats'
+    | '/configmaps'
     | '/crds'
+    | '/daemonsets'
     | '/deployments'
     | '/events'
     | '/help-center'
     | '/k8s'
     | '/nodes'
     | '/pods'
+    | '/secrets'
     | '/settings'
+    | '/statefulsets'
     | '/tasks'
     | '/terminal'
     | '/users'
@@ -834,14 +945,18 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/notifications'
     | '/_authenticated/apps/'
     | '/_authenticated/chats/'
+    | '/_authenticated/configmaps/'
     | '/_authenticated/crds/'
+    | '/_authenticated/daemonsets/'
     | '/_authenticated/deployments/'
     | '/_authenticated/events/'
     | '/_authenticated/help-center/'
     | '/_authenticated/k8s/'
     | '/_authenticated/nodes/'
     | '/_authenticated/pods/'
+    | '/_authenticated/secrets/'
     | '/_authenticated/settings/'
+    | '/_authenticated/statefulsets/'
     | '/_authenticated/tasks/'
     | '/_authenticated/terminal/'
     | '/_authenticated/users/'
@@ -909,13 +1024,17 @@ export const routeTree = rootRoute
         "/_authenticated/",
         "/_authenticated/apps/",
         "/_authenticated/chats/",
+        "/_authenticated/configmaps/",
         "/_authenticated/crds/",
+        "/_authenticated/daemonsets/",
         "/_authenticated/deployments/",
         "/_authenticated/events/",
         "/_authenticated/help-center/",
         "/_authenticated/k8s/",
         "/_authenticated/nodes/",
         "/_authenticated/pods/",
+        "/_authenticated/secrets/",
+        "/_authenticated/statefulsets/",
         "/_authenticated/tasks/",
         "/_authenticated/terminal/",
         "/_authenticated/users/"
@@ -993,8 +1112,16 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/chats/index.lazy.tsx",
       "parent": "/_authenticated"
     },
+    "/_authenticated/configmaps/": {
+      "filePath": "_authenticated/configmaps/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
     "/_authenticated/crds/": {
       "filePath": "_authenticated/crds/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/daemonsets/": {
+      "filePath": "_authenticated/daemonsets/index.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/deployments/": {
@@ -1021,9 +1148,17 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/pods/index.lazy.tsx",
       "parent": "/_authenticated"
     },
+    "/_authenticated/secrets/": {
+      "filePath": "_authenticated/secrets/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
     "/_authenticated/settings/": {
       "filePath": "_authenticated/settings/index.lazy.tsx",
       "parent": "/_authenticated/settings"
+    },
+    "/_authenticated/statefulsets/": {
+      "filePath": "_authenticated/statefulsets/index.lazy.tsx",
+      "parent": "/_authenticated"
     },
     "/_authenticated/tasks/": {
       "filePath": "_authenticated/tasks/index.lazy.tsx",

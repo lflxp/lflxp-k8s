@@ -4,6 +4,7 @@ import { Pod } from '../data/schema'
 import { DataTableColumnHeader } from './data-table-column-header'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useTasks } from '../context/tasks-context'
+import { Badge } from '@/components/ui/badge'
 
 export const columns: ColumnDef<Pod>[] = [
   {
@@ -27,6 +28,23 @@ export const columns: ColumnDef<Pod>[] = [
         className='translate-y-[2px]'
       />
     ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: 'avtive',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='状态' />
+    ),
+    cell: ({ row }) => {
+      const status = row.original?.crd?.status?.availableReplicas ? (
+        <Badge variant="outline" className='text-green-500 border-none'>Running</Badge>
+      ) : (
+        <Badge variant="outline" className='text-red-500 border-none'>Progressing</Badge>
+      )
+
+      return status
+    },
     enableSorting: false,
     enableHiding: false,
   },

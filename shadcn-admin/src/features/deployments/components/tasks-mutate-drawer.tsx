@@ -51,9 +51,9 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
       }
 
       const updatedData = {
-        group: "",
+        group: "apps",
         version: "v1",
-        resource: "pods",
+        resource: "deployments",
         namespace: currentRow.namespace,
         name: currentRow.name,
         data: JSON.parse(jsonText)
@@ -105,9 +105,9 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
         })
       }
       const AdddData = {
-        group: "",
+        group: "apps",
         version: "v1",
-        resource: "pods",
+        resource: "deployments",
         namespace: tmp.metadata.namespace === '' ? 'default' : tmp.metadata.namespace,
         name: tmp.metadata.name,
         data: tmp
@@ -158,11 +158,11 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
     >
       <SheetContent side="right" className="w-[50%] sm:max-w-[90%] flex flex-col overflow-y-auto">
         <SheetHeader className='text-left'>
-          <SheetTitle>{isUpdate ? '更新' : '创建'} Pod</SheetTitle>
+          <SheetTitle>{isUpdate ? '更新' : '创建'} Deployments</SheetTitle>
           <SheetDescription>
             {isUpdate
-              ? '更新Pod配置信息'
-              : '创建新的Pod配置'}
+              ? '更新Deployment配置信息'
+              : '创建新的Deployment配置'}
           </SheetDescription>
         </SheetHeader>
         { isUpdate ? (

@@ -55,8 +55,10 @@ export default function Container({
           {currentRow.crd.spec.replicas}
         </TableCell>
         <TableCell className="font-medium">
-          <div className="w-48 truncate hover:whitespace-normal">
-            { JSON.stringify(currentRow.crd.spec.selector.matchLabels, null, 2) }
+          <div className="w-48">
+            {/* { JSON.stringify(currentRow.crd.spec.selector.matchLabels, null, 2) } */}
+            {Object.entries(currentRow?.crd?.spec.selector.matchLabels).map(([key, value]) => 
+              `${key}=${value as string}`).reduce((prev, curr) => `${prev}, ${curr}`)}
           </div>
         </TableCell>
         <TableCell className="font-medium">
