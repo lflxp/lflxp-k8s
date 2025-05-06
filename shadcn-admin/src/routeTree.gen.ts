@@ -61,6 +61,9 @@ const AuthenticatedNodesIndexLazyImport = createFileRoute(
 const AuthenticatedK8sIndexLazyImport = createFileRoute(
   '/_authenticated/k8s/',
 )()
+const AuthenticatedJobsIndexLazyImport = createFileRoute(
+  '/_authenticated/jobs/',
+)()
 const AuthenticatedHelpCenterIndexLazyImport = createFileRoute(
   '/_authenticated/help-center/',
 )()
@@ -72,6 +75,9 @@ const AuthenticatedDeploymentsIndexLazyImport = createFileRoute(
 )()
 const AuthenticatedDaemonsetsIndexLazyImport = createFileRoute(
   '/_authenticated/daemonsets/',
+)()
+const AuthenticatedCronjobsIndexLazyImport = createFileRoute(
+  '/_authenticated/cronjobs/',
 )()
 const AuthenticatedCrdsIndexLazyImport = createFileRoute(
   '/_authenticated/crds/',
@@ -287,6 +293,16 @@ const AuthenticatedK8sIndexLazyRoute = AuthenticatedK8sIndexLazyImport.update({
   import('./routes/_authenticated/k8s/index.lazy').then((d) => d.Route),
 )
 
+const AuthenticatedJobsIndexLazyRoute = AuthenticatedJobsIndexLazyImport.update(
+  {
+    id: '/jobs/',
+    path: '/jobs/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any,
+).lazy(() =>
+  import('./routes/_authenticated/jobs/index.lazy').then((d) => d.Route),
+)
+
 const AuthenticatedHelpCenterIndexLazyRoute =
   AuthenticatedHelpCenterIndexLazyImport.update({
     id: '/help-center/',
@@ -327,6 +343,15 @@ const AuthenticatedDaemonsetsIndexLazyRoute =
     import('./routes/_authenticated/daemonsets/index.lazy').then(
       (d) => d.Route,
     ),
+  )
+
+const AuthenticatedCronjobsIndexLazyRoute =
+  AuthenticatedCronjobsIndexLazyImport.update({
+    id: '/cronjobs/',
+    path: '/cronjobs/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/cronjobs/index.lazy').then((d) => d.Route),
   )
 
 const AuthenticatedCrdsIndexLazyRoute = AuthenticatedCrdsIndexLazyImport.update(
@@ -571,6 +596,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrdsIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/cronjobs/': {
+      id: '/_authenticated/cronjobs/'
+      path: '/cronjobs'
+      fullPath: '/cronjobs'
+      preLoaderRoute: typeof AuthenticatedCronjobsIndexLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/daemonsets/': {
       id: '/_authenticated/daemonsets/'
       path: '/daemonsets'
@@ -597,6 +629,13 @@ declare module '@tanstack/react-router' {
       path: '/help-center'
       fullPath: '/help-center'
       preLoaderRoute: typeof AuthenticatedHelpCenterIndexLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/jobs/': {
+      id: '/_authenticated/jobs/'
+      path: '/jobs'
+      fullPath: '/jobs'
+      preLoaderRoute: typeof AuthenticatedJobsIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/k8s/': {
@@ -700,10 +739,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedChatsIndexLazyRoute: typeof AuthenticatedChatsIndexLazyRoute
   AuthenticatedConfigmapsIndexLazyRoute: typeof AuthenticatedConfigmapsIndexLazyRoute
   AuthenticatedCrdsIndexLazyRoute: typeof AuthenticatedCrdsIndexLazyRoute
+  AuthenticatedCronjobsIndexLazyRoute: typeof AuthenticatedCronjobsIndexLazyRoute
   AuthenticatedDaemonsetsIndexLazyRoute: typeof AuthenticatedDaemonsetsIndexLazyRoute
   AuthenticatedDeploymentsIndexLazyRoute: typeof AuthenticatedDeploymentsIndexLazyRoute
   AuthenticatedEventsIndexLazyRoute: typeof AuthenticatedEventsIndexLazyRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
+  AuthenticatedJobsIndexLazyRoute: typeof AuthenticatedJobsIndexLazyRoute
   AuthenticatedK8sIndexLazyRoute: typeof AuthenticatedK8sIndexLazyRoute
   AuthenticatedNodesIndexLazyRoute: typeof AuthenticatedNodesIndexLazyRoute
   AuthenticatedPodsIndexLazyRoute: typeof AuthenticatedPodsIndexLazyRoute
@@ -722,11 +763,13 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChatsIndexLazyRoute: AuthenticatedChatsIndexLazyRoute,
   AuthenticatedConfigmapsIndexLazyRoute: AuthenticatedConfigmapsIndexLazyRoute,
   AuthenticatedCrdsIndexLazyRoute: AuthenticatedCrdsIndexLazyRoute,
+  AuthenticatedCronjobsIndexLazyRoute: AuthenticatedCronjobsIndexLazyRoute,
   AuthenticatedDaemonsetsIndexLazyRoute: AuthenticatedDaemonsetsIndexLazyRoute,
   AuthenticatedDeploymentsIndexLazyRoute:
     AuthenticatedDeploymentsIndexLazyRoute,
   AuthenticatedEventsIndexLazyRoute: AuthenticatedEventsIndexLazyRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
+  AuthenticatedJobsIndexLazyRoute: AuthenticatedJobsIndexLazyRoute,
   AuthenticatedK8sIndexLazyRoute: AuthenticatedK8sIndexLazyRoute,
   AuthenticatedNodesIndexLazyRoute: AuthenticatedNodesIndexLazyRoute,
   AuthenticatedPodsIndexLazyRoute: AuthenticatedPodsIndexLazyRoute,
@@ -763,10 +806,12 @@ export interface FileRoutesByFullPath {
   '/chats': typeof AuthenticatedChatsIndexLazyRoute
   '/configmaps': typeof AuthenticatedConfigmapsIndexLazyRoute
   '/crds': typeof AuthenticatedCrdsIndexLazyRoute
+  '/cronjobs': typeof AuthenticatedCronjobsIndexLazyRoute
   '/daemonsets': typeof AuthenticatedDaemonsetsIndexLazyRoute
   '/deployments': typeof AuthenticatedDeploymentsIndexLazyRoute
   '/events': typeof AuthenticatedEventsIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
+  '/jobs': typeof AuthenticatedJobsIndexLazyRoute
   '/k8s': typeof AuthenticatedK8sIndexLazyRoute
   '/nodes': typeof AuthenticatedNodesIndexLazyRoute
   '/pods': typeof AuthenticatedPodsIndexLazyRoute
@@ -798,10 +843,12 @@ export interface FileRoutesByTo {
   '/chats': typeof AuthenticatedChatsIndexLazyRoute
   '/configmaps': typeof AuthenticatedConfigmapsIndexLazyRoute
   '/crds': typeof AuthenticatedCrdsIndexLazyRoute
+  '/cronjobs': typeof AuthenticatedCronjobsIndexLazyRoute
   '/daemonsets': typeof AuthenticatedDaemonsetsIndexLazyRoute
   '/deployments': typeof AuthenticatedDeploymentsIndexLazyRoute
   '/events': typeof AuthenticatedEventsIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
+  '/jobs': typeof AuthenticatedJobsIndexLazyRoute
   '/k8s': typeof AuthenticatedK8sIndexLazyRoute
   '/nodes': typeof AuthenticatedNodesIndexLazyRoute
   '/pods': typeof AuthenticatedPodsIndexLazyRoute
@@ -837,10 +884,12 @@ export interface FileRoutesById {
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexLazyRoute
   '/_authenticated/configmaps/': typeof AuthenticatedConfigmapsIndexLazyRoute
   '/_authenticated/crds/': typeof AuthenticatedCrdsIndexLazyRoute
+  '/_authenticated/cronjobs/': typeof AuthenticatedCronjobsIndexLazyRoute
   '/_authenticated/daemonsets/': typeof AuthenticatedDaemonsetsIndexLazyRoute
   '/_authenticated/deployments/': typeof AuthenticatedDeploymentsIndexLazyRoute
   '/_authenticated/events/': typeof AuthenticatedEventsIndexLazyRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexLazyRoute
+  '/_authenticated/jobs/': typeof AuthenticatedJobsIndexLazyRoute
   '/_authenticated/k8s/': typeof AuthenticatedK8sIndexLazyRoute
   '/_authenticated/nodes/': typeof AuthenticatedNodesIndexLazyRoute
   '/_authenticated/pods/': typeof AuthenticatedPodsIndexLazyRoute
@@ -876,10 +925,12 @@ export interface FileRouteTypes {
     | '/chats'
     | '/configmaps'
     | '/crds'
+    | '/cronjobs'
     | '/daemonsets'
     | '/deployments'
     | '/events'
     | '/help-center'
+    | '/jobs'
     | '/k8s'
     | '/nodes'
     | '/pods'
@@ -910,10 +961,12 @@ export interface FileRouteTypes {
     | '/chats'
     | '/configmaps'
     | '/crds'
+    | '/cronjobs'
     | '/daemonsets'
     | '/deployments'
     | '/events'
     | '/help-center'
+    | '/jobs'
     | '/k8s'
     | '/nodes'
     | '/pods'
@@ -947,10 +1000,12 @@ export interface FileRouteTypes {
     | '/_authenticated/chats/'
     | '/_authenticated/configmaps/'
     | '/_authenticated/crds/'
+    | '/_authenticated/cronjobs/'
     | '/_authenticated/daemonsets/'
     | '/_authenticated/deployments/'
     | '/_authenticated/events/'
     | '/_authenticated/help-center/'
+    | '/_authenticated/jobs/'
     | '/_authenticated/k8s/'
     | '/_authenticated/nodes/'
     | '/_authenticated/pods/'
@@ -1026,10 +1081,12 @@ export const routeTree = rootRoute
         "/_authenticated/chats/",
         "/_authenticated/configmaps/",
         "/_authenticated/crds/",
+        "/_authenticated/cronjobs/",
         "/_authenticated/daemonsets/",
         "/_authenticated/deployments/",
         "/_authenticated/events/",
         "/_authenticated/help-center/",
+        "/_authenticated/jobs/",
         "/_authenticated/k8s/",
         "/_authenticated/nodes/",
         "/_authenticated/pods/",
@@ -1120,6 +1177,10 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/crds/index.lazy.tsx",
       "parent": "/_authenticated"
     },
+    "/_authenticated/cronjobs/": {
+      "filePath": "_authenticated/cronjobs/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
     "/_authenticated/daemonsets/": {
       "filePath": "_authenticated/daemonsets/index.lazy.tsx",
       "parent": "/_authenticated"
@@ -1134,6 +1195,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/help-center/": {
       "filePath": "_authenticated/help-center/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/jobs/": {
+      "filePath": "_authenticated/jobs/index.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/k8s/": {

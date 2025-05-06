@@ -6,17 +6,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useTasks } from '../context/tasks-context'
-import { labels } from '../data/data'
 import { newSchema } from '../data/schema'
 // components/pods/data-table-row-actions.tsx
 
@@ -29,14 +22,7 @@ export function DataTableRowActions<TData>({
 }: DataTableRowActionsProps<TData>) {
   const task = newSchema.parse(row.original)
 
-  // 筛选出containerName
-  const containers = [...new Set(task.containerStatuses?.map((container) => container.name))]
-  .map((containerName) => ({
-    label: containerName,
-    value: containerName,
-  }));
-
-  const { setOpen, setCurrentRow, setContainerName } = useTasks()
+  const { setOpen, setCurrentRow } = useTasks()
 
   return (
     <DropdownMenu modal={false}>
@@ -50,69 +36,7 @@ export function DataTableRowActions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-[160px]'>
-        <DropdownMenuItem
-          onClick={() => {
-            setCurrentRow(task)
-            setOpen('update')
-          }}
-        >
-          编辑 
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>日志</DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup value={task.name}>
-              {containers.map((label) => (
-                <DropdownMenuRadioItem 
-                  onClick={() => {
-                    setCurrentRow(task)
-                    setContainerName(label.value)
-                    setOpen('terminal')
-                  }}
-                  key={label.value} 
-                  value={label.value}>
-                  {label.label}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>终端</DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup value={task.name}>
-              {containers.map((label) => (
-                <DropdownMenuRadioItem 
-                  onClick={() => {
-                    setCurrentRow(task)
-                    setContainerName(label.value)
-                    setOpen('ssh')
-                  }}
-                  key={label.value} 
-                  value={label.value}>
-                  {label.label}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuItem disabled>Make a copy</DropdownMenuItem>
-        <DropdownMenuItem disabled>Favorite</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup value={task.name}>
-              {labels.map((label) => (
-                <DropdownMenuRadioItem key={label.value} value={label.value}>
-                  {label.label}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuSeparator />
+        
         <DropdownMenuItem
           onClick={() => {
             setCurrentRow(task)

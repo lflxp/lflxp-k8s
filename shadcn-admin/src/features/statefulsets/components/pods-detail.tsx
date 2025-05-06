@@ -52,7 +52,7 @@ export function PodDetailDrawer({
       const updatedData = {
         group: "apps",
         version: "v1",
-        resource: "daemonsets",
+        resource: "statefulsets",
         namespace: currentRow?.crd?.metadata?.namespace,
         name: currentRow?.crd?.metadata?.name,
         data: isEditMode ? JSON.parse(jsonText) : currentRow?.crd

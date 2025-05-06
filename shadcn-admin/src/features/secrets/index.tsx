@@ -83,7 +83,7 @@ export default function Secret() {
             </div>
           </div>
         </Main>
-      <TasksDialogs />
+      <TasksDialogs fetchData={fetchData} />
     </TasksProvider>
   )
 }

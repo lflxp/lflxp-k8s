@@ -121,6 +121,16 @@ export const sidebarData: SidebarData = {
           icon: IconLayoutDashboard,
         },
         {
+          title: 'Jobs',
+          url: '/jobs',
+          icon: IconLayoutDashboard,
+        },
+        {
+          title: 'CronJobs',
+          url: '/cronjobs',
+          icon: IconLayoutDashboard,
+        },
+        {
           title: 'K8s',
           url: '/k8s',
           icon: IconLockAccess,

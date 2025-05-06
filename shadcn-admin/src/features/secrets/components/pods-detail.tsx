@@ -69,7 +69,7 @@ export function PodDetailDrawer({
         setCurrentRow(newData);
         toast({
           title: "更新成功",
-          description: "Deployments配置已更新",
+          description: `Secret ${currentRow?.crd.metadata.name}已更新`,
         });
       })
       .catch(_error => {

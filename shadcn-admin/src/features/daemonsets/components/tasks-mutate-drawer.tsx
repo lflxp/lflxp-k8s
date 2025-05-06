@@ -75,7 +75,7 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
       .then(_data => {
         toast({
           title: "更新成功",
-          description: "Pod配置已更新",
+          description: `Daemonset ${currentRow.name} 配置已更新`,
         });
         onOpenChange(false);
       })
@@ -129,7 +129,7 @@ export function TasksMutateDrawer({ open, onOpenChange, currentRow }: Props) {
       .then(_data => {
         toast({
           title: "新增成功",
-          description: "Pod配置已新增",
+          description: `Daemonset ${tmp.metadata.name} 配置已新增`,
         });
         onOpenChange(false);
       })

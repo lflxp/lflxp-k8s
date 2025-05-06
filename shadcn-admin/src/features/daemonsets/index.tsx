@@ -83,7 +83,7 @@ export default function Daemonsets() {
             </div>
           </div>
         </Main>
-      <TasksDialogs />
+      <TasksDialogs fetchData={fetchData} />
     </TasksProvider>
   )
 }

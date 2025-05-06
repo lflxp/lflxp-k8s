@@ -83,7 +83,7 @@ export default function StatefulSet() {
             </div>
           </div>
         </Main>
-      <TasksDialogs />
+      <TasksDialogs fetchData={fetchData}/>
     </TasksProvider>
   )
 }

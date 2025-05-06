@@ -86,7 +86,7 @@ export default function ConfigMap() {
             </div>
           </div>
         </Main>
-      <TasksDialogs />
+      <TasksDialogs fetchData={fetchData} />
     </TasksProvider>
   )
 }

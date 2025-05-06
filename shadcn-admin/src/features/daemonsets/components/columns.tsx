@@ -5,6 +5,7 @@ import { DataTableColumnHeader } from './data-table-column-header'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useTasks } from '../context/tasks-context'
 import { Badge } from '@/components/ui/badge'
+import { DataTableRowActions } from './data-table-row-actions'
 
 export const columns: ColumnDef<Pod>[] = [
   {
@@ -231,8 +232,8 @@ export const columns: ColumnDef<Pod>[] = [
       );
     },
   },
-  // {
-  //   id: 'actions',
-  //   cell: ({ row }) => <DataTableRowActions row={row} />,
-  // },
+  {
+    id: 'actions',
+    cell: ({ row }) => <DataTableRowActions row={row} />,
+  },
 ]

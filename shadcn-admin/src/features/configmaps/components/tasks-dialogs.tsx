@@ -5,7 +5,13 @@ import { TasksImportDialog } from './tasks-import-dialog'
 import { TasksMutateDrawer, PodTerminalDrawer, PodSSHDrawer } from './tasks-mutate-drawer'
 import { PodDetailDrawer } from './pods-detail'
 
-export function TasksDialogs() {
+interface TD {
+  fetchData: () => void
+}
+
+export function TasksDialogs({
+  fetchData,
+}: TD) {
   const { open, setOpen, currentRow, setCurrentRow, containerName, setContainerName } = useTasks()
 
   const handleUpdate = () => {
@@ -22,7 +28,7 @@ export function TasksDialogs() {
       const updatedData = {
         group: "",
         version: "v1",
-        resource: "pods",
+        resource: "configmaps",
         namespace: currentRow?.namespace,
         name: currentRow?.name
       };
@@ -41,9 +47,10 @@ export function TasksDialogs() {
         return response.json();
       })
       .then(_data => {
+        fetchData();
         toast({
           title: "刪除成功",
-          description: "Pod配置已刪除",
+          description: `ConfigMap ${currentRow?.name}已刪除`,
         });
       })
       .catch(_error => {
@@ -152,10 +159,10 @@ export function TasksDialogs() {
             name={currentRow.name}
             namespace={currentRow.namespace}
             className='max-w-md'
-            title={`Delete Pod: ${currentRow.namespace}/${currentRow.name} ?`}
+            title={`Delete ConfigMap: ${currentRow.namespace}/${currentRow.name} ?`}
             desc={
               <>
-                You are about to delete a Pod with the Name{' '}
+                You are about to delete a ConfigMap with the Name{' '}
                 <strong>{currentRow.namespace}/{currentRow.name}</strong>. <br />
                 This action cannot be undone.
               </>

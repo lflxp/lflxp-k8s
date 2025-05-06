@@ -33,22 +33,22 @@ export function EventDetail({
             </DrawerClose>
         </DialogTitle>
         
-        <div className="w-full h-full">
+        <div className="w-full h-[80uv] overflow-y-auto">
           <Card>
-                <CardHeader>
-                  <CardTitle>原始JSON</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="flex justify-start mb-4">
-                    <JsonView 
-                      src={currentRow || {}} 
-                      enableClipboard={true}
-                      displayDataTypes={false}
-                      name={false}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
+              <CardHeader>
+                <CardTitle>原始JSON</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex justify-start mb-4 max-h-[80vu] overflow-y-auto">
+                  <JsonView 
+                  src={currentRow || {}} 
+                  enableClipboard={true}
+                  displayDataTypes={false}
+                  name={false}
+                  />
+                </div>
+              </CardContent>
+            </Card>
         </div>
       </DrawerContent>
     </Drawer>
