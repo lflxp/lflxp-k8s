@@ -25,7 +25,7 @@ export default function CRDS() {
       response.data.apiresourceListSlice.forEach((item: ApiResource) => {
         item.resources.forEach((resource: ResourceResult) => {
           const apiGroup = item.groupVersion.split('/')[0];
-          const apiVersion = item.apiVersion;
+          const apiVersion = item.groupVersion.split('/')[1];
           const kind = resource.kind;
           const resourceName = resource.name;
           const namespaced = resource.namespaced;
