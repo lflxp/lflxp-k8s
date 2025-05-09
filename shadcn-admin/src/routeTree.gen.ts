@@ -67,6 +67,12 @@ const AuthenticatedJobsIndexLazyImport = createFileRoute(
 const AuthenticatedHelpCenterIndexLazyImport = createFileRoute(
   '/_authenticated/help-center/',
 )()
+const AuthenticatedHelminstallIndexLazyImport = createFileRoute(
+  '/_authenticated/helminstall/',
+)()
+const AuthenticatedHelmIndexLazyImport = createFileRoute(
+  '/_authenticated/helm/',
+)()
 const AuthenticatedEventsIndexLazyImport = createFileRoute(
   '/_authenticated/events/',
 )()
@@ -313,6 +319,27 @@ const AuthenticatedHelpCenterIndexLazyRoute =
       (d) => d.Route,
     ),
   )
+
+const AuthenticatedHelminstallIndexLazyRoute =
+  AuthenticatedHelminstallIndexLazyImport.update({
+    id: '/helminstall/',
+    path: '/helminstall/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/helminstall/index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
+const AuthenticatedHelmIndexLazyRoute = AuthenticatedHelmIndexLazyImport.update(
+  {
+    id: '/helm/',
+    path: '/helm/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any,
+).lazy(() =>
+  import('./routes/_authenticated/helm/index.lazy').then((d) => d.Route),
+)
 
 const AuthenticatedEventsIndexLazyRoute =
   AuthenticatedEventsIndexLazyImport.update({
@@ -624,6 +651,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEventsIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/helm/': {
+      id: '/_authenticated/helm/'
+      path: '/helm'
+      fullPath: '/helm'
+      preLoaderRoute: typeof AuthenticatedHelmIndexLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/helminstall/': {
+      id: '/_authenticated/helminstall/'
+      path: '/helminstall'
+      fullPath: '/helminstall'
+      preLoaderRoute: typeof AuthenticatedHelminstallIndexLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/help-center/': {
       id: '/_authenticated/help-center/'
       path: '/help-center'
@@ -743,6 +784,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDaemonsetsIndexLazyRoute: typeof AuthenticatedDaemonsetsIndexLazyRoute
   AuthenticatedDeploymentsIndexLazyRoute: typeof AuthenticatedDeploymentsIndexLazyRoute
   AuthenticatedEventsIndexLazyRoute: typeof AuthenticatedEventsIndexLazyRoute
+  AuthenticatedHelmIndexLazyRoute: typeof AuthenticatedHelmIndexLazyRoute
+  AuthenticatedHelminstallIndexLazyRoute: typeof AuthenticatedHelminstallIndexLazyRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
   AuthenticatedJobsIndexLazyRoute: typeof AuthenticatedJobsIndexLazyRoute
   AuthenticatedK8sIndexLazyRoute: typeof AuthenticatedK8sIndexLazyRoute
@@ -768,6 +811,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDeploymentsIndexLazyRoute:
     AuthenticatedDeploymentsIndexLazyRoute,
   AuthenticatedEventsIndexLazyRoute: AuthenticatedEventsIndexLazyRoute,
+  AuthenticatedHelmIndexLazyRoute: AuthenticatedHelmIndexLazyRoute,
+  AuthenticatedHelminstallIndexLazyRoute:
+    AuthenticatedHelminstallIndexLazyRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
   AuthenticatedJobsIndexLazyRoute: AuthenticatedJobsIndexLazyRoute,
   AuthenticatedK8sIndexLazyRoute: AuthenticatedK8sIndexLazyRoute,
@@ -810,6 +856,8 @@ export interface FileRoutesByFullPath {
   '/daemonsets': typeof AuthenticatedDaemonsetsIndexLazyRoute
   '/deployments': typeof AuthenticatedDeploymentsIndexLazyRoute
   '/events': typeof AuthenticatedEventsIndexLazyRoute
+  '/helm': typeof AuthenticatedHelmIndexLazyRoute
+  '/helminstall': typeof AuthenticatedHelminstallIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/jobs': typeof AuthenticatedJobsIndexLazyRoute
   '/k8s': typeof AuthenticatedK8sIndexLazyRoute
@@ -847,6 +895,8 @@ export interface FileRoutesByTo {
   '/daemonsets': typeof AuthenticatedDaemonsetsIndexLazyRoute
   '/deployments': typeof AuthenticatedDeploymentsIndexLazyRoute
   '/events': typeof AuthenticatedEventsIndexLazyRoute
+  '/helm': typeof AuthenticatedHelmIndexLazyRoute
+  '/helminstall': typeof AuthenticatedHelminstallIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/jobs': typeof AuthenticatedJobsIndexLazyRoute
   '/k8s': typeof AuthenticatedK8sIndexLazyRoute
@@ -888,6 +938,8 @@ export interface FileRoutesById {
   '/_authenticated/daemonsets/': typeof AuthenticatedDaemonsetsIndexLazyRoute
   '/_authenticated/deployments/': typeof AuthenticatedDeploymentsIndexLazyRoute
   '/_authenticated/events/': typeof AuthenticatedEventsIndexLazyRoute
+  '/_authenticated/helm/': typeof AuthenticatedHelmIndexLazyRoute
+  '/_authenticated/helminstall/': typeof AuthenticatedHelminstallIndexLazyRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/_authenticated/jobs/': typeof AuthenticatedJobsIndexLazyRoute
   '/_authenticated/k8s/': typeof AuthenticatedK8sIndexLazyRoute
@@ -929,6 +981,8 @@ export interface FileRouteTypes {
     | '/daemonsets'
     | '/deployments'
     | '/events'
+    | '/helm'
+    | '/helminstall'
     | '/help-center'
     | '/jobs'
     | '/k8s'
@@ -965,6 +1019,8 @@ export interface FileRouteTypes {
     | '/daemonsets'
     | '/deployments'
     | '/events'
+    | '/helm'
+    | '/helminstall'
     | '/help-center'
     | '/jobs'
     | '/k8s'
@@ -1004,6 +1060,8 @@ export interface FileRouteTypes {
     | '/_authenticated/daemonsets/'
     | '/_authenticated/deployments/'
     | '/_authenticated/events/'
+    | '/_authenticated/helm/'
+    | '/_authenticated/helminstall/'
     | '/_authenticated/help-center/'
     | '/_authenticated/jobs/'
     | '/_authenticated/k8s/'
@@ -1085,6 +1143,8 @@ export const routeTree = rootRoute
         "/_authenticated/daemonsets/",
         "/_authenticated/deployments/",
         "/_authenticated/events/",
+        "/_authenticated/helm/",
+        "/_authenticated/helminstall/",
         "/_authenticated/help-center/",
         "/_authenticated/jobs/",
         "/_authenticated/k8s/",
@@ -1191,6 +1251,14 @@ export const routeTree = rootRoute
     },
     "/_authenticated/events/": {
       "filePath": "_authenticated/events/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/helm/": {
+      "filePath": "_authenticated/helm/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/helminstall/": {
+      "filePath": "_authenticated/helminstall/index.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/help-center/": {

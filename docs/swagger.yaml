@@ -375,6 +375,55 @@ paths:
       summary: 服务端探活查询接口
       tags:
       - ThirdParty
+  /api/helm/install/list:
+    get:
+      description: 获取安装列表
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 获取安装列表
+      tags:
+      - Helm
+  /api/helm/release/list/{name}:
+    get:
+      description: 获取repo软件列表
+      parameters:
+      - description: repo name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: 最新版本
+        in: query
+        name: fast
+        type: string
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 获取repo软件列表
+      tags:
+      - Helm
+  /api/helm/repo/list:
+    get:
+      description: 获取repo列表
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 获取repo列表
+      tags:
+      - Helm
   /api/login:
     post:
       description: 后端服务登录接口

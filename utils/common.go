@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"compress/gzip"
 	"crypto/md5"
 	"encoding/base64"
 	"encoding/hex"
@@ -300,6 +301,22 @@ func ExecCommandLinux(cmd string) ([]byte, error) {
 	return out.Bytes(), nil
 }
 
+func ExecCommandLinuxWithWorkdir(cmd, workdir string) ([]byte, error) {
+	pipeline := exec.Command("sh", "-c", cmd)
+	pipeline.Dir = workdir
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	pipeline.Stdout = &out
+	pipeline.Stderr = &stderr
+	err := pipeline.Run()
+	if err != nil {
+		fmt.Printf("执行命令错误: %s %s\n", cmd, err.Error())
+		return stderr.Bytes(), err
+	}
+	// fmt.Println(stderr.String())
+	return out.Bytes(), nil
+}
+
 func ExecCommandWindows(cmd string) ([]byte, error) {
 	pipeline := exec.Command("powershell.exe", "-c", cmd)
 	var out bytes.Buffer
@@ -368,4 +385,33 @@ func ProbePort(network, host string, port int, timeout time.Duration) (bool, err
 	}
 	defer conn.Close()
 	return true, nil
+}
+
+func Gunzip(data []byte) ([]byte, error) {
+	reader, err := gzip.NewReader(bytes.NewReader(data))
+	if err != nil {
+		return nil, err
+	}
+	defer reader.Close()
+
+	var out bytes.Buffer
+	if _, err := io.Copy(&out, reader); err != nil {
+		return nil, err
+	}
+
+	return out.Bytes(), nil
+}
+func Gzip(data []byte) ([]byte, error) {
+	var out bytes.Buffer
+	writer := gzip.NewWriter(&out)
+	defer writer.Close()
+
+	if _, err := writer.Write(data); err != nil {
+		return nil, err
+	}
+	if err := writer.Close(); err != nil {
+		return nil, err
+	}
+
+	return out.Bytes(), nil
 }

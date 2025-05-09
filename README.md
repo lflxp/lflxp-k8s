@@ -52,6 +52,11 @@
     2.  helm chart应用商店
     3.  helm chart应用商店的应用可以通过helm chart进行部署
     4.  应用商店的应用可以通过helm chart进行部署
+    5.  helm
+        * macos -> $HOME/Library/Caches/helm/repository
+        * linux -> $HOME/.cache/helm/repository
+        * secret sh.helm.release.v1.demo.v1 -> echo 1|base64 -d|base64 -d|gunzip
+15. 多集群管理
 
 
 # 功能列表

@@ -153,6 +153,21 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
+      title: '应用商店',
+      items: [
+        {
+          title: 'Helm Charts',
+          url: '/helm',
+          icon: IconLayoutDashboard,
+        },
+        {
+          title: '已安装应用',
+          url: '/helminstall',
+          icon: IconLayoutDashboard,
+        }
+      ],
+    },
+    {
       title: 'Pages',
       items: [
         {

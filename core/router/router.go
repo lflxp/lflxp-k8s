@@ -8,6 +8,7 @@ import (
 	"github.com/lflxp/lflxp-k8s/core/pages"
 	"github.com/lflxp/lflxp-k8s/pkg/apiserver"
 	"github.com/lflxp/lflxp-k8s/pkg/csm"
+	"github.com/lflxp/lflxp-k8s/pkg/helm"
 	"github.com/lflxp/lflxp-k8s/pkg/monitor"
 	"github.com/lflxp/lflxp-k8s/pkg/tty"
 	"github.com/lflxp/lflxp-k8s/pkg/vela/appshop"
@@ -74,4 +75,5 @@ func PreGinServe(r *gin.Engine, port string, ttyData *pkg.Tty) {
 	csm.RegisterCSM(r)
 	tty.RegisterTTY(r, ttyData)
 	pages.RegisterTemplate(r)
+	helm.RegisterApiserverHelm(r)
 }
