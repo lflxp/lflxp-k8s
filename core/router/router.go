@@ -41,13 +41,13 @@ func PreGinServe(r *gin.Engine, port string, ttyData *pkg.Tty) {
 	// 404
 	r.NoRoute(middlewares.NoRouteHandler)
 
-	// r.GET("/", func(c *gin.Context) {
-	// 	// c.Redirect(301, "/login")
-	// 	// c.Redirect(301, "/dashboard")
-	// 	// c.Redirect(301, "/d2admin")
-	// 	c.Redirect(301, "/shadcn")
-	// 	// c.Redirect(301, "/swaggers/index.html")
-	// })
+	r.GET("/", func(c *gin.Context) {
+		// c.Redirect(301, "/login")
+		// c.Redirect(301, "/dashboard")
+		// c.Redirect(301, "/d2admin")
+		c.Redirect(301, "/shadcn")
+		// c.Redirect(301, "/swaggers/index.html")
+	})
 
 	// 健康检查
 	r.GET("/health", middlewares.RegisterHealthMiddleware)

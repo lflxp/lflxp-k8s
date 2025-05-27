@@ -178,9 +178,9 @@ func init() {
 	rootCmd.Flags().IntVarP(&model.HeartSync, "heartSync", "Z", 60, "心跳同步 单位秒")
 	rootCmd.Flags().IntVarP(&model.ServerSync, "serverSync", "V", 60, "服务端服务探活，单位秒")
 	rootCmd.Flags().StringVarP(&model.Path, "path", "W", "config.yaml", "配置文件路径 单位秒")
-	rootCmd.Flags().StringVarP(&helm.HelmHome, "helmhome", "O", "/home/lixueping/.cache/helm", "helm home path")
+	rootCmd.Flags().StringVarP(&helm.HelmHome, "helmhome", "O", "/Users/lixueping/Library/Caches/helm", "helm home path")
 	rootCmd.Flags().StringVarP(&helm.HelmKubeConfig, "kubeconfig", "K", "/home/lixueping/.kube/config", "kubeconfig path")
-	rootCmd.Flags().StringVarP(&helm.HelmBin, "helmbin", "D", "/usr/local/bin/helm", "helm bin path")
+	rootCmd.Flags().StringVarP(&helm.HelmBin, "helmbin", "D", "/opt/homebrew/bin/helm", "helm bin path")
 
 	model.Host = fmt.Sprintf("localhost:%s", port)
 	model.Https = isHttps
