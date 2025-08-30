@@ -4,7 +4,6 @@ Copyright © 2025 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"github.com/lflxp/lflxp-k8s/pkg/csm/agent"
 	"github.com/lflxp/lflxp-k8s/pkg/csm/model"
 	"github.com/spf13/cobra"
 )
@@ -20,7 +19,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		agent.Server()
+		// agent.Server()
 	},
 }
 

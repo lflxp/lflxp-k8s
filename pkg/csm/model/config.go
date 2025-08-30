@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/lflxp/lflxp-k8s/utils"
 
@@ -16,26 +15,26 @@ var (
 	ipAddress    string
 )
 
-func init() {
-	go func() {
-		cmdTicker := time.NewTicker(10 * time.Second)
-		defer cmdTicker.Stop()
+// func init() {
+// 	go func() {
+// 		cmdTicker := time.NewTicker(10 * time.Second)
+// 		defer cmdTicker.Stop()
 
-		for range cmdTicker.C {
-			if IsServer {
-				err := getConfigByFile()
-				if err != nil {
-					fmt.Println("Server 获取配置失败", err)
-				}
-			} else {
-				err := refreshConfig()
-				if err != nil {
-					fmt.Println("Agent 获取配置失败", err)
-				}
-			}
-		}
-	}()
-}
+// 		for range cmdTicker.C {
+// 			if IsServer {
+// 				err := getConfigByFile()
+// 				if err != nil {
+// 					fmt.Println("Server 获取配置失败", err)
+// 				}
+// 			} else {
+// 				err := refreshConfig()
+// 				if err != nil {
+// 					fmt.Println("Agent 获取配置失败", err)
+// 				}
+// 			}
+// 		}
+// 	}()
+// }
 
 func GetLocalIP() string {
 	if ipAddress != "" {
