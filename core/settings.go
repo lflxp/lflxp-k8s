@@ -18,7 +18,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lflxp/lflxp-tty/pkg"
-	"github.com/skratchdot/open-golang/open"
+
+	// "github.com/skratchdot/open-golang/open"
 	"github.com/spf13/viper"
 )
 
@@ -81,20 +82,20 @@ func Run(ishttps bool, port string, tty *pkg.Tty) {
 		}
 	}()
 
-	var openUrl string
-	for index, ip := range utils.GetIPs() {
+	// var openUrl string
+	for _, ip := range utils.GetIPs() {
 		if ishttps {
 			slog.Info(fmt.Sprintf("Listening and serving HTTPS on https://%s:%s", ip, port))
 		} else {
 			slog.Info(fmt.Sprintf("Listening and serving HTTPS on http://%s:%s", ip, port))
 		}
 
-		if index == 0 {
-			openUrl = fmt.Sprintf("localhost:%s", port)
-		}
+		// if index == 0 {
+		// 	openUrl = fmt.Sprintf("localhost:%s", port)
+		// }
 	}
 	if ishttps {
-		open.Start(fmt.Sprintf("https://%s", openUrl))
+		// open.Start(fmt.Sprintf("https://%s", openUrl))
 		if err := server.ListenAndServeTLS("ca.crt", "ca.key"); err != nil {
 			if err == http.ErrServerClosed {
 				slog.Warn("Server closed under request")
@@ -103,7 +104,7 @@ func Run(ishttps bool, port string, tty *pkg.Tty) {
 			}
 		}
 	} else {
-		open.Start(fmt.Sprintf("http://%s", openUrl))
+		// open.Start(fmt.Sprintf("http://%s", openUrl))
 		if err := server.ListenAndServe(); err != nil {
 			if err == http.ErrServerClosed {
 				slog.Warn("Server closed under request")
