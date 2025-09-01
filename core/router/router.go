@@ -5,6 +5,7 @@ import (
 
 	"github.com/lflxp/lflxp-k8s/core/controller"
 	"github.com/lflxp/lflxp-k8s/core/middlewares"
+	"github.com/lflxp/lflxp-k8s/core/pages"
 	"github.com/lflxp/lflxp-k8s/pkg/apiserver"
 	"github.com/lflxp/lflxp-k8s/pkg/helm"
 	"github.com/lflxp/lflxp-k8s/pkg/monitor"
@@ -72,6 +73,6 @@ func PreGinServe(r *gin.Engine, port string, ttyData *pkg.Tty) {
 	monitor.RegisterMonitor(r)
 	// csm.RegisterCSM(r)
 	tty.RegisterTTY(r, ttyData)
-	// pages.RegisterTemplate(r)
+	pages.RegisterTemplate(r)
 	helm.RegisterApiserverHelm(r)
 }
