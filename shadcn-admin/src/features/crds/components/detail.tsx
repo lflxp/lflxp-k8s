@@ -1,46 +1,41 @@
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
+import ReactJsonView from 'react-json-view'
 
 export function SheetDemo(data: TData[], name: string) {
   return (
-    <Sheet>
-      <SheetTrigger asChild>
+    <Drawer>
+      <DrawerTrigger asChild>
         <Button
           variant="link"
           className="text-blue-400 hover:text-green-600"
         >
           {name}
         </Button>
-      </SheetTrigger>
-      <SheetContent className="w-[45%] sm:max-w-[425px]">
-      <SheetHeader>
-          <SheetTitle>{name}</SheetTitle>
-      </SheetHeader>
-      <div className="h-full">
-          <div className="items-center h-full w-full">
-          <Textarea
-          className="h-full w-full"
-          placeholder="Type your message here."
-          value={JSON.stringify(data, null, 2)}
-          readOnly
-          />
+      </DrawerTrigger>
+      <DrawerContent
+        className="bg-white h-[70vh] w-full"
+      >
+        <DrawerHeader>
+          <DrawerTitle>{name}</DrawerTitle>
+        </DrawerHeader>
+          <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+            <ReactJsonView src={data} />
           </div>
-      </div>
-      <SheetFooter>
-          <SheetClose asChild>
-          <Button type="submit">关闭</Button>
-          </SheetClose>
-      </SheetFooter>
-      </SheetContent>
-    </Sheet>
-  )
+        <DrawerFooter>
+          <DrawerClose asChild>
+        <Button type="button">关闭</Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  );
 }

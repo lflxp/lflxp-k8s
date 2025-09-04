@@ -12,7 +12,7 @@ export const columns: ColumnDef<Crd>[] = [
     cell: ({ row }) => {  
         return (
           <div>
-            {SheetDemo(row.original, row.original.metadata.name)}
+            {row.original.metadata.name} {SheetDemo(row.original, row.original.metadata.name)}
           </div>
         );
       },
